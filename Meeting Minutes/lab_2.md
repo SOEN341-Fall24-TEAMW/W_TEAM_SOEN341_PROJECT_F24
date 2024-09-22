@@ -3,7 +3,7 @@
 **Meeting Date/Time:** 20 Sept 2024, 16:15 - 18:00  
 **Meeting Purpose:** Lab 2
 **Meeting Location:** Concordia University
-**Note Taker:** Adja Boye
+**Note Taker:** Mik Driver
 
 ## Attendees
 People who attended:
