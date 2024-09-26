@@ -60,3 +60,9 @@
   border: 1px solid grey;
   padding-left: 8px;
 }
+
+.header { 
+  height: 50px;
+  padding-right: 10px;
+  margin-top: 5px;
+}
