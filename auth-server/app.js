@@ -1,8 +1,8 @@
 const express = require("express")
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcrypt") //for hashing and comparing passwords
 var cors = require('cors')
-const jwt = require("jsonwebtoken")
-var low = require("lowdb");
+const jwt = require("jsonwebtoken") // for generating and verifying JSON web tokens
+var low = require("lowdb"); //for storing user details (email and hashed password)
 var FileSync = require("lowdb/adapters/FileSync");
 var adapter = new FileSync("./database.json");
 var db = low(adapter);
