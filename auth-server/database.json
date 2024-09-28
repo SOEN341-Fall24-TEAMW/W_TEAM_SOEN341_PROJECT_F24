@@ -1,6 +1,7 @@
 {
   "users": [
-    { "role": "instructor",
+    {
+      "role": "instructor",
       "email": "kumar@draft.dev",
       "password": "$2b$10$XccSsh0YszxUYbWWHQZZfeGH87YSE3pP7G4uFQyLFsELaeOLGdBO."
     },
@@ -8,6 +9,16 @@
       "role": "student",
       "email": "hey@kumarharsh.me",
       "password": "$2b$10$Lrm/GG7Klwylen9MXifus.H/TardFqnvBjD8LYXXjiuzEx.kXbz2u"
+    },
+    {
+      "email": "newuser@example.com",
+      "password": "$2b$10$/r/oWAxW6QBsdxenoegz6OH1YbiQNNQtZ4prYjj6VwBMgsaMySawG",
+      "role": "student"
+    },
+    {
+      "email": "instructor@example.com",
+      "password": "$2b$10$xZJA0Gi9r7z9lfzUMjiq5uEKjIfbrHb7DdSwWOraAiN1p7vzAp11i",
+      "role": "instructor"
     }
   ]
 }
