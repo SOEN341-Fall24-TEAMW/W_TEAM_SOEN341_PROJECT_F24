@@ -1,0 +1,13 @@
+{
+  "users": [
+    {
+      "email": "newuser@example.com",
+      "password": "$2b$10$/rGOKhI7g377YXye5z/H5eSerplaFrhRh.dTzI93nmm/C6W.k8Hje"
+    },
+    {
+      "email": "instructor@example.com",
+      "password": "$2b$10$ruShyXCa7eZxg8ucYuhTEOvshC6X/a4ChBrsee8r/L6zTy9s.1nr6"
+    },
+    {}
+  ]
+}
