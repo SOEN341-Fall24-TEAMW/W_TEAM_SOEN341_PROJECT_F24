@@ -11,8 +11,15 @@ var db = low(adapter);
 const fs = require("fs"); // File system module to read CSV files
 const csvParser = require("csv-parser"); // CSV parser library for reading the CSV file
 
+// Real-time communication setup
+const http = require('http');
+const { Server } = require("socket.io");
+
 // Initialize Express app
 const app = express()
+const server = http.createServer(app);
+const io = new Server(server);
+
 
 // Define a JWT secret key. This should be isolated by using env variables for security
 const jwtSecretKey = "dsfdsfsdfdsvcsvdfgefg"
@@ -223,9 +230,17 @@ function isCourseValid(courseId) {
             resolve(validCourse);
         });
     });
-  }
+}
   
-  // Start server
-  app.listen(3080, () => {
+// Real-time Socket.IO connection handler
+io.on('connection', (socket) => {
+    console.log('A user connected');
+    socket.on('disconnect', () => {
+        console.log('User disconnected');
+    });
+});
+
+// Start server
+app.listen(3080, () => {
     console.log("Server running on port 3080");
 });
