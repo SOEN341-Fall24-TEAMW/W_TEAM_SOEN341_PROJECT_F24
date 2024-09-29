@@ -8,6 +8,16 @@
       "email": "instructor@example.com",
       "password": "$2b$10$ruShyXCa7eZxg8ucYuhTEOvshC6X/a4ChBrsee8r/L6zTy9s.1nr6"
     },
-    {}
+    {},
+    {
+      "email": "instructor2@example.com",
+      "password": "$2b$10$vfdjBpewlTaIWwRtx.ke4u8NKFcP6T4Zv5OSsp2/Zx0YNbg1hAlTq",
+      "role": "instructor"
+    },
+    {
+      "email": "student2@example.com",
+      "password": "$2b$10$lbE7Vn1UpqtD9k6jD63wAO.BuqX6yQ72KgzGyV6VO4dzn4iQ/ILZC",
+      "role": "student"
+    }
   ]
 }

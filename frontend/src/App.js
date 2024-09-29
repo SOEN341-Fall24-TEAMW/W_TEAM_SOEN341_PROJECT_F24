@@ -2,6 +2,10 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Header from './header';
 import Home from './home';
 import Login from './login';
+import CreateTeams from './pages/CreateTeams';
+import Teams from './pages/Teams';
+import TeamList from './pages/TeamList';
+
 import './App.css';
 import { useEffect, useState } from 'react';
 
@@ -40,6 +44,10 @@ function App() {
         <Routes>
           <Route path="/" element={<Home email={email} loggedIn={loggedIn} setLoggedIn={setLoggedIn}/>} />
           <Route path="/login" element={<Login setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
+          <Route path='/Teams' element={<Teams/>}></Route>
+          <Route path='/CreateTeams' element={<CreateTeams/>}></Route>
+          <Route path='/TeamList' element={<TeamList/>}></Route>
+
         </Routes>
       </BrowserRouter>
     </div>
@@ -47,3 +55,4 @@ function App() {
 }
 
 export default App;
+
