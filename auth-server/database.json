@@ -19,6 +19,16 @@
       "email": "instructor@example.com",
       "password": "$2b$10$xZJA0Gi9r7z9lfzUMjiq5uEKjIfbrHb7DdSwWOraAiN1p7vzAp11i",
       "role": "instructor"
+    },
+    {
+      "email": "student2@example.com",
+      "password": "$2b$10$PFktDdeC1jA6sBcbMzEvseMcxpU3bsbh.F3fkwGZT3ME207oUi.Si",
+      "role": "student"
+    },
+    {
+      "email": "student3@example.com",
+      "password": "$2b$10$Vh6p0irwpvi4rp/qdKbWOOnysqm0o9l9CHccJYY0g22Ebqcz5O.AG",
+      "role": "student"
     }
   ]
 }
