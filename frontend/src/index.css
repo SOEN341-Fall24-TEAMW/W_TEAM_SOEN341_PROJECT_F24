@@ -36,3 +36,110 @@ input[type="button"] {
     border-radius: 8px;
     cursor: pointer;
 }
+
+#team{
+  text-align: center;
+  font-weight: bold;
+  font-size: 50px;
+  padding: 60px;
+  font-family: sans-serif;
+
+}
+
+.button{
+
+  background-color: #fafbfc;
+  border: none;
+  color: black;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 30px;
+  margin: 80px 150px;
+  padding-top: 40px;
+  padding-bottom: 70px;
+
+font-family: sans-serif;
+color: black;
+cursor: pointer;
+text-decoration: none;
+width: 400px;
+height: 50px;
+border: none;
+
+}
+
+.button2{
+
+  text-align: center;
+    font-size: 30px;
+    font-family: sans-serif;
+    padding-top: 40px;
+    padding-bottom: 70px;
+
+    display: inline-block;
+    color: black;
+    background-color: #fafbfc;
+    cursor: pointer;  
+    text-decoration: none;
+    margin: 80px 150px;
+
+    width: 400px;
+    height: 50px;
+     border: 5cm;
+
+}
+
+#head{
+
+  text-align: center;
+  font-weight: bold;
+  font-size: 50px;
+  padding: 5px;
+  font-family: sans-serif;
+}
+
+
+#head1{
+
+  font-weight: bold;
+  font-size: 50px;
+  padding: 5px;
+  font-family: sans-serif; 
+
+}
+
+.button3{
+  text-align: center;
+  font-size: 14px;
+  font-family: sans-serif;
+  background: #e8edf1 ;
+  border: none;
+  display: inline-block;
+  cursor: pointer;  
+
+  margin-left: 10px;
+   margin-top: 10px;
+   
+
+
+}
+
+
+.choose{
+  text-align: center;
+
+}
+
+#teamList{
+  text-align: left;
+
+}
+
+.user{
+  background-color: fafbfc;
+  font-size: 30px;
+  font-family: 'Courier New', Courier, monospace;
+  padding: 20px;
+  margin: 20px;
+}
