@@ -2,7 +2,7 @@
 
 ## Project Description
 
-A Peer Assessment System for university team projects is designed to allow students to evaluate the contributions and performance of their teammates based on four key dimensions: cooperation, conceptual contribution, practical contribution, and work ethic. The system promotes accountability and provides valuable feedback to both students and instructors on team dynamics and individual efforts.
+A peer assessment system for a university team projects is designed to allow students to evaluate the contributions and performance of their teammates based on four key dimensions: cooperation, conceptual contribution, practical contribution, and work ethic. The system promotes accountability and provides valuable feedback to both students and instructors on team dynamics and individual efforts.
 
 We identify two primary users: Students and Instructors.
 
