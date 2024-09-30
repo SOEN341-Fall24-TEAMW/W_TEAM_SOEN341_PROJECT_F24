@@ -209,7 +209,7 @@ app.delete("/teams/:id/students/:studentId", isInstructor, (req, res) => {
 function isCourseValid(courseId) {
     const courses = [];
     return new Promise((resolve, reject) => {
-      const stream = fs.createReadStream("/Users/mikdriver/W_TEAM_SOEN341_PROJECT_F24/CU_SR_OPEN_DATA_CATALOG_utf8.csv")
+      const stream = fs.createReadStream("../CU_SR_OPEN_DATA_CATALOG_utf8.csv")
       stream.on("error", (error) => {
         console.error("Error reading the file:", error.message); // Log the error message
         reject(error);
