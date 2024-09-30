@@ -1,4 +1,3 @@
-
 const express = require("express")
 const bcrypt = require("bcrypt") //for hashing and comparing passwords
 var cors = require('cors')
@@ -7,6 +6,9 @@ var low = require("lowdb"); //for storing user details (email and hashed passwor
 var FileSync = require("lowdb/adapters/FileSync");
 var adapter = new FileSync("./database.json");
 var db = low(adapter);
+
+// Set default structure for the database
+db.defaults({ users: [], teams: [] }).write();
 
 const fs = require("fs"); // File system module to read CSV files
 const csvParser = require("csv-parser"); // CSV parser library for reading the CSV file
@@ -120,6 +122,36 @@ app.post('/check-account', (req, res) => {
     })
 })
 
+// Endpoint to get teams information for students or instructors
+app.get("/teams", (req, res) => {
+    const tokenHeaderKey = "jwt-token";
+    const authToken = req.headers[tokenHeaderKey];
+
+    try {
+        const verified = jwt.verify(authToken, jwtSecretKey);
+        
+        // If the user is an instructor, return all teams they manage
+        if (verified.role === "instructor") {
+            const instructorTeams = db.get("teams").filter({ instructorId: verified.email }).value();
+            return res.status(200).json({ message: "success", teams: instructorTeams });
+        
+        // If the user is a student, return the team they belong to
+        } else if (verified.role === "student") {
+            const studentTeams = db.get("teams").filter(team => {
+                return team.students.some(student => student.email === verified.email);
+            }).value();
+
+            return res.status(200).json({ message: "success", teams: studentTeams });
+        }
+
+        // If the role is neither student nor instructor, return an error
+        return res.status(403).json({ message: "Access forbidden: invalid role" });
+
+    } catch (error) {
+        return res.status(401).json({ message: "Invalid token", error });
+    }
+});
+
 
 // Middleware to verify if the user is an instructor
 function isInstructor(req, res, next) {
@@ -150,7 +182,7 @@ app.post("/teams", isInstructor, (req, res) => {
         return res.status(400).json({ message: "Invalid course ID" });
       }
   
-      const newTeam = { name, instructorId, maxSize, courseId, students: [] };
+      const newTeam = { id: Date.now().toString(), name, instructorId, maxSize, courseId, students: [] }; //change id for random num generator?
       db.get("teams").push(newTeam).write();
   
       res.status(201).json({ message: "Team created successfully", team: newTeam });
@@ -169,16 +201,26 @@ app.post("/teams/:id/students", (req, res) => {
     if (!team) {
       return res.status(404).json({ message: "Team not found" });
     }
-  
+
     // Check if team is full
     if (team.students.length >= team.maxSize) {
       return res.status(400).json({ message: "Team is full" });
     }
-  
+
+    // Check if the student is registered
+    const registeredStudent = db.get("users").find({ email }).value();
+    if (!registeredStudent) {
+        console.warn(`Warning: Student ${email} is not registered in the database.`);
+    }
+
     const newStudent = { studentId, name, email };
     db.get("teams").find({ id: teamId }).get("students").push(newStudent).write();
   
-    res.status(201).json({ message: "Student added to team", student: newStudent });
+    res.status(201).json({ 
+        message: "Student added to team", 
+        student: newStudent,
+        warning: registeredStudent ? null : "Warning: Student is not registered in the database."
+    });
 });
   
 // API to update team size (instructors only)
@@ -195,7 +237,13 @@ app.put("/teams/:id/size", isInstructor, (req, res) => {
 app.delete("/teams/:id/students/:studentId", isInstructor, (req, res) => {
     const teamId = req.params.id;
     const studentId = req.params.studentId;
-  
+
+    // Find the team
+    const team = db.get("teams").find({ id: teamId }).value();
+    if (!team) {
+      return res.status(404).json({ message: "Team not found" });
+    }
+
     db.get("teams")
       .find({ id: teamId })
       .get("students")
@@ -209,7 +257,7 @@ app.delete("/teams/:id/students/:studentId", isInstructor, (req, res) => {
 function isCourseValid(courseId) {
     const courses = [];
     return new Promise((resolve, reject) => {
-      const stream = fs.createReadStream("/Users/mikdriver/W_TEAM_SOEN341_PROJECT_F24/CU_SR_OPEN_DATA_CATALOG_utf8.csv")
+      const stream = fs.createReadStream("../CU_SR_OPEN_DATA_CATALOG_utf8.csv")
       stream.on("error", (error) => {
         console.error("Error reading the file:", error.message); // Log the error message
         reject(error);
