@@ -1,10 +1,10 @@
 # Meeting Minutes
 ## Meeting Information
-**Meeting Date/Time:** 22 Sept 2024, 18:00 - 19:00 
-**Meeting Purpose:** meeting_purpose
-**Meeting Location:**  Virtual over Discord
-**Note Taker:** Adja Boye
-**Formatting and Edits:** Hadi Assemani
+**Meeting Date/Time:** 22 Sept 2024, 18:00 - 19:00   
+**Meeting Purpose:** meeting_purpose   
+**Meeting Location:**  Virtual over Discord   
+**Note Taker:** Adja Boye   
+**Formatting and Edits:** Hadi Assemani   
 
 ## Attendees
 People who attended:
