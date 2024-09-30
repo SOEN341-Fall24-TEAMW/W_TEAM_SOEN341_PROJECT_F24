@@ -42,4 +42,7 @@ We identify two primary users: Students and Instructors.
 
 
 ### Project Structure 
-  The project is divided into multiple sprints, with the first sprint based on: - Setting up the GitHub repository. - Implementing user authentication and team management features. - Defining user stories and breaking down tasks.
+  The project is divided into multiple sprints, with the first sprint consists of the following:
+  - Setting up the GitHub repository
+  - Defining user stories and breaking down tasks
+  - Implementing user authentication and team management features
