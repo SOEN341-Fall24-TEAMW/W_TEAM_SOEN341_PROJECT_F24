@@ -90,9 +90,10 @@ const Login = (props) => {
 
     return <div className={"mainContainer"}>
         <div className={"titleContainer"}>
-            <div>Peereview</div>
+            <div>Welcome!</div>
         </div>
         <div className="subTitleContainer">
+            <div>Log in to rate your peers from your school projects.</div>
         </div>
         <br />
         <div className={"inputContainer"}>
