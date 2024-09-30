@@ -3,7 +3,8 @@
 **Meeting Date/Time:** 21 Sept 2024, 12:00 - 13:00 
 **Meeting Purpose:** Plan of Action
 **Meeting Location:**  Virtual over Discord
-**Note Taker:** Adja Boye 
+**Note Taker:** Adja Boye
+**Formatting and Edits:** Hadi Assemani
 
 ## Attendees
 People who attended:

@@ -4,6 +4,7 @@
 **Meeting Purpose:** meeting_purpose
 **Meeting Location:**  Virtual over Discord
 **Note Taker:** Adja Boye
+**Formatting and Edits:** Hadi Assemani
 
 ## Attendees
 People who attended:

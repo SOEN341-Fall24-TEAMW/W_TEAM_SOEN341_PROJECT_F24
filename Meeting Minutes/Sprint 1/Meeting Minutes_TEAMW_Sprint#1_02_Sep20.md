@@ -4,6 +4,7 @@
 **Meeting Purpose:** Lab 2
 **Meeting Location:** Concordia University
 **Note Taker:** Mik Driver
+**Formatting and Edits:** Hadi Assemani
 
 ## Attendees
 People who attended:
