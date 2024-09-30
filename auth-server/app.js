@@ -59,7 +59,7 @@ app.post("/auth", (req, res) => {
                 };
 
                 const token = jwt.sign(loginData, jwtSecretKey);
-                res.status(200).json({ message: "Successfull.", token });
+                res.status(200).json({ message: "success", token });
             }
         });
     // If no user is found, hash the given password and create a new entry in the auth db with the email and hashed password
@@ -75,7 +75,7 @@ app.post("/auth", (req, res) => {
             };
 
             const token = jwt.sign(loginData, jwtSecretKey);
-            res.status(200).json({ message: "Successfull.", token });
+            res.status(200).json({ message: "success", token });
         });
 
     }
