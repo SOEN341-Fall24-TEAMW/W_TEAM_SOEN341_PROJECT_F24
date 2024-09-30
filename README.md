@@ -1,9 +1,19 @@
 # W_TEAM_SOEN341_PROJECT_F24
-## Clear and concise file, with clear explanation and identified problem and proposed solution.
+## Clear and concise file, with clear explanation and identified problem and proposed solution
 
 ## Project Description
 
+A Peer Assessment System for university team projects is designed to allow students to evaluate the contributions and performance of their teammates based on four key dimensions: cooperation, conceptual contribution, practical contribution, and work ethic. The system promotes accountability and provides valuable feedback to both students and instructors on team dynamics and individual efforts.
+
+We identify two primary users: Students and Instructors.
+
 ## Team Member + Role
+
+- Adja: Software Engineer(backend and frontend)
+- Hadi: Software Engineer(backend and frontend)
+- Mik: Computer Engineer(backend and frontend)
+- Sara: Software Engineer(mainly frontend)
+- Youssef: Computer Engineer(data management and frontend)
 
 ## Peer Assessment Application
 
@@ -31,14 +41,6 @@
     - Team Management: Instructors can create teams, assign students, and manage the evaluation process.
     - Detailed Reports: The dashboard provides detailed assessment results by team, by student, and a summary of results.
 
-     
-### Team Members and Roles
-
-Adja Boye: Software Engineer(backend and frontend)
-Sara : Software Engineer(mainly frontend)
-Mik : Computer Engineer(backend and frontend)
-Youssef: Computer Engineer(data management and frontend)
-Hadi : Software Engineer(backend and frontend)
 
 ### Project Structure 
   The project is divided into multiple sprints, with the first sprint based on: - Setting up the GitHub repository. - Implementing user authentication and team management features. - Defining user stories and breaking down tasks.
