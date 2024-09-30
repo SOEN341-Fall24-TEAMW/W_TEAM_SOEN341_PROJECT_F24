@@ -18,7 +18,7 @@ People who attended:
 
 Item | Description
 ---- | ----
-Agenda Item 1 |  Initial Demo of Team's Progress
+Agenda Item 1 | Demo of Team's Progress
 
 ## Discussion Items
 Item | Notes |
