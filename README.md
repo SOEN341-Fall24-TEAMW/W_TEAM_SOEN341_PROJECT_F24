@@ -8,11 +8,11 @@ We identify two primary users: Students and Instructors.
 
 ## Team Member and Roles
 
-- Hadi Assemani: Software Engineer(backend and frontend)
-- Adja Boye: Software Engineer(backend and frontend)
-- Mik Driver: Computer Engineer(backend and frontend)
-- Sara Razene Habte: Software Engineer(mainly frontend)
-- Youssef Tassine: Computer Engineer(data management and frontend)
+- **Hadi Assemani**: Software Engineer(backend and frontend)
+- **Adja Boye**: Software Engineer(backend and frontend)
+- **Mik Driver**: Computer Engineer(backend and frontend)
+- **Sara Razene Habte**: Software Engineer(mainly frontend)
+- **Youssef Tassine**: Computer Engineer(data management and frontend)
 
 ## Peer Assessment Application
 
