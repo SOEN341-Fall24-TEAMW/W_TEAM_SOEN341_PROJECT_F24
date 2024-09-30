@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
 function CreateTeams() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   return (
 

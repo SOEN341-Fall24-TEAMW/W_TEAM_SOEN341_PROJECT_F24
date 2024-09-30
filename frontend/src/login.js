@@ -6,7 +6,9 @@ const Login = (props) => {
     const [password, setPassword] = useState("")
     const [emailError, setEmailError] = useState("")
     const [passwordError, setPasswordError] = useState("")
-    
+    const [role, setRole] = useState("");
+    const [roleError, setRoleError] = useState("");
+
     const navigate = useNavigate();
         
     const onButtonClick = () => {
@@ -36,15 +38,20 @@ const Login = (props) => {
             return
         }
 
+        if (role === "") {
+            setRoleError("Please select a role");
+            return;
+        }
+
         // Check if email has an account associated with it
         checkAccountExists(accountExists => {
             // If yes, log in 
             if (accountExists)
-                logIn()
+                logIn();
             else
             // Else, ask user if they want to create a new account and if yes, then log in
                 if (window.confirm("An account does not exist with this email address: " + email + ". Do you want to create a new account?")) {
-                    logIn()
+                    navigate('/create-new-account');
                 }
         })        
   
@@ -73,17 +80,22 @@ const Login = (props) => {
             headers: {
                 'Content-Type': 'application/json'
               },
-            body: JSON.stringify({email, password})
+            body: JSON.stringify({ email, password, role })
         })
         .then(r => r.json())
         .then(r => {
             if ('success' === r.message) {
                 localStorage.setItem("user", JSON.stringify({email, token: r.token}))
-                props.setLoggedIn(true)
-                props.setEmail(email)
-                navigate("/")
+                props.setLoggedIn(true);
+                props.setEmail(email);
+                navigate("/");
+                if (role === "student") {
+                    navigate("/student-dashboard");
+                } else if (role === "instructor") {
+                    navigate("/instructor-dashboard");
+                }
             } else {
-                window.alert("Wrong email or password")
+                window.alert(r.message);
             }
         })
     }
@@ -96,6 +108,14 @@ const Login = (props) => {
             <div>Log in to rate your peers from your school projects.</div>
         </div>
         <br />
+        <div className="inputContainer">
+            <select value={role} onChange={(ev) => setRole(ev.target.value)} className="inputBox">
+                <option value="">Select Role</option>
+                <option value="student">Student</option>
+                <option value="instructor">Instructor</option>
+            </select>
+            <label className="errorLabel">{roleError}</label>
+        </div>
         <div className={"inputContainer"}>
             <input
                 value={email}
@@ -104,7 +124,6 @@ const Login = (props) => {
                 className={"inputBox"} />
             <label className="errorLabel">{emailError}</label>
         </div>
-        <br />
         <div className={"inputContainer"}>
             <input
                 type="password"

@@ -1,4 +1,3 @@
-
 const express = require("express")
 const bcrypt = require("bcrypt") //for hashing and comparing passwords
 var cors = require('cors')
@@ -41,7 +40,7 @@ app.post("/", (req, res) => {
 // The auth endpoint that creates a new user record or logs a user based on an existing record
 app.post("/auth", (req, res) => {
     
-    const { email, password, role } = req.body;
+    const { role, email, password } = req.body;
 
     // Look up the user entry in the database
     const user = db.get("users").value().filter(user => email === user.email)
@@ -51,6 +50,8 @@ app.post("/auth", (req, res) => {
         bcrypt.compare(password, user[0].password, function (_err, result) {
             if (!result) {
                 return res.status(401).json({ message: "Invalid password" });
+            } else if (role !== user[0].role) {
+                return res.status(401).json({ message: "Invalid role" });
             } else {
                 let loginData = {
                     email,
@@ -90,9 +91,7 @@ app.post('/verify', (req, res) => {
     try {
       const verified = jwt.verify(authToken, jwtSecretKey);
       if (verified) {
-        return res
-          .status(200)
-          .json({ status: "logged in", message: "success", role: verified.role });
+        return res.status(200).json({ status: "logged in", message: "success", role: verified.role });
       } else {
         // Access Denied
         return res.status(401).json({ status: "invalid auth", message: "error" });
@@ -108,7 +107,7 @@ app.post('/verify', (req, res) => {
 app.post('/check-account', (req, res) => {
     const { email } = req.body
 
-    console.log(req.body)
+    console.log("Request Body:", req.body);
 
     const user = db.get("users").value().filter(user => email === user.email)
 
@@ -129,7 +128,7 @@ function isInstructor(req, res, next) {
     }
     try {
         const decodedToken = jwt.verify(token, jwtSecretKey);
-        console.log("Decoded Token:", decodedToken); // Log the entire decoded token
+        // console.log("Decoded Token:", decodedToken); // Log the entire decoded token
         if (decodedToken.role !== "instructor") {
             return res.status(403).json({ message: "Access forbidden: not an instructor" });
         }
@@ -217,7 +216,7 @@ function isCourseValid(courseId) {
 
     stream.pipe(csvParser())
         .on("data", (row) => {
-            console.log("Parsed Row: ", row); // Log each parsed row
+            // console.log("Parsed Row: ", row); // Log each parsed row
             if (row["Course ID"]) {
                 const courseID = row["Course ID"].trim();
                 console.log("Found Course ID: ", courseID);
@@ -225,7 +224,7 @@ function isCourseValid(courseId) {
             }
         })
         .on("end", () => {
-            console.log("Available Course IDs: ", courses); // Log available course IDs
+            // console.log("Available Course IDs: ", courses); // Log available course IDs
             const validCourse = courses.includes(courseId);
             resolve(validCourse);
         });

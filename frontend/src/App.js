@@ -2,6 +2,9 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Header from './header';
 import Home from './home';
 import Login from './login';
+import CreateNewAccount from './pages/create-new-account.js';
+import StudentDashboard from './pages/instructor-dashboard.js';
+import InstructorDashboard from './pages/instructor-dashboard.js';
 import CreateTeams from './pages/CreateTeams';
 import Teams from './pages/Teams';
 import TeamList from './pages/TeamList';
@@ -44,10 +47,12 @@ function App() {
         <Routes>
           <Route path="/" element={<Home email={email} loggedIn={loggedIn} setLoggedIn={setLoggedIn}/>} />
           <Route path="/login" element={<Login setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
+          <Route path='/create-new-account' element={<CreateNewAccount setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
+          <Route path="/student-dashboard" element={<StudentDashboard setLoggedIn={setLoggedIn} />} />
+          <Route path="/instructor-dashboard" element={<InstructorDashboard setLoggedIn={setLoggedIn} />} />
           <Route path='/Teams' element={<Teams/>}></Route>
           <Route path='/CreateTeams' element={<CreateTeams/>}></Route>
           <Route path='/TeamList' element={<TeamList/>}></Route>
-
         </Routes>
       </BrowserRouter>
     </div>

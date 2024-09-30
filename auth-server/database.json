@@ -29,6 +29,26 @@
       "email": "student3@example.com",
       "password": "$2b$10$Vh6p0irwpvi4rp/qdKbWOOnysqm0o9l9CHccJYY0g22Ebqcz5O.AG",
       "role": "student"
+    },
+    {
+      "email": "asd@asd.asd",
+      "password": "$2b$10$.aylaHxvtmztKuDEP96lCOCyawdKgyCOpCJ0gJoRpG7t5IWSsNih.",
+      "role": "student"
+    },
+    {
+      "email": "qwe@qwe.qwe",
+      "password": "$2b$10$PEg2hiYuVD9xT5WYIHQjTuzRulvhcw1XxOHaBpPSeIPcNbODTD87W",
+      "role": "student"
+    },
+    {
+      "email": "dew@dew.dew",
+      "password": "$2b$10$MaPPuZNyYX60ftokOfyeD.9NZKias.b0mxJOeCXO.Hn7Y81LtKb0G",
+      "role": "student"
+    },
+    {
+      "email": "tre@tre.tre",
+      "password": "$2b$10$tbtM6rsP7wvA2D30I04BHepPGYfGxRK/psV.kFUUChXcXKea2dttC",
+      "role": "student"
     }
   ]
 }
