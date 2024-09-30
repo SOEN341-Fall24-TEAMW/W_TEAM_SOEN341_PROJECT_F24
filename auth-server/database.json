@@ -30,5 +30,36 @@
       "password": "$2b$10$Vh6p0irwpvi4rp/qdKbWOOnysqm0o9l9CHccJYY0g22Ebqcz5O.AG",
       "role": "student"
     }
+  ],
+  "teams": [
+    {
+      "id": "1727714417549",
+      "name": "team alpha",
+      "instructorId": "instructor@example.com",
+      "maxSize": "5",
+      "courseId": "049969",
+      "students": [
+        {
+          "studentId": "400899",
+          "name": "Rand User",
+          "email": "student2@example.com"
+        },
+        {
+          "studentId": "4677783",
+          "name": "Om User",
+          "email": "student3@example.com"
+        },
+        {
+          "studentId": "4236547",
+          "name": "Ello User",
+          "email": "student5@example.com"
+        },
+        {
+          "studentId": "19992333",
+          "name": "Notreg User",
+          "email": "student7@example.com"
+        }
+      ]
+    }
   ]
 }
