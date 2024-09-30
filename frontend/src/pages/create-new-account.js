@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Login = (props) => {
+const CreateNewAccount = (props) => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [emailError, setEmailError] = useState("")
@@ -47,12 +47,14 @@ const Login = (props) => {
         checkAccountExists(accountExists => {
             // If yes, log in 
             if (accountExists)
-                logIn();
-            else
-            // Else, ask user if they want to create a new account and if yes, then log in
+                navigate("/login");
+            else {
+                // Else, ask user if they want to create a new account and if yes, then log in
                 if (window.confirm("An account does not exist with this email address: " + email + ". Do you want to create a new account?")) {
-                    navigate('/create-new-account');
+                    logIn();
                 }
+            }
+            
         })        
   
 
@@ -105,7 +107,7 @@ const Login = (props) => {
             <div>Welcome!</div>
         </div>
         <div className="subTitleContainer">
-            <div>Log in to rate your peers from your school projects.</div>
+            <div>Here you can create a new account</div>
         </div>
         <br />
         <div className="inputContainer">
@@ -139,9 +141,9 @@ const Login = (props) => {
                 className={"inputButton"}
                 type="button"
                 onClick={onButtonClick}
-                value={"Log in"} />
+                value={"Sign Up"} />
         </div>
     </div>
 }
 
-export default Login
+export default CreateNewAccount

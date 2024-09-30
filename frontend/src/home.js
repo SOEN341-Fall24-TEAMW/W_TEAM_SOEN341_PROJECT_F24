@@ -16,6 +16,7 @@ const Home = (props) => {
 
 
     return <div className="mainContainer">
+        <img src="/team-logo.png" alt="Team Logo" style={{ maxHeight: "350px" }} />
         <div className={"titleContainer"}>
             <div>TEAM W!</div>
         </div>
