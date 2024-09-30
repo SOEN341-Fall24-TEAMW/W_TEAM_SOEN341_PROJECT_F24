@@ -1,10 +1,10 @@
 # Meeting Minutes
 ## Meeting Information
-**Meeting Date/Time:** 13 Sept 2024, 16:15 - 18:00  
+**Meeting Date/Time:** 13 Sept 2024, 16:15 - 18:00   
 **Meeting Purpose:** Lab 1   
-**Meeting Location:** Concordia University
-**Note Taker:** Mik Driver
-**Formatting and Edits:** Hadi Assemani
+**Meeting Location:** Concordia University   
+**Note Taker:** Mik Driver   
+**Formatting and Edits:** Hadi Assemani   
 
 ## Attendees
 People who attended:
