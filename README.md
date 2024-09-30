@@ -5,7 +5,7 @@
 
 ## Team Member + Role
 
-##Peer Assessment Application
+## Peer Assessment Application
 
 ### Project Overview 
   The peer assessment application is mainly designed to let students evaluate the contribution of everyone in a certain team project. The application allows them to assess their teammates based on four different aspects: cooperation, conceptual contribution, practical contribution and work ethic. The whole system has for goal to contribute accountability and provides a valuable feedback to students and also to instructors enhancing the collaborative learning experience.
