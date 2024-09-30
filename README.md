@@ -7,7 +7,7 @@ A Peer Assessment System for university team projects is designed to allow stude
 
 We identify two primary users: Students and Instructors.
 
-## Team Member + Role
+## Team Member and Roles
 
 - Adja: Software Engineer(backend and frontend)
 - Hadi: Software Engineer(backend and frontend)
