@@ -4,6 +4,7 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
+  color: #402C03;
 }
 
 .titleContainer {
@@ -50,6 +51,7 @@
 .inputContainer > .errorLabel {
   color: red;
   font-size: 12px;
+  margin-left: 1rem;
 }
 
 .inputBox {
@@ -59,10 +61,20 @@
   border-radius: 8px;
   border: 1px solid grey;
   padding-left: 8px;
+  margin: 10px;
 }
 
-.header { 
+.header {
+  display: flex;
+  margin-left: auto;
+  margin-right: auto;
+  padding-right: max(env(safe-area-inset-right),1.5rem);
+  padding-left: max(env(safe-area-inset-right),1.5rem);
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.headerElement { 
   height: 50px;
-  padding-right: 10px;
+  padding: 5px;
   margin-top: 5px;
 }

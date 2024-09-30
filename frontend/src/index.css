@@ -28,16 +28,31 @@ code {
 
 input[type="button"] {
     border: none;
-    background: cornflowerblue;
+    background: #F6B42E;
     color: white;
     padding: 12px 24px;
-    margin: 8px;
     font-size: 24px;
     border-radius: 8px;
     cursor: pointer;
+    width: 400px;
+    margin: 10px;
 }
 
-#team{
+
+#createAccount {
+  position: absolute;
+  top: 1.3rem;
+  right: .5rem;
+  border: none;
+  background: none;
+  color: #402C03;
+  padding: 0;
+  margin: 0;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#team {
   text-align: center;
   font-weight: bold;
   font-size: 50px;
@@ -46,7 +61,7 @@ input[type="button"] {
 
 }
 
-.button{
+.button {
 
   background-color: #fafbfc;
   border: none;
@@ -58,18 +73,17 @@ input[type="button"] {
   margin: 80px 150px;
   padding-top: 40px;
   padding-bottom: 70px;
-
-font-family: sans-serif;
-color: black;
-cursor: pointer;
-text-decoration: none;
-width: 400px;
-height: 50px;
-border: none;
+  font-family: sans-serif;
+  color: black;
+  cursor: pointer;
+  text-decoration: none;
+  width: 400px;
+  height: 48px;
+  border: none;
 
 }
 
-.button2{
+.button2 {
 
   text-align: center;
     font-size: 30px;
@@ -90,7 +104,7 @@ border: none;
 
 }
 
-#head{
+#head {
 
   text-align: center;
   font-weight: bold;
@@ -100,7 +114,7 @@ border: none;
 }
 
 
-#head1{
+#head1 {
 
   font-weight: bold;
   font-size: 50px;
@@ -109,7 +123,7 @@ border: none;
 
 }
 
-.button3{
+.button3 {
   text-align: center;
   font-size: 14px;
   font-family: sans-serif;
@@ -126,17 +140,17 @@ border: none;
 }
 
 
-.choose{
+.choose {
   text-align: center;
 
 }
 
-#teamList{
+#teamList {
   text-align: left;
 
 }
 
-.user{
+.user {
   background-color: fafbfc;
   font-size: 30px;
   font-family: 'Courier New', Courier, monospace;
