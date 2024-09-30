@@ -26,8 +26,7 @@ Item | Notes |
 GitHub Management | How to create a branches/pull requests and merge branches |
 Work Logs | Update Documentation for Sprint 1 (Work Logs) |
 Project Feedback | How to improve the current working site before submission | 
-Troubleshooting | The reasons behind any delayed task completion (Any issues faced by team members were
-resolved with the help of the others) |
+Troubleshooting | The reasons behind any delayed task completion (Any issues faced by team members were resolved with the help of the others) |
 Re-adjust Project's Road Map | Updated deadlines to allow sufficient time for code review and successful merges |
 
 ## Action Items
