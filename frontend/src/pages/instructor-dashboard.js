@@ -19,7 +19,7 @@ const InstructorDashboard = (props) => {
                 <div>Welcome!</div>
             </div>
             <div className="subTitleContainer">
-                <div>This is the Student Dashboard.</div>
+                <div>This is the Instructor Dashboard.</div>
                 <div>It's currently under construction!</div>
             </div>
             <br />
