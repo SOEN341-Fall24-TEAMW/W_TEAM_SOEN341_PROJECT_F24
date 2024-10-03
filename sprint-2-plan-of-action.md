@@ -14,6 +14,8 @@ dimension.
 - **S2.4.1:** **Dimension-Based Assessment** → Add the remaining assessment dimensions: Conceptual Contribution, Practical
 Contribution, and Work Ethic.
 
+<br>
+
 ---
 
 | Task ID | front-end/back-end | Assignee | Due Date |
@@ -27,5 +29,7 @@ Contribution, and Work Ethic.
 | S2.4.1 | back-end | Hadi | Oct 31st |
 
 ---
+
+<br>
 
 <img src="./sprint-2-gnatt-chart.png" alt="Sprint 2 Plan of Action Gnatt Chart">
