@@ -8,9 +8,18 @@ const Header = ({ loggedIn, setLoggedIn}) => {
 
     return (
         <header className="header">
-            <span><img src="/concordia-logo.svg" alt="Concordia Logo" id='headerLogo'/></span>
-            <span><img src="/50th-anniversary.svg" alt="Concordia Celebrating 50th  Anniversary" id='headerLogo'/></span>
-            <span><img src="/gina-cody-logo.png" alt="Gina Cody Logo" id='headerLogo'/></span>
+            {location.pathname !== '/student-dashboard' && location.pathname !=='/instructor-dashboard' && (
+                <span><img src="/concordia-logo.svg" alt="Concordia Logo" id='headerLogo'/></span>
+            )}
+            {location.pathname !== '/student-dashboard' && location.pathname !=='/instructor-dashboard' && (
+                <span><img src="/50th-anniversary.svg" alt="Concordia Celebrating 50th  Anniversary" id='headerLogo'/></span>
+            )}
+            {location.pathname !== '/student-dashboard' && location.pathname !=='/instructor-dashboard' && (
+                <span><img src="/gina-cody-logo.png" alt="Gina Cody Logo" id='headerLogo'/></span>
+            )}
+            {(location.pathname === '/student-dashboard' || location.pathname ==='/instructor-dashboard') && (
+                <span><img src="/team-logo.png" alt="Team Logo" id='headerLogo'/></span>
+            )}
             <span className='header2'>
                 {!loggedIn && (
                     <span>

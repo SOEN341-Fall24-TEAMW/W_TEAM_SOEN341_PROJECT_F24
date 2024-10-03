@@ -1,4 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+
 import Header from './header';
 import Home from './home';
 import Login from './login';
@@ -9,12 +11,11 @@ import CreateTeams from './pages/CreateTeams';
 import Teams from './pages/Teams';
 import TeamList from './pages/TeamList';
 import Footer from './footer.js';
-
-import { useEffect, useState } from 'react';
+import DropdownMenu from './drop-down-menu.js';
 
 function App() {
-  const [loggedIn, setLoggedIn] = useState(false)
-  const [email, setEmail] = useState("")
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
     // Fetch the user email and token from local storage
@@ -50,9 +51,10 @@ function App() {
           <Route path='/create-new-account' element={<CreateNewAccount setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
           <Route path="/student-dashboard" element={<StudentDashboard loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} />
           <Route path="/instructor-dashboard" element={<InstructorDashboard setLoggedIn={setLoggedIn} />} />
-          <Route path='/Teams' element={<Teams/>}></Route>
-          <Route path='/CreateTeams' element={<CreateTeams/>}></Route>
-          <Route path='/TeamList' element={<TeamList/>}></Route>
+          <Route path='/Teams' element={<Teams/>} />
+          <Route path='/CreateTeams' element={<CreateTeams/>} />
+          <Route path='/TeamList' element={<TeamList/>} />
+          <Route path='/drop-down-menu' element={<DropdownMenu />} />
         </Routes>
         <Footer />
       </BrowserRouter>

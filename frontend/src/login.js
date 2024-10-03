@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { React, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Login = (props) => {
@@ -86,6 +86,7 @@ const Login = (props) => {
         .then(r => {
             if ('success' === r.message) {
                 localStorage.setItem("user", JSON.stringify({email, token: r.token}))
+                localStorage.setItem("jwt-token", r.token);
                 props.setLoggedIn(true);
                 props.setEmail(email);
                 navigate("/");

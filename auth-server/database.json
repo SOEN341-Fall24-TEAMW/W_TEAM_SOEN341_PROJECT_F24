@@ -36,11 +36,6 @@
       "role": "student"
     },
     {
-      "email": "qwe@qwe.qwe",
-      "password": "$2b$10$PEg2hiYuVD9xT5WYIHQjTuzRulvhcw1XxOHaBpPSeIPcNbODTD87W",
-      "role": "student"
-    },
-    {
       "email": "dew@dew.dew",
       "password": "$2b$10$MaPPuZNyYX60ftokOfyeD.9NZKias.b0mxJOeCXO.Hn7Y81LtKb0G",
       "role": "student"
@@ -49,13 +44,47 @@
       "email": "tre@tre.tre",
       "password": "$2b$10$tbtM6rsP7wvA2D30I04BHepPGYfGxRK/psV.kFUUChXcXKea2dttC",
       "role": "student"
+    },
+    {
+      "email": "qwe@qwe.qwe",
+      "password": "$2b$10$KkVEaqwjy9bQ4het/hWs/.hr/3y1Z3No6SNZqGxkjIS5CBquk9VAa",
+      "role": "instructor"
     }
   ],
   "teams": [
     {
       "id": "1727714417549",
       "name": "team alpha",
-      "instructorId": "instructor@example.com",
+      "instructorId": "qwe@qwe.qwe",
+      "maxSize": "5",
+      "courseId": "049969",
+      "students": [
+        {
+          "studentId": "400899",
+          "name": "Rand User",
+          "email": "student2@example.com"
+        },
+        {
+          "studentId": "4677783",
+          "name": "Om User",
+          "email": "student3@example.com"
+        },
+        {
+          "studentId": "4236547",
+          "name": "Ello User",
+          "email": "student5@example.com"
+        },
+        {
+          "studentId": "19992333",
+          "name": "Notreg User",
+          "email": "student7@example.com"
+        }
+      ]
+    },
+    {
+      "id": "1727714417548",
+      "name": "team gamma",
+      "instructorId": "qwe@qwe.qwe",
       "maxSize": "5",
       "courseId": "049969",
       "students": [

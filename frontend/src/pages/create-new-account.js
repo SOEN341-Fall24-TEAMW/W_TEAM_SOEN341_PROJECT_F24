@@ -88,9 +88,9 @@ const CreateNewAccount = (props) => {
         .then(r => {
             if ('success' === r.message) {
                 localStorage.setItem("user", JSON.stringify({email, token: r.token}))
+                localStorage.setItem("jwt-token", r.token);
                 props.setLoggedIn(true);
                 props.setEmail(email);
-                navigate("/");
                 if (role === "student") {
                     navigate("/student-dashboard");
                 } else if (role === "instructor") {

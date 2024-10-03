@@ -133,6 +133,7 @@ app.get("/teams", (req, res) => {
         // If the user is an instructor, return all teams they manage
         if (verified.role === "instructor") {
             const instructorTeams = db.get("teams").filter({ instructorId: verified.email }).value();
+            console.log("mario", instructorTeams);
             return res.status(200).json({ message: "success", teams: instructorTeams });
         
         // If the user is a student, return the team they belong to
@@ -142,6 +143,10 @@ app.get("/teams", (req, res) => {
             }).value();
 
             return res.status(200).json({ message: "success", teams: studentTeams });
+        }
+
+        if (!teams || teams.length === 0) {
+            return res.status(404).json({ message: "No teams found", teams: [] });
         }
 
         // If the role is neither student nor instructor, return an error
