@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { MantineProvider } from '@mantine/core';
 
 import Header from './header';
 import Home from './home';
@@ -11,11 +12,13 @@ import CreateTeams from './pages/CreateTeams';
 import Teams from './pages/Teams';
 import TeamList from './pages/TeamList';
 import Footer from './footer.js';
-import DropdownMenu from './drop-down-menu.js';
+
+import '@mantine/core/styles.css';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [email, setEmail] = useState("");
+  const [course, setCourse] = useState("");
 
   useEffect(() => {
     // Fetch the user email and token from local storage
@@ -43,21 +46,22 @@ function App() {
 
   return (
     <div className="App">
-      <BrowserRouter>
-        <Header loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
-        <Routes>
-          <Route path="/" element={<Home email={email} loggedIn={loggedIn} setLoggedIn={setLoggedIn}/>} />
-          <Route path="/login" element={<Login setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
-          <Route path='/create-new-account' element={<CreateNewAccount setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
-          <Route path="/student-dashboard" element={<StudentDashboard loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} />
-          <Route path="/instructor-dashboard" element={<InstructorDashboard setLoggedIn={setLoggedIn} />} />
-          <Route path='/Teams' element={<Teams/>} />
-          <Route path='/CreateTeams' element={<CreateTeams/>} />
-          <Route path='/TeamList' element={<TeamList/>} />
-          <Route path='/drop-down-menu' element={<DropdownMenu />} />
-        </Routes>
-        <Footer />
-      </BrowserRouter>
+      <MantineProvider>
+        <BrowserRouter>
+          <Header loggedIn={loggedIn} setLoggedIn={setLoggedIn} course={course} setCourse={setCourse}/>
+          <Routes>
+            <Route path="/" element={<Home email={email} loggedIn={loggedIn} setLoggedIn={setLoggedIn}/>} />
+            <Route path="/login" element={<Login setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
+            <Route path='/create-new-account' element={<CreateNewAccount setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
+            <Route path="/student-dashboard" element={<StudentDashboard loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} />
+            <Route path="/instructor-dashboard" element={<InstructorDashboard setLoggedIn={setLoggedIn} course={course} />} />
+            <Route path='/Teams' element={<Teams/>} />
+            <Route path='/CreateTeams' element={<CreateTeams/>} />
+            <Route path='/TeamList' element={<TeamList/>} />
+          </Routes>
+          <Footer />
+        </BrowserRouter>
+      </MantineProvider>
     </div>
   );
 }

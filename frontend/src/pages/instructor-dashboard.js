@@ -1,60 +1,41 @@
 import React, { useState } from "react";
-import DropdownMenu from '../drop-down-menu';
+import { NavLink } from '@mantine/core';
+import { IconGauge, IconFingerprint, IconNotes } from '@tabler/icons-react';
 import './styles.css';
 
-const InstructorDashboard = () => {
+const InstructorDashboard = ({ course }) => {
 
-    const [selectedOption, setSelectedOption] = useState("");
-    const [navBarTabSelected, setNavBarTabSelected] = useState("");
+    const [navBarTabSelected, setNavBarTabSelected] = useState('');
 
-    const tabs = ['Teams', 'Students', 'Admin'];
-
-    // Handle dropdown selection change
-    var handleDropdownSelect = (value) => {
-        setSelectedOption(value);
-        console.log("Selected option:", value);
+    const tabs = {
+        IconGauge: { label: 'Students', icon: IconGauge },
+        IconFingerprint: { label: 'Teams', icon: IconFingerprint },
+        IconNotes: { label: 'Admin', icon: IconNotes },
     };
 
-    var handleClick = (tab) => {
-        setNavBarTabSelected(tab);
-    }
+    const handleClick = (tabKey) => {
+        setNavBarTabSelected(tabKey);
+    };
 
     return (
-        <div className={"mainContainer"}>
-            <div className={'navBar'}>
-            {tabs.map((tab, index) => (
-                    <input
-                        key={index} // Unique key for each tab
-                        className={'inputButton'}
-                        id={navBarTabSelected === tab ? 'navBarTabSelected' : 'navBarTab'}
-                        type="button"
-                        value={tab}
-                        onClick={() => handleClick(tab)} // Correct way to pass the tab as an argument
+        <div className='mainContainer'>
+            <div className='navBar'>
+                {Object.entries(tabs).map(([iconKey, tabData]) => (
+                    <NavLink
+                        key={iconKey}
+                        leftSection={React.createElement(tabData.icon, { size: '1rem', stroke: 1.5 })}
+                        id={navBarTabSelected === iconKey ? 'navBarTabSelected' : 'navBarTab'}
+                        childrenOffset={28}
+                        label={tabData.label}
+                        onClick={() => handleClick(iconKey)}
                     />
                 ))}
             </div>
-            <div className={"titleContainer"}>
-                <div>Welcome!</div>
+            <div>
+                <h1>Selected Course: {course}</h1>
             </div>
-            <div className="subTitleContainer">
-                <div>This is the Instructor Dashboard.</div>
-                <div>It's currently under construction!</div>
-            </div>
-            {/* Add a DropdownMenu component */}
-            <div className="dropdownContainer">
-                <DropdownMenu onChange={handleDropdownSelect} />
-            </div>
-
-            {/* Display the selected option */}
-            {selectedOption && (
-                <div className="selectedOptionDisplay">
-                    <span>You selected: {selectedOption}</span>
-                </div>
-            )}
-            
-            <br />
         </div>
     );
 };
 
-export default InstructorDashboard
+export default InstructorDashboard;

@@ -1,5 +1,6 @@
 import { React, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Select } from '@mantine/core';
 
 const Login = (props) => {
     const [email, setEmail] = useState("")
@@ -109,12 +110,14 @@ const Login = (props) => {
             <div>Log in to rate your peers from your school projects.</div>
         </div>
         <br />
-        <div className="inputContainer">
-            <select value={role} onChange={(ev) => setRole(ev.target.value)} className="inputBox">
-                <option value="">Select Role</option>
-                <option value="student">Student</option>
-                <option value="instructor">Instructor</option>
-            </select>
+        <div>
+            <Select
+                placeholder="Select a Role"
+                data={['student', 'instructor']}
+                value={ role ? role : null }
+                onChange={(value) => setRole(value)}
+                clearable
+                className='selectMenu' />
             <label className="errorLabel">{roleError}</label>
         </div>
         <div className={"inputContainer"}>

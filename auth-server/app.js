@@ -8,7 +8,7 @@ var adapter = new FileSync("./database.json");
 var db = low(adapter);
 
 // Set default structure for the database
-db.defaults({ users: [], teams: [] }).write();
+db.defaults({ users: [], teams: [], courses: [] }).write();
 
 const fs = require("fs"); // File system module to read CSV files
 const csvParser = require("csv-parser"); // CSV parser library for reading the CSV file
@@ -157,6 +157,40 @@ app.get("/teams", (req, res) => {
     }
 });
 
+// Endpoint to get course information for students or instructors
+app.get("/courses", (req, res) => {
+    const tokenHeaderKey = "jwt-token";
+    const authToken = req.headers[tokenHeaderKey];
+
+    try {
+        const verified = jwt.verify(authToken, jwtSecretKey);
+        
+        // If the user is an instructor, return all teams they manage
+        if (verified.role === "instructor") {
+            const instructorCourses = db.get("courses").filter({ instructorId: verified.email }).value();
+            console.log("luigi", instructorCourses);
+            return res.status(200).json({ message: "success", courses: instructorCourses });
+        
+        // If the user is a student, return the team they belong to
+        } else if (verified.role === "student") {
+            const studentCourses = db.get("courses").filter(team => {
+                return team.students.some(student => student.email === verified.email);
+            }).value();
+
+            return res.status(200).json({ message: "success", teams: studentCourses });
+        }
+
+        if (!teams || teams.length === 0) {
+            return res.status(404).json({ message: "No teams found", teams: [] });
+        }
+
+        // If the role is neither student nor instructor, return an error
+        return res.status(403).json({ message: "Access forbidden: invalid role" });
+
+    } catch (error) {
+        return res.status(401).json({ message: "Invalid token", error });
+    }
+});
 
 // Middleware to verify if the user is an instructor
 function isInstructor(req, res, next) {
