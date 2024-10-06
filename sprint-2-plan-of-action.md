@@ -26,7 +26,7 @@ Contribution, and Work Ethic.
 | S2.3.1 & S2.3.2 | front-end | Adja | Oct 23rd |
 | S2.3.1 & S2.3.2 | back-end | Vlad | Oct 24th |
 | S2.4.1 | front-end | Youssef | Oct 30th |
-| S2.4.1 | back-end | Hadi | Oct 31st |
+| S2.4.1 | back-end | Vlad | Oct 31st |
 
 ---
 
