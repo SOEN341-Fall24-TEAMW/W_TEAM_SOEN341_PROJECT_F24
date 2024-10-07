@@ -4,10 +4,14 @@ import { useNavigate } from "react-router-dom";
 const CreateNewAccount = (props) => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [role, setRole] = useState("");
+    const [studentName, setName] = useState("");
+    const [studentId, setId] = useState("");
     const [emailError, setEmailError] = useState("")
     const [passwordError, setPasswordError] = useState("")
-    const [role, setRole] = useState("");
     const [roleError, setRoleError] = useState("");
+    const [nameError, setNameError] = useState("");
+    const [idError, setIdError] = useState("");
 
     const navigate = useNavigate();
         
@@ -18,6 +22,16 @@ const CreateNewAccount = (props) => {
         setPasswordError("")
 
         // Check if the user has entered both fields correctly
+        if (studentName === "") {
+            setNameError("Please enter your name");
+            return;
+        }
+
+        if (studentId === "") {
+            setIdError("Please enter your student Id");
+            return
+        }
+
         if ("" === email) {
             setEmailError("Please enter your email")
             return
@@ -46,17 +60,16 @@ const CreateNewAccount = (props) => {
         // Check if email has an account associated with it
         checkAccountExists(accountExists => {
             // If yes, log in 
-            if (accountExists)
+            if (accountExists && window.confirm("An account already exists with this email address: " + email + ". Do you want to navigate to the login page?")){
                 navigate("/login");
-            else {
-                // Else, ask user if they want to create a new account and if yes, then log in
-                if (window.confirm("An account does not exist with this email address: " + email + ". Do you want to create a new account?")) {
-                    logIn();
-                }
             }
-            
+            // Else, ask user if they want to create a new account and if yes, then log in
+            if ((accountExists === false) && window.confirm("An account does not exist with this email address: " + email + ". Do you want to create a new account?")) {
+                createAccoount();
+            } else {
+                return;
+            }
         })        
-  
 
     }
 
@@ -75,27 +88,18 @@ const CreateNewAccount = (props) => {
         })
     }
 
-    // Log in a user using email and password
-    const logIn = () => {
-        fetch("http://localhost:3080/auth", {
+    const createAccoount = () => {
+        fetch ("http://localhost:3080/create-account", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
               },
-            body: JSON.stringify({ email, password, role })
+            body: JSON.stringify({ role, studentName, studentId, email, password })
         })
         .then(r => r.json())
         .then(r => {
-            if ('success' === r.message) {
-                localStorage.setItem("user", JSON.stringify({email, token: r.token}))
-                localStorage.setItem("jwt-token", r.token);
-                props.setLoggedIn(true);
-                props.setEmail(email);
-                if (role === "student") {
-                    navigate("/student-dashboard");
-                } else if (role === "instructor") {
-                    navigate("/instructor-dashboard");
-                }
+            if ('success' === r.message){
+                navigate('/login');
             } else {
                 window.alert(r.message);
             }
@@ -118,6 +122,23 @@ const CreateNewAccount = (props) => {
             </select>
             <label className="errorLabel">{roleError}</label>
         </div>
+        <div className={"inputContainer"}>
+            <input
+                value={studentName}
+                placeholder="Enter your name"
+                onChange={ev => setName(ev.target.value)}
+                className={"inputBox"} />
+            <label className="errorLabel">{nameError}</label>
+        </div>
+        {(role === 'student') && (<div className={"inputContainer"}>
+            <input
+                value={studentId}
+                placeholder="Enter your id"
+                onChange={ev => setId(ev.target.value)}
+                className={"inputBox"} />
+            <label className="errorLabel">{idError}</label>
+        </div>)
+        }
         <div className={"inputContainer"}>
             <input
                 value={email}

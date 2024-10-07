@@ -66,24 +66,28 @@ app.post("/auth", (req, res) => {
                 res.status(200).json({ message: "success", token });
             }
         });
-    // If no user is found, hash the given password and create a new entry in the auth db with the email and hashed password
-    } else {
-        bcrypt.hash(password, 10, function (_err, hash) {
-            console.log({ email, password: hash })
-            db.get("users").push({ email, password: hash, role }).write()
+    } 
 
-            let loginData = {
-                email,
-                role,
-                signInTime: Date.now(),
-            };
+})
 
-            const token = jwt.sign(loginData, jwtSecretKey);
-            res.status(200).json({ message: "success", token });
-        });
+app.post("/create-account", (req, res) => {
+    
+    const { role, studentName, studentId, email, password } = req.body;
 
-    }
+    bcrypt.hash(password, 10, function (_err, hash) {
+        
+        db.get("users").push({ role, studentName, studentId, email, password: hash, courses : {} }).write();
+        let creationData = {
+            studentId,
+            studentName,
+            email,
+            role,
+            creationTime: Date.now(),
+        };
 
+        const token = jwt.sign(creationData, jwtSecretKey);
+        return res.status(200).json({ message: "success", token });
+    });
 
 })
 
@@ -114,7 +118,7 @@ app.post('/check-account', (req, res) => {
 
     const user = db.get("users").value().filter(user => email === user.email)
 
-    console.log(user)
+    console.log("user", user)
     
     res.status(200).json({
         status: user.length > 0 ? "User exists" : "User does not exist", // Check length instead of truthy
@@ -182,6 +186,29 @@ app.get("/courses", (req, res) => {
 
         if (!teams || teams.length === 0) {
             return res.status(404).json({ message: "No teams found", teams: [] });
+        }
+
+        // If the role is neither student nor instructor, return an error
+        return res.status(403).json({ message: "Access forbidden: invalid role" });
+
+    } catch (error) {
+        return res.status(401).json({ message: "Invalid token", error });
+    }
+});
+
+app.get("/users", (req, res) => {
+    console.log("GET /users endpoint hit");
+    const tokenHeaderKey = "jwt-token";
+    const authToken = req.headers[tokenHeaderKey];
+
+    try {
+        const verified = jwt.verify(authToken, jwtSecretKey);
+
+        if (verified.role === "instructor" || verified.role === "student") {
+            const allUsers = db.get("users").value();
+            const students = allUsers.filter(user => user.role === 'student');
+            console.log("bowser", students);
+            return res.status(200).json({ message: "success", data: students });
         }
 
         // If the role is neither student nor instructor, return an error

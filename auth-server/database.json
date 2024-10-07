@@ -49,6 +49,30 @@
       "email": "qwe@qwe.qwe",
       "password": "$2b$10$KkVEaqwjy9bQ4het/hWs/.hr/3y1Z3No6SNZqGxkjIS5CBquk9VAa",
       "role": "instructor"
+    },
+    {
+      "role": "student",
+      "studentName": "def",
+      "studentId": "def",
+      "email": "def@def.def",
+      "password": "$2b$10$YccydOqUVIV.5ptnttJrOeW4.OECSU4U0K2h2Qt25XlWPzZyMSsR6",
+      "courses": {}
+    },
+    {
+      "role": "student",
+      "studentName": "def",
+      "studentId": "def",
+      "email": "defi@def.def",
+      "password": "$2b$10$j95UghoU7NU6YQjeJrh.GuZqtWo5vPMiDS4r6PrPDhlk4jqHwoNJG",
+      "courses": {}
+    },
+    {
+      "role": "student",
+      "studentName": "def",
+      "studentId": "def",
+      "email": "defi2@def.def",
+      "password": "$2b$10$2xRlOqVuKuVSVu9QOFNXm.pksDbrW7fH2vYDIkEawtVtptgjQiF.O",
+      "courses": {}
     }
   ],
   "teams": [
@@ -116,60 +140,61 @@
       "name": "SOEN 341",
       "id": "F341",
       "instructorId": "qwe@qwe.qwe",
+      "organization": "Concordia University",
       "teams": [
         {
           "id": "1727714417549",
           "name": "team alpha",
           "instructorId": "qwe@qwe.qwe",
           "maxSize": "5",
-          "courseId": "049969",
+          "courseId": "049959",
           "students": [
             {
-              "studentId": "400899",
+              "studentId": "400819",
               "name": "Rand User",
               "email": "student2@example.com"
             },
             {
-              "studentId": "4677783",
+              "studentId": "4677723",
               "name": "Om User",
               "email": "student3@example.com"
             },
             {
-              "studentId": "4236547",
+              "studentId": "4236537",
               "name": "Ello User",
               "email": "student5@example.com"
             },
             {
-              "studentId": "19992333",
+              "studentId": "1999243",
               "name": "Notreg User",
               "email": "student7@example.com"
             }
           ]
         },
         {
-          "id": "1727714417548",
+          "id": "1727714417538",
           "name": "team gamma",
           "instructorId": "qwe@qwe.qwe",
           "maxSize": "5",
-          "courseId": "049969",
+          "courseId": "049999",
           "students": [
             {
-              "studentId": "400899",
+              "studentId": "400859",
               "name": "Rand User",
               "email": "student2@example.com"
             },
             {
-              "studentId": "4677783",
+              "studentId": "4677763",
               "name": "Om User",
               "email": "student3@example.com"
             },
             {
-              "studentId": "4236547",
+              "studentId": "4236577",
               "name": "Ello User",
               "email": "student5@example.com"
             },
             {
-              "studentId": "19992333",
+              "studentId": "1999283",
               "name": "Notreg User",
               "email": "student7@example.com"
             }
@@ -181,60 +206,61 @@
       "name": "ENGR 391",
       "id": "F391",
       "instructorId": "qwe@qwe.qwe",
+      "organization": "McGill University",
       "teams": [
         {
-          "id": "1727714417549",
+          "id": "1727714417519",
           "name": "team alpha",
           "instructorId": "qwe@qwe.qwe",
           "maxSize": "5",
           "courseId": "049969",
           "students": [
             {
-              "studentId": "400899",
+              "studentId": "400199",
               "name": "Rand User",
               "email": "student2@example.com"
             },
             {
-              "studentId": "4677783",
+              "studentId": "4677283",
               "name": "Om User",
               "email": "student3@example.com"
             },
             {
-              "studentId": "4236547",
+              "studentId": "4236347",
               "name": "Ello User",
               "email": "student5@example.com"
             },
             {
-              "studentId": "19992333",
+              "studentId": "1994333",
               "name": "Notreg User",
               "email": "student7@example.com"
             }
           ]
         },
         {
-          "id": "1727714417548",
+          "id": "1727714417528",
           "name": "team gamma",
           "instructorId": "qwe@qwe.qwe",
           "maxSize": "5",
-          "courseId": "049969",
+          "courseId": "049949",
           "students": [
             {
-              "studentId": "400899",
+              "studentId": "400599",
               "name": "Rand User",
               "email": "student2@example.com"
             },
             {
-              "studentId": "4677783",
+              "studentId": "4677683",
               "name": "Om User",
               "email": "student3@example.com"
             },
             {
-              "studentId": "4236547",
+              "studentId": "4236747",
               "name": "Ello User",
               "email": "student5@example.com"
             },
             {
-              "studentId": "19992333",
+              "studentId": "1999833",
               "name": "Notreg User",
               "email": "student7@example.com"
             }
