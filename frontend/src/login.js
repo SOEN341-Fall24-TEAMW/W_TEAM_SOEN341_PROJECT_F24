@@ -86,6 +86,8 @@ const Login = (props) => {
         .then(r => r.json())
         .then(r => {
             if ('success' === r.message) {
+                console.log("r: ",r);
+                localStorage.setItem("id", r.id);
                 localStorage.setItem("user", JSON.stringify({email, token: r.token}))
                 localStorage.setItem("jwt-token", r.token);
                 props.setLoggedIn(true);

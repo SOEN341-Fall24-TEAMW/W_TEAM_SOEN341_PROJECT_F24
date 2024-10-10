@@ -3,10 +3,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Select, AppShell } from '@mantine/core';
 import { IconSchool } from '@tabler/icons-react';
 
-const Header = ({ loggedIn, setLoggedIn, course, setCourse, enlistedCourses }) => {
+const Header = ({ loggedIn, setLoggedIn, organizations, org, setOrg }) => {
     const navigate = useNavigate();
     const location = useLocation();
-
 
     return (
         <AppShell header={{ height : 60 }}>
@@ -28,9 +27,9 @@ const Header = ({ loggedIn, setLoggedIn, course, setCourse, enlistedCourses }) =
                         <Select
                         placeholder="Select School"
                         leftSection={<IconSchool size="1rem" stroke={1.5} />}
-                        data={enlistedCourses ? enlistedCourses.map(course =>({ value : course.organization })) : []}
-                        value={ course ? course : [] }
-                        onChange={(value) => setCourse(value)}
+                        data={organizations ? organizations.map(org => org.name) : []}
+                        value={ org ? org : [] }
+                        onChange={(value) => setOrg(value)}
                         clearable />
                     )}
                 </div>

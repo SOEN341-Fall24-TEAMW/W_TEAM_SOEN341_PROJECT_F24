@@ -5,12 +5,14 @@ const CreateNewAccount = (props) => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [role, setRole] = useState("");
-    const [studentName, setName] = useState("");
-    const [studentId, setId] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [id, setId] = useState("");
     const [emailError, setEmailError] = useState("")
     const [passwordError, setPasswordError] = useState("")
     const [roleError, setRoleError] = useState("");
-    const [nameError, setNameError] = useState("");
+    const [firstNameError, setFirstNameError] = useState("");
+    const [lastNameError, setLastNameError] = useState("");
     const [idError, setIdError] = useState("");
 
     const navigate = useNavigate();
@@ -22,12 +24,16 @@ const CreateNewAccount = (props) => {
         setPasswordError("")
 
         // Check if the user has entered both fields correctly
-        if (studentName === "") {
-            setNameError("Please enter your name");
+        if (firstName === "") {
+            setFirstNameError("Please enter your  first name");
+            return;
+        }
+        if (lastName === "") {
+            setLastNameError("Please enter your last name");
             return;
         }
 
-        if (studentId === "") {
+        if ((role === "student") && id === "") {
             setIdError("Please enter your student Id");
             return
         }
@@ -52,20 +58,21 @@ const CreateNewAccount = (props) => {
             return
         }
 
-        if (role === "") {
+        if (role === "Select Role") {
             setRoleError("Please select a role");
             return;
         }
 
         // Check if email has an account associated with it
         checkAccountExists(accountExists => {
+            console.log("here");
             // If yes, log in 
             if (accountExists && window.confirm("An account already exists with this email address: " + email + ". Do you want to navigate to the login page?")){
                 navigate("/login");
             }
             // Else, ask user if they want to create a new account and if yes, then log in
             if ((accountExists === false) && window.confirm("An account does not exist with this email address: " + email + ". Do you want to create a new account?")) {
-                createAccoount();
+                createAccount();
             } else {
                 return;
             }
@@ -88,13 +95,13 @@ const CreateNewAccount = (props) => {
         })
     }
 
-    const createAccoount = () => {
+    const createAccount = () => {
         fetch ("http://localhost:3080/create-account", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
               },
-            body: JSON.stringify({ role, studentName, studentId, email, password })
+            body: JSON.stringify({ role, firstName, lastName, id, email, password })
         })
         .then(r => r.json())
         .then(r => {
@@ -124,15 +131,21 @@ const CreateNewAccount = (props) => {
         </div>
         <div className={"inputContainer"}>
             <input
-                value={studentName}
-                placeholder="Enter your name"
-                onChange={ev => setName(ev.target.value)}
+                value={firstName}
+                placeholder="Enter your first name"
+                onChange={ev => setFirstName(ev.target.value)}
                 className={"inputBox"} />
-            <label className="errorLabel">{nameError}</label>
+            <label className="errorLabel">{firstNameError}</label>
+            <input
+                value={lastName}
+                placeholder="Enter your last name"
+                onChange={ev => setLastName(ev.target.value)}
+                className={"inputBox"} />
+            <label className="errorLabel">{lastNameError}</label>
         </div>
         {(role === 'student') && (<div className={"inputContainer"}>
             <input
-                value={studentId}
+                value={id}
                 placeholder="Enter your id"
                 onChange={ev => setId(ev.target.value)}
                 className={"inputBox"} />
