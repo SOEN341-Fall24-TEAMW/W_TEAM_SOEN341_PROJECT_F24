@@ -1,10 +1,11 @@
 import React from "react"
 import { useNavigate } from "react-router-dom";
+import { Flex, Space, Button } from '@mantine/core';
 
 const Home = (props) => {
     const { loggedIn, email } = props
     const navigate = useNavigate();
-    
+
     const onButtonClick = () => {
         if (loggedIn) {
             localStorage.removeItem("user")
@@ -14,25 +15,32 @@ const Home = (props) => {
         }
     }
 
+    const value = loggedIn ? "Log out" : "Log in";
+
 
     return <div className="mainContainer">
-        <img src="/team-logo.png" alt="Team Logo" style={{ maxHeight: "350px" }} />
-        <div className={"titleContainer"}>
-            <div>TEAM W!</div>
-        </div>
-        <div>
-            This is our peer review web application.
-        </div>
-        <div className={"buttonContainer"}>
-            <input
-                className={"inputButton"}
-                type="button"
-                onClick={onButtonClick}
-                value={loggedIn ? "Log out" : "Log in"} />
-            {(loggedIn ? <div>
-                Your email address is {email}
-            </div> : <div/>)}
-        </div>
+        <Flex>
+            <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center" }}>
+                <img src="/team-logo.svg" alt="Team Logo" style={{ maxWidth: "335.18px" }} />
+                <Space h="lg" />
+                <Space h="lg" />
+                <div style={{ fontSize: 28 }}>
+                    Work Assessment <br />
+                    and Team Coordination Hub
+                </div>
+                <Space h="lg" />
+                <Space h="lg" />
+                <Button
+                    variant="gradient"
+                    gradient={{ from: 'blue', to: 'cyan', deg: 90 }}
+                    onClick={onButtonClick}
+                    style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
+                >{value}</Button>
+                {(loggedIn ? <div style={{ fontSize: 24 }}>
+                    Your email address is {email}
+                </div> : <div />)}
+            </div>
+        </Flex>
 
 
     </div>

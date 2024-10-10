@@ -4,10 +4,16 @@ import { useNavigate } from "react-router-dom";
 const CreateNewAccount = (props) => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [role, setRole] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [id, setId] = useState("");
     const [emailError, setEmailError] = useState("")
     const [passwordError, setPasswordError] = useState("")
-    const [role, setRole] = useState("");
     const [roleError, setRoleError] = useState("");
+    const [firstNameError, setFirstNameError] = useState("");
+    const [lastNameError, setLastNameError] = useState("");
+    const [idError, setIdError] = useState("");
 
     const navigate = useNavigate();
         
@@ -18,6 +24,20 @@ const CreateNewAccount = (props) => {
         setPasswordError("")
 
         // Check if the user has entered both fields correctly
+        if (firstName === "") {
+            setFirstNameError("Please enter your  first name");
+            return;
+        }
+        if (lastName === "") {
+            setLastNameError("Please enter your last name");
+            return;
+        }
+
+        if ((role === "student") && id === "") {
+            setIdError("Please enter your student Id");
+            return
+        }
+
         if ("" === email) {
             setEmailError("Please enter your email")
             return
@@ -38,25 +58,25 @@ const CreateNewAccount = (props) => {
             return
         }
 
-        if (role === "") {
+        if (role === "Select Role") {
             setRoleError("Please select a role");
             return;
         }
 
         // Check if email has an account associated with it
         checkAccountExists(accountExists => {
+            console.log("here");
             // If yes, log in 
-            if (accountExists)
+            if (accountExists && window.confirm("An account already exists with this email address: " + email + ". Do you want to navigate to the login page?")){
                 navigate("/login");
-            else {
-                // Else, ask user if they want to create a new account and if yes, then log in
-                if (window.confirm("An account does not exist with this email address: " + email + ". Do you want to create a new account?")) {
-                    logIn();
-                }
             }
-            
+            // Else, ask user if they want to create a new account and if yes, then log in
+            if ((accountExists === false) && window.confirm("An account does not exist with this email address: " + email + ". Do you want to create a new account?")) {
+                createAccount();
+            } else {
+                return;
+            }
         })        
-  
 
     }
 
@@ -75,27 +95,18 @@ const CreateNewAccount = (props) => {
         })
     }
 
-    // Log in a user using email and password
-    const logIn = () => {
-        fetch("http://localhost:3080/auth", {
+    const createAccount = () => {
+        fetch ("http://localhost:3080/create-account", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
               },
-            body: JSON.stringify({ email, password, role })
+            body: JSON.stringify({ role, firstName, lastName, id, email, password })
         })
         .then(r => r.json())
         .then(r => {
-            if ('success' === r.message) {
-                localStorage.setItem("user", JSON.stringify({email, token: r.token}))
-                props.setLoggedIn(true);
-                props.setEmail(email);
-                navigate("/");
-                if (role === "student") {
-                    navigate("/student-dashboard");
-                } else if (role === "instructor") {
-                    navigate("/instructor-dashboard");
-                }
+            if ('success' === r.message){
+                navigate('/login');
             } else {
                 window.alert(r.message);
             }
@@ -118,6 +129,29 @@ const CreateNewAccount = (props) => {
             </select>
             <label className="errorLabel">{roleError}</label>
         </div>
+        <div className={"inputContainer"}>
+            <input
+                value={firstName}
+                placeholder="Enter your first name"
+                onChange={ev => setFirstName(ev.target.value)}
+                className={"inputBox"} />
+            <label className="errorLabel">{firstNameError}</label>
+            <input
+                value={lastName}
+                placeholder="Enter your last name"
+                onChange={ev => setLastName(ev.target.value)}
+                className={"inputBox"} />
+            <label className="errorLabel">{lastNameError}</label>
+        </div>
+        {(role === 'student') && (<div className={"inputContainer"}>
+            <input
+                value={id}
+                placeholder="Enter your id"
+                onChange={ev => setId(ev.target.value)}
+                className={"inputBox"} />
+            <label className="errorLabel">{idError}</label>
+        </div>)
+        }
         <div className={"inputContainer"}>
             <input
                 value={email}

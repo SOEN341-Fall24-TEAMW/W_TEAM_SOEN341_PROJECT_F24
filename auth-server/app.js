@@ -6,9 +6,11 @@ var low = require("lowdb"); //for storing user details (email and hashed passwor
 var FileSync = require("lowdb/adapters/FileSync");
 var adapter = new FileSync("./database.json");
 var db = low(adapter);
+const { v4: uuidv4 } = require('uuid');
+const newId = uuidv4();
 
 // Set default structure for the database
-db.defaults({ users: [], teams: [] }).write();
+db.defaults({ users: [], teams: [], courses: [] }).write();
 
 const fs = require("fs"); // File system module to read CSV files
 const csvParser = require("csv-parser"); // CSV parser library for reading the CSV file
@@ -57,33 +59,40 @@ app.post("/auth", (req, res) => {
                 return res.status(401).json({ message: "Invalid role" });
             } else {
                 let loginData = {
+                    id: user[0].id,
                     email,
                     role,
                     signInTime: Date.now(),
                 };
-
+                console.log("login data: ", loginData);
                 const token = jwt.sign(loginData, jwtSecretKey);
-                res.status(200).json({ message: "success", token });
+                console.log("auth token: ", token);
+                res.status(200).json({ message: "success", id: user[0].id, token });
             }
         });
-    // If no user is found, hash the given password and create a new entry in the auth db with the email and hashed password
-    } else {
-        bcrypt.hash(password, 10, function (_err, hash) {
-            console.log({ email, password: hash })
-            db.get("users").push({ email, password: hash, role }).write()
+    } 
 
-            let loginData = {
-                email,
-                role,
-                signInTime: Date.now(),
-            };
+})
 
-            const token = jwt.sign(loginData, jwtSecretKey);
-            res.status(200).json({ message: "success", token });
-        });
+app.post("/create-account", (req, res) => {
+    
+    const { role, firstName, lastName, id, email, password } = req.body;
 
-    }
+    bcrypt.hash(password, 10, function (_err, hash) {
+        
+        db.get("users").push({ id: email, email, password: hash, role, name : firstName + " " + lastName, organization_id : "" }).write();
+        let creationData = {
+            id,
+            email,
+            role,
+            name : firstName + " " + lastName,
+            creationTime: Date.now(),
+        };
+        console.log(creationData);
 
+        const token = jwt.sign(creationData, jwtSecretKey);
+        return res.status(200).json({ message: "success", token });
+    });
 
 })
 
@@ -91,8 +100,11 @@ app.post("/auth", (req, res) => {
 app.post('/verify', (req, res) => {
     const tokenHeaderKey = "jwt-token";
     const authToken = req.headers[tokenHeaderKey];
+
+    console.log("Received Token:", authToken);
     try {
       const verified = jwt.verify(authToken, jwtSecretKey);
+      console.log("verified 1: ", verified);
       if (verified) {
         return res.status(200).json({ status: "logged in", message: "success", role: verified.role });
       } else {
@@ -114,7 +126,7 @@ app.post('/check-account', (req, res) => {
 
     const user = db.get("users").value().filter(user => email === user.email)
 
-    console.log(user)
+    console.log("user: ", user)
     
     res.status(200).json({
         status: user.length > 0 ? "User exists" : "User does not exist", // Check length instead of truthy
@@ -133,6 +145,7 @@ app.get("/teams", (req, res) => {
         // If the user is an instructor, return all teams they manage
         if (verified.role === "instructor") {
             const instructorTeams = db.get("teams").filter({ instructorId: verified.email }).value();
+            console.log("mario", instructorTeams);
             return res.status(200).json({ message: "success", teams: instructorTeams });
         
         // If the user is a student, return the team they belong to
@@ -144,6 +157,10 @@ app.get("/teams", (req, res) => {
             return res.status(200).json({ message: "success", teams: studentTeams });
         }
 
+        if (!teams || teams.length === 0) {
+            return res.status(404).json({ message: "No teams found", teams: [] });
+        }
+
         // If the role is neither student nor instructor, return an error
         return res.status(403).json({ message: "Access forbidden: invalid role" });
 
@@ -152,6 +169,127 @@ app.get("/teams", (req, res) => {
     }
 });
 
+// Endpoint to get course information for students or instructors
+app.get("/courses", (req, res) => {
+    const tokenHeaderKey = "jwt-token";
+    const authToken = req.headers[tokenHeaderKey];
+    console.log("Courses Token:", authToken);
+
+    try {
+        const verified = jwt.verify(authToken, jwtSecretKey);
+        console.log("verified", verified);
+        
+        // If the user is an instructor, return all teams they manage
+        if (verified.role === "instructor") {
+            const courses = db.get("courses").filter({ instructor_id: verified.id }).value();
+            const course_id = courses.map(course => course.id);
+            console.log(courses);
+            console.log(course_id);
+            const course_names = courses.map(course => course.name);
+            console.log(course_names);
+            const teams = db.get("teams").filter(team => course_id.includes(team.course_id)).value();
+            console.log("teams: ", teams);
+            const team_id = teams.map(team => team.id);
+            console.log("team ids: ", team_id);
+            const team_membership = db.get("team_memberships").filter(membership => team_id.includes(membership.team_id)).value();
+            console.log("team membership: ", team_membership);
+            const student_id = team_membership.map(membership => membership.student_id);
+            console.log(student_id);
+            const students = db.get("users").filter(student => student_id.includes(student.id)).value();
+            console.log(students);
+            const organization_id = students.map(student => student.organization_id);
+            console.log(organization_id);
+            const organizations = db.get("organizations").filter(organization => organization_id.includes(organization.id)).value();
+            console.log(organizations);
+            const organization_name = organizations.map(organization => organization.name);
+            console.log(organization_name);
+            return res.status(200).json({ 
+                message: "success", 
+                organization_info: organizations, 
+                course_info: courses, 
+                team_info: teams,
+                student_info: students,
+                membership_info: team_membership,
+             });
+        
+        // If the user is a student, return the team they belong to
+        } else if (verified.role === "student") {
+            const studentCourses = db.get("team_memberships").filter(team => {
+                return team.some(team => team.student_id === verified.id);
+            }).value();
+
+            return res.status(200).json({ message: "success", teams: studentCourses });
+        }
+
+        if (!teams || teams.length === 0) {
+            return res.status(404).json({ message: "No teams found", teams: [] });
+        }
+
+        // If the role is neither student nor instructor, return an error
+        return res.status(403).json({ message: "Access forbidden: invalid role" });
+
+    } catch (error) {
+        return res.status(401).json({ message: "Invalid token", error });
+    }
+});
+
+app.post('/create-team', (req, res) => {
+    const { organization_id, new_org_name, course_id, new_course_name, team_name, max_size, instructor_id, selected_students } = req.body;
+  
+    try {
+      // Step 1: Add new organization if needed
+      let final_org_id = organization_id;
+      if (new_org_name) {
+        final_org_id = newId;
+        db.get('organizations').push({ id: final_org_id, name: new_org_name }).write();
+      }
+  
+      // Step 2: Add new course if needed
+      let final_course_id = course_id;
+      if (new_course_name) {
+        final_course_id = newId
+        db.get('courses').push({ id: final_course_id, name: new_course_name, instructor_id, organization_id: final_org_id }).write();
+      }
+  
+      // Step 3: Add the new team
+      const new_team = { id: newId, name: team_name, max_size, course_id: final_course_id, instructor_id };
+      db.get('teams').push(new_team).write();
+  
+      // Step 4: Add students to the team
+      selected_students.forEach((student_id) => {
+        const membership = { id: newId, team_id: new_team.id, student_id };
+        db.get('team_memberships').push(membership).write();
+      });
+  
+      res.status(200).json({ message: "Team created successfully" });
+    } catch (error) {
+      console.error("Error creating team:", error);
+      res.status(500).json({ message: "Error creating team" });
+    }
+  });
+
+app.get("/users", (req, res) => {
+    console.log("GET /users endpoint hit");
+    const tokenHeaderKey = "jwt-token";
+    const authToken = req.headers[tokenHeaderKey];
+
+    try {
+        const verified = jwt.verify(authToken, jwtSecretKey);
+
+        if (verified.role === "instructor" || verified.role === "student") {
+            const allUsers = db.get("users").value();
+            const students = allUsers.filter(user => user.role === 'student');
+            console.log("bowser", students);
+            return res.status(200).json({ message: "success", data: students });
+        }
+
+        // If the role is neither student nor instructor, return an error
+        return res.status(403).json({ message: "Access forbidden: invalid role" });
+
+    } catch (error) {
+        return res.status(401).json({ message: "Invalid token", error });
+    }
+});
 
 // Middleware to verify if the user is an instructor
 function isInstructor(req, res, next) {
