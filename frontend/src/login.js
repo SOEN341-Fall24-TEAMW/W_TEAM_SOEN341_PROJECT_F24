@@ -148,6 +148,7 @@ const Login = (props) => {
                 value={password}
                 label="Password"
                 placeholder="Password"
+                type="password"
                 onChange={ev => setPassword(ev.target.value)}
                 style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
             />
