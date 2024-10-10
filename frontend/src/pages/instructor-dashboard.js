@@ -220,7 +220,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
         <Space h="md" />
         <Group justify="space-between">
           <Title>Teams</Title>
-          <Modal opened={opened} onClose={modalClose} title={<Title order={3}>Create a New Team</Title>} centered>
+          <Modal styles={{header:{display:'flE'}}} opened={opened} onClose={modalClose} title={<Title order={3}>Create a New Team</Title>} centered>
             {/* Step 1: Select or Add Organization */}
             {step === 1 && (
               <>
