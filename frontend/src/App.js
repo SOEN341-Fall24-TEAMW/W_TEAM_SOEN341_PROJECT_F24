@@ -7,6 +7,7 @@ import Home from './home';
 import Login from './login';
 import CreateNewAccount from './pages/create-new-account.js';
 import StudentDashboard from './pages/student-dashboard.js';
+import StudentDashboard from './pages/student-dashboard.js';
 import InstructorDashboard from './pages/instructor-dashboard.js';
 import CreateTeams from './pages/CreateTeams';
 import Teams from './pages/Teams';
