@@ -5,6 +5,7 @@ import Login from './login';
 import CreateNewAccount from './pages/create-new-account.js';
 import StudentDashboard from './pages/student-dashboard.js';
 import InstructorDashboard from './pages/instructor-dashboard.js';
+import PeerEvaluationForm from './pages/peerEvaluationForm.js';
 import CreateTeams from './pages/CreateTeams';
 import Teams from './pages/Teams';
 import TeamList from './pages/TeamList';
@@ -53,6 +54,7 @@ function App() {
           <Route path='/Teams' element={<Teams/>}></Route>
           <Route path='/CreateTeams' element={<CreateTeams/>}></Route>
           <Route path='/TeamList' element={<TeamList/>}></Route>
+          <Route path='/peer-evaluation' element={<PeerEvaluationForm/>}></Route>
         </Routes>
         <Footer />
       </BrowserRouter>
