@@ -27,28 +27,25 @@ function App() {
   const [memberships, setMemberships] = useState([]);
 
   useEffect(() => {
-    // Fetch the user email and token from local storage
     const user = JSON.parse(localStorage.getItem("user"));
 
-    // If the token/email does not exist, mark the user as logged out
     if (!user || !user.token) {
-      setLoggedIn(false)
-      return
+      setLoggedIn(false);
+      return;
     }
 
-    // If the token exists, verify it with the auth server to see if it is valid
     fetch("http://localhost:3080/verify", {
-            method: "POST",
-            headers: {
-                'jwt-token': user.token,
-              }
-        })
-        .then(r => r.json())
-        .then(r => {
-            setLoggedIn('success' === r.message)
-            setEmail(user.email || "")
-        })
-  }, [])
+      method: "POST",
+      headers: {
+        'jwt-token': user.token,
+      },
+    })
+      .then(r => r.json())
+      .then(r => {
+        setLoggedIn('success' === r.message);
+        setEmail(user.email || "");
+      });
+  }, []);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -59,27 +56,26 @@ function App() {
       return;
     }
 
-    // Send a request to the backend with the JWT token in the headers
     fetch('http://localhost:3080/courses', {
       headers: {
         'Content-Type': 'application/json',
-        'jwt-token': user.token, // Use 'jwt-token' as the header key to send the token
+        'jwt-token': user.token,
       },
     })
     .then((response) => response.json())
     .then((data) => {
-        if (data.message === 'success') {
-          setOrganizations(data.organization_info);
-          setCourses(data.course_info);
-          setTeams(data.team_info);
-          setStudents(data.student_info);
-          setMemberships(data.membership_info);
-        } else {
-          console.error('Failed to fetch options:', data.message);
-        }
+      if (data.message === 'success') {
+        setOrganizations(data.organization_info);
+        setCourses(data.course_info);
+        setTeams(data.team_info);
+        setStudents(data.student_info);
+        setMemberships(data.membership_info);
+      } else {
+        console.error('Failed to fetch options:', data.message);
+      }
     })
-      .catch((error) => console.error('Error fetching options:', error));
-  }, []);
+    .catch((error) => console.error('Error fetching options:', error));
+  }, [loggedIn]);
 
   return (
     <div className="App">
@@ -105,4 +101,3 @@ function App() {
 }
 
 export default App;
-

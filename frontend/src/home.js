@@ -15,7 +15,7 @@ const Home = (props) => {
         }
     }
 
-    const value = loggedIn ? "Log out" : "Log in";
+    const value = loggedIn ? "Log out" : "Get Started →";
 
 
     return <div className="mainContainer">
@@ -34,7 +34,7 @@ const Home = (props) => {
                     variant="gradient"
                     gradient={{ from: 'blue', to: 'cyan', deg: 90 }}
                     onClick={onButtonClick}
-                    style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
+                    style={{ width: "fit-content", height: 50, fontSize: 20, borderRadius: 11 }}
                 >{value}</Button>
                 {(loggedIn ? <div style={{ fontSize: 24 }}>
                     Your email address is {email}
