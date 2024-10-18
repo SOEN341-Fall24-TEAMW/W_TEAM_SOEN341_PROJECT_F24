@@ -305,6 +305,30 @@
       "role": "instructor",
       "name": "qwe qwe",
       "organization_id": ""
+    },
+    {
+      "id": "Student999@email.com",
+      "email": "Student999@email.com",
+      "password": "$2b$10$Q9mYRzyIR9ho3TjlN..hjueCnKmuG8v./1rir26nF3QHhfkDbEUAK",
+      "role": "student",
+      "name": "Stu Dent",
+      "organization_id": ""
+    },
+    {
+      "id": "testing123@concordia.ca",
+      "email": "testing123@concordia.ca",
+      "password": "$2b$10$BaEYPBOakWNbFZCscMnw6uWrOm765alDZ7wF18AIjT2zFaG5o6.Mi",
+      "role": "student",
+      "name": "te sting",
+      "organization_id": ""
+    },
+    {
+      "id": "instructing123@concordia.ca",
+      "email": "instructing123@concordia.ca",
+      "password": "$2b$10$W2DN4AYhRXFaQQz4IL2xce7wFf4wzAxKQe0kyVO.E5jis40/1XF3.",
+      "role": "instructor",
+      "name": "In struct",
+      "organization_id": ""
     }
   ],
   "courses": [
