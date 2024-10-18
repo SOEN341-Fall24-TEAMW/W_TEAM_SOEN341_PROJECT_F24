@@ -45,7 +45,6 @@ const StudentDashboard = ({ organizations, courses, teams, email }) => {
           <AppShell.Main>
             <Group justify="space-between">
               <Title>My Teams</Title>
-              {/* Add any student-specific button or action here */}
             </Group>
             <TextInput value={query} placeholder="Search Teams" onChange={(event) => setQuery(event.currentTarget.value)} />
             <Table.ScrollContainer>
@@ -61,7 +60,6 @@ const StudentDashboard = ({ organizations, courses, teams, email }) => {
             </Table.ScrollContainer>
           </AppShell.Main>
         )}
-        {/* Add more sections for other active states like 'Courses' */}
       </AppShell>
     );
   };
