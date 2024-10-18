@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import TeammatesList from './TeamatesList'; 
+import TeammatesList from './TeamatesList.js'; 
 
 function TeamList() {
   const navigate = useNavigate();
