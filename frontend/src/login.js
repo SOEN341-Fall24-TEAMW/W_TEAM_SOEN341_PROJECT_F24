@@ -96,12 +96,13 @@ const Login = (props) => {
                     localStorage.setItem("jwt-token", r.token);
                     props.setLoggedIn(true);
                     props.setEmail(email);
-                    navigate("/");
-                    if (role === "student") {
-                        navigate("/student-dashboard");
-                    } else if (role === "instructor") {
-                        navigate("/instructor-dashboard");
-                    }
+                    setTimeout(() => {
+                        if (role === "student") {
+                          navigate("/student-dashboard");
+                        } else if (role === "instructor") {
+                          navigate("/instructor-dashboard");
+                        }
+                      }, 0);
                 } else {
                     window.alert(r.message);
                 }

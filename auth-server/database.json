@@ -370,14 +370,8 @@
     },
     {
       "id": "a47a166c-dccf-44cf-872b-2349109a7b3d",
-      "name": "statistics",
+      "name": "Statistics",
       "instructor_id": "qwe@qwe.qwe",
-      "organization_id": "org1"
-    },
-    {
-      "id": "ad096326-7c6d-4ca7-98d8-170c01d6bc43",
-      "name": "Math",
-      "instructor_id": "",
       "organization_id": "org1"
     }
   ],
@@ -514,13 +508,6 @@
       "max_size": 5,
       "course_id": "a47a166c-dccf-44cf-872b-2349109a7b3d",
       "instructor_id": "qwe@qwe.qwe"
-    },
-    {
-      "id": "ad096326-7c6d-4ca7-98d8-170c01d6bc43",
-      "name": "Name",
-      "max_size": 5,
-      "course_id": "ad096326-7c6d-4ca7-98d8-170c01d6bc43",
-      "instructor_id": ""
     }
   ],
   "team_memberships": [
@@ -998,31 +985,6 @@
       "id": "a47a166c-dccf-44cf-872b-2349109a7b3d",
       "team_id": "a47a166c-dccf-44cf-872b-2349109a7b3d",
       "student_id": "s5"
-    },
-    {
-      "id": "ad096326-7c6d-4ca7-98d8-170c01d6bc43",
-      "team_id": "ad096326-7c6d-4ca7-98d8-170c01d6bc43",
-      "student_id": "s1"
-    },
-    {
-      "id": "ad096326-7c6d-4ca7-98d8-170c01d6bc43",
-      "team_id": "ad096326-7c6d-4ca7-98d8-170c01d6bc43",
-      "student_id": "s3"
-    },
-    {
-      "id": "ad096326-7c6d-4ca7-98d8-170c01d6bc43",
-      "team_id": "ad096326-7c6d-4ca7-98d8-170c01d6bc43",
-      "student_id": "s5"
-    },
-    {
-      "id": "ad096326-7c6d-4ca7-98d8-170c01d6bc43",
-      "team_id": "ad096326-7c6d-4ca7-98d8-170c01d6bc43",
-      "student_id": "s7"
-    },
-    {
-      "id": "ad096326-7c6d-4ca7-98d8-170c01d6bc43",
-      "team_id": "ad096326-7c6d-4ca7-98d8-170c01d6bc43",
-      "student_id": "s9"
     }
   ]
 }
