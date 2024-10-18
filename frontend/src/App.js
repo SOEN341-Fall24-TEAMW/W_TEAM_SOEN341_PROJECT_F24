@@ -11,6 +11,7 @@ import InstructorDashboard from './pages/instructor-dashboard.js';
 import CreateTeams from './pages/CreateTeams.js';
 import Teams from './pages/Teams.js';
 import TeamList from './pages/TeamList.js';
+import PeerEvaluationForm from './pages/peerEvaluationForm.js';
 import Footer from './footer.js';
 
 import '@mantine/core/styles.css';
@@ -94,6 +95,7 @@ function App() {
             <Route path='/Teams' element={<Teams/>} />
             <Route path='/CreateTeams' element={<CreateTeams/>} />
             <Route path='/TeamList' element={<TeamList/>} />
+            <Route path='/peer-evaluation' element={<PeerEvaluationForm/>} />
           </Routes>
           <Footer />
         </BrowserRouter>
