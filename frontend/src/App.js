@@ -2,16 +2,16 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { MantineProvider } from '@mantine/core';
 
-import Header from './header';
-import Home from './home';
-import Login from './login';
+import Header from './header.js';
+import Home from './home.js';
+import Login from './login.js';
 import CreateNewAccount from './pages/create-new-account.js';
 import StudentDashboard from './pages/student-dashboard.js';
 import InstructorDashboard from './pages/instructor-dashboard.js';
+import CreateTeams from './pages/CreateTeams.js';
+import Teams from './pages/Teams.js';
+import TeamList from './pages/TeamList.js';
 import PeerEvaluationForm from './pages/peerEvaluationForm.js';
-import CreateTeams from './pages/CreateTeams';
-import Teams from './pages/Teams';
-import TeamList from './pages/TeamList';
 import Footer from './footer.js';
 
 import '@mantine/core/styles.css';

@@ -5,6 +5,7 @@ import { IconUsers, IconUsersGroup, IconSettings, IconSearch } from '@tabler/ico
 import { v4 as uuidv4 } from 'uuid';
 import './styles.css';
 
+
 const InstructorDashboard = ({ organizations, org, courses, teams, students, memberships, email }) => {
 
   const [active, setActive] = useState('Students');
@@ -58,6 +59,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
     close();
   };
 
+  
   // Handler for submitting the form data
   const handleSubmit = async () => {
     // Prepare the data to be submitted in one go

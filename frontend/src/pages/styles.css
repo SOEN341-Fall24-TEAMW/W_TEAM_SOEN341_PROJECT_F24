@@ -186,3 +186,21 @@ body {
   border: transparent;
   border-radius: 10px;
 }
+
+
+.team-members-container {
+  margin: 20px 0; /* Adds spacing around the team members section */
+  width: 400px; /* Matches the width of other containers */
+  text-align: left; /* Aligns text to the left for better readability */
+}
+
+.team-members-list {
+  list-style-type: none; /* Removes the default bullet points */
+  padding: 0; /* Removes default padding */
+}
+
+.team-member {
+  margin: 5px 0; /* Adds spacing between team members */
+  font-size: 18px; /* Sets a consistent font size for team member names */
+  color: #402C03; /* Uses the same color as the rest of the app */
+}
