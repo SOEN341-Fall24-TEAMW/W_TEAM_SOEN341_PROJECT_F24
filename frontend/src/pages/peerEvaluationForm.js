@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import './peerEvaluationForm.css'; // New CSS for styling
-import { h2 } from '@mantine/core';
 
 function PeerEvaluationForm() {
   const [evaluation, setEvaluation] = useState({
@@ -27,9 +26,11 @@ function PeerEvaluationForm() {
     <div className="form-container">
       <form className="evaluation-form" onSubmit={handleSubmit}>
         <div className='titleContainer'>Peer Evaluation Form</div>
+
         {/* Cooperation */}
         <div className="form-group">
           <label>Cooperation</label>
+            <p>This measures how well your teammate worked with others, attended meetings, helped the team, and contributed to group tasks.</p>
           <div className="rating-container">
             {Array.from({ length: 7 }, (_, i) => (
               <label key={i} className="rating-label">
@@ -55,6 +56,7 @@ function PeerEvaluationForm() {
         {/* Conceptual Contribution */}
         <div className="form-group">
           <label>Conceptual Contribution</label>
+          <p>This evaluates the teammate’s ability to share useful ideas, gather information, and solve problems that helped guide the project.</p>
           <div className="rating-container">
             {Array.from({ length: 7 }, (_, i) => (
               <label key={i} className="rating-label">
@@ -80,6 +82,7 @@ function PeerEvaluationForm() {
         {/* Practical Contribution */}
         <div className="form-group">
           <label>Practical Contribution</label>
+          <p>This looks at how well the teammate handled tasks like writing reports, reviewing work, and keeping things organized for the team.</p>
           <div className="rating-container">
             {Array.from({ length: 7 }, (_, i) => (
               <label key={i} className="rating-label">
@@ -105,6 +108,7 @@ function PeerEvaluationForm() {
         {/* Work Ethic */}
         <div className="form-group">
           <label>Work Ethic</label>
+          <p>This checks your teammate's attitude, respect for deadlines, and overall responsibility toward their work and the team.</p>
           <div className="rating-container">
             {Array.from({ length: 7 }, (_, i) => (
               <label key={i} className="rating-label">
