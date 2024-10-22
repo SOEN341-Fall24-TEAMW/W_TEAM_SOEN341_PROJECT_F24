@@ -7,6 +7,10 @@
     {
       "id": "org2",
       "name": "McGill University"
+    },
+    {
+      "id": "org3",
+      "name": "UQAM"
     }
   ],
   "users": [
@@ -64,7 +68,7 @@
       "password": "hashed_password7",
       "role": "student",
       "name": "Rand Student1",
-      "organization_id": "org1"
+      "organization_id": "org3"
     },
     {
       "id": "s2",
@@ -72,7 +76,7 @@
       "password": "hashed_password8",
       "role": "student",
       "name": "Rand Student2",
-      "organization_id": "org1"
+      "organization_id": "org3"
     },
     {
       "id": "s3",
@@ -80,7 +84,7 @@
       "password": "hashed_password9",
       "role": "student",
       "name": "Rand Student3",
-      "organization_id": "org1"
+      "organization_id": "org3"
     },
     {
       "id": "s4",
@@ -88,7 +92,7 @@
       "password": "hashed_password10",
       "role": "student",
       "name": "Rand Student4",
-      "organization_id": "org1"
+      "organization_id": "org3"
     },
     {
       "id": "s5",
@@ -96,7 +100,7 @@
       "password": "hashed_password11",
       "role": "student",
       "name": "Rand Student5",
-      "organization_id": "org1"
+      "organization_id": "org3"
     },
     {
       "id": "s6",
@@ -329,6 +333,54 @@
       "role": "instructor",
       "name": "In struct",
       "organization_id": ""
+    },
+    {
+      "id": "asd@asd.asd",
+      "email": "asd@asd.asd",
+      "password": "$2b$10$32/JwqUly7AU63Qo/Tn1rOOmlnNwXddr9CwTLYm7EqIH4kMCRWjsG",
+      "role": "student",
+      "name": "asd asd",
+      "organization_id": "org3"
+    },
+    {
+      "id": "s31",
+      "email": "student111@uqam.ca",
+      "password": "hashed_password36",
+      "role": "student",
+      "name": "Rand Student111",
+      "organization_id": "org3"
+    },
+    {
+      "id": "s32",
+      "email": "student222@uqam.ca",
+      "password": "hashed_password36",
+      "role": "student",
+      "name": "Rand Student222",
+      "organization_id": "org3"
+    },
+    {
+      "id": "s33",
+      "email": "student333@uqam.ca",
+      "password": "hashed_password36",
+      "role": "student",
+      "name": "Rand Student333",
+      "organization_id": "org3"
+    },
+    {
+      "id": "s34",
+      "email": "student444@uqam.ca",
+      "password": "hashed_password36",
+      "role": "student",
+      "name": "Rand Student444",
+      "organization_id": "org3"
+    },
+    {
+      "id": "s35",
+      "email": "student555@uqam.ca",
+      "password": "hashed_password36",
+      "role": "student",
+      "name": "Rand Student555",
+      "organization_id": "org3"
     }
   ],
   "courses": [
@@ -373,6 +425,12 @@
       "name": "Statistics",
       "instructor_id": "qwe@qwe.qwe",
       "organization_id": "org1"
+    },
+    {
+      "id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
+      "name": "ENGR 232",
+      "instructor_id": "qwe@qwe.qwe",
+      "organization_id": "org3"
     }
   ],
   "teams": [
@@ -507,6 +565,13 @@
       "name": "Jamaica",
       "max_size": 5,
       "course_id": "a47a166c-dccf-44cf-872b-2349109a7b3d",
+      "instructor_id": "qwe@qwe.qwe"
+    },
+    {
+      "id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
+      "name": "L'Omellete",
+      "max_size": 5,
+      "course_id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
       "instructor_id": "qwe@qwe.qwe"
     }
   ],
@@ -985,6 +1050,31 @@
       "id": "a47a166c-dccf-44cf-872b-2349109a7b3d",
       "team_id": "a47a166c-dccf-44cf-872b-2349109a7b3d",
       "student_id": "s5"
+    },
+    {
+      "id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
+      "team_id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
+      "student_id": "s31"
+    },
+    {
+      "id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
+      "team_id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
+      "student_id": "s32"
+    },
+    {
+      "id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
+      "team_id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
+      "student_id": "s33"
+    },
+    {
+      "id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
+      "team_id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
+      "student_id": "s34"
+    },
+    {
+      "id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
+      "team_id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
+      "student_id": "s35"
     }
   ]
 }
