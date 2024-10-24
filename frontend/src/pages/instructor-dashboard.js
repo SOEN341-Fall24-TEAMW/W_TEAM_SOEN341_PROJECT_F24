@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { NavLink, AppShell, Table, Group, Space, Modal, Button, Title, TextInput, rem, Select, NumberInput, MultiSelect } from '@mantine/core';
+import { NavLink, AppShell, Table, Group, Space, Modal, Button, Title, TextInput, rem, Select, NumberInput, MultiSelect, Alert } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconUsers, IconUsersGroup, IconSettings, IconSearch } from '@tabler/icons-react';
+import { IconUsers, IconUsersGroup, IconSettings, IconSearch, IconAlertTriangle } from '@tabler/icons-react';
 import { v4 as uuidv4 } from 'uuid';
 import './styles.css';
 
@@ -12,6 +12,9 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
   const [query, setQuery] = useState('');
   const [opened, { open, close }] = useDisclosure(false);
   const [step, setStep] = useState(1);
+  const [maxSizeError, setMaxSizeError] = useState("");
+
+  const icon = <IconAlertTriangle />;
 
   // Single state object to hold all the form data
   const [formData, setFormData] = useState({
@@ -59,7 +62,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
     close();
   };
 
-  
+
   // Handler for submitting the form data
   const handleSubmit = async () => {
     // Prepare the data to be submitted in one go
@@ -222,12 +225,12 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
         <Space h="md" />
         <Group justify="space-between">
           <Title>Teams</Title>
-          <Modal styles={{header:{display:'flE'}}} opened={opened} onClose={modalClose} title={<Title order={3}>Create a New Team</Title>} centered>
+          <Modal opened={opened} onClose={modalClose} title={<div><Title order={3}>Create a New Team</Title></div>} centered lockScroll={false}>
             {/* Step 1: Select or Add Organization */}
             {step === 1 && (
               <>
                 <Title order={4}>Select an Organization</Title>
-                <Select
+                <Select id="org-select"
                   label="Choose an existing organization"
                   placeholder="Select organization"
                   data={organizations.map((org) => ({ value: org.id, label: org.name }))}
@@ -239,7 +242,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
                   label="Or add a new organization"
                   placeholder="New Organization Name"
                   value={formData.new_org_name}
-                  onChange={(event) => updateFormData("new_org_name", event.currentTarget.value)}
+                  onChange={(event) => { updateFormData("new_org_name", event.currentTarget.value); updateFormData("organization_id", null) }}
                 />
                 <Space h="md" />
                 <Group justify="flex-end">
@@ -271,7 +274,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
                   label="Or add a new course"
                   placeholder="New Course Name"
                   value={formData.new_course_name}
-                  onChange={(event) => updateFormData("new_course_name", event.currentTarget.value)}
+                  onChange={(event) => { updateFormData("new_course_name", event.currentTarget.value); updateFormData("course_id", null) }}
                 />
                 <Space h="md" />
                 <Group justify="flex-end">
@@ -320,14 +323,31 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
                 <MultiSelect
                   label="Select Students"
                   placeholder="Select students"
-                  data={students.map((student) => ({ value: student.id, label: student.name }))}
+                  // Filter students based on the selected organization_id
+                  data={students
+                    .filter(
+                      (student) =>
+                        student.organization_id === formData.organization_id && // Filter by organization
+                        !memberships.some((membership) => membership.student_id === student.id) // Exclude students already in teams
+                    )
+                    .map((student) => ({ value: student.id, label: student.name }))
+                  }
                   value={formData.selected_students}
-                  onChange={(value) => updateFormData("selected_students", value)}
+                  onChange={(value) => {
+                    if (value.length <= formData.max_size) {
+                      updateFormData("selected_students", value);
+                      setMaxSizeError("");
+                    } else {
+                      updateFormData("selected_students", value);
+                      setMaxSizeError("Maximum allotted size exceeded");
+                    }
+                  }}
                   multiple
                 />
+                {(maxSizeError !== "") && (<> <Space h="sm" /><Alert variant="light" color="red" title="Max Size Exceeded" icon={icon} style={{ width: 335.14 }}>{maxSizeError}</Alert> </>)}
                 <Space h="md" />
                 <Group justify="flex-end">
-                  <Button onClick={handleSubmit} disabled={formData.selected_students.length === 0}>
+                  <Button onClick={handleSubmit} disabled={(formData.selected_students.length === 0) || (formData.selected_students.length > formData.max_size) || (formData.selected_students.length < formData.max_size)}>
                     Add Students and Finish
                   </Button>
                 </Group>

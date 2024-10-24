@@ -193,16 +193,16 @@ app.get("/courses", (req, res) => {
             console.log("team ids: ", team_id);
             const team_membership = db.get("team_memberships").filter(membership => team_id.includes(membership.team_id)).value();
             console.log("team membership: ", team_membership);
-            const student_id = team_membership.map(membership => membership.student_id);
-            console.log(student_id);
+            const student_id =  db.get("users").filter(user => (user.role === "student")).map(user => user.id).value();
+            console.log("student_id", student_id);
             const students = db.get("users").filter(student => student_id.includes(student.id)).value();
-            console.log(students);
+            console.log("students", students);
             const organization_id = students.map(student => student.organization_id);
-            console.log(organization_id);
+            console.log("organization_id", organization_id);
             const organizations = db.get("organizations").filter(organization => organization_id.includes(organization.id)).value();
-            console.log(organizations);
+            console.log("organization", organizations);
             const organization_name = organizations.map(organization => organization.name);
-            console.log(organization_name);
+            console.log("organization_name", organization_name);
             return res.status(200).json({ 
                 message: "success", 
                 organization_info: organizations, 
