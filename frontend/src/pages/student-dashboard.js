@@ -1,74 +1,101 @@
-import React, { useState } from "react";
-import {  Space, Group, Title, TextInput, Table, NavLink, AppShell, } from '@mantine/core';
-import { IconUsersGroup, IconSettings } from '@tabler/icons-react';
-
+import React, { useState } from 'react';
+import { NavLink, AppShell, Table, Group, Space, Button, Title, TextInput, rem } from '@mantine/core';
+import { IconUsers, IconClipboardList, IconMessageCircle, IconSearch } from '@tabler/icons-react';
+import { NavbarStudentDashboard } from './NavbarStudentDashboard.js';
+import PeerEvaluationForm from './peerEvaluationForm.js'; 
+import PeerFeedback from './peerFeedback.js';
 import './styles.css';
 
-const StudentDashboard = ({ organizations, courses, teams, email }) => {
-    const [active, setActive] = useState('My Teams');
-    const [query, setQuery] = useState('');
-  
-    const tabs = [
-      { label: 'My Teams', icon: IconUsersGroup },
-      { label: 'Settings', icon: IconSettings }
-    ];
-  
-    const navBarData = tabs.map((data) => (
-      <NavLink
-        key={data.label}
-        leftSection={<data.icon size='1rem' stroke='1.5' />}
-        label={data.label}
-        active={data.label === active}
-        variant="light"
-        component="button"
-        onClick={() => setActive(data.label)}
-      />
-    ));
-  
-    const rows = (teams || [])
-      .filter((team) => {
-        // Logic to filter teams based on the student's memberships
-        return team.members.includes(email); // Assuming you have a way to check memberships
-      })
-      .filter((team) => team.name.toLowerCase().includes(query.toLowerCase()))
-      .map((team) => (
-        <Table.Tr key={team.id}>
-          <Table.Td>{team.name || "No name"}</Table.Td>
-        </Table.Tr>
-      ));
-  
-    return (
-        <AppShell navbar={{ width: 250 }}>
-        <AppShell.Navbar>{navBarData}</AppShell.Navbar>
-        
-        {active === 'My Teams' && (
-          <AppShell.Main>
-            <Space h="md" />
-            <Group justify="space-between">
-              <Title>My Teams</Title>
-            </Group>
-            <Space h="md" />
-            <TextInput 
-              value={query} 
-              placeholder="Search Teams" 
-              onChange={(event) => setQuery(event.currentTarget.value)} 
+
+const StudentDashboard = ({ students, email, teams, courses, feedbackData }) => {
+  const [active, setActive] = useState('Students'); 
+  const [query, setQuery] = useState(''); 
+
+  const tabs = [
+    { label: 'Students', icon: IconUsers },
+    { label: 'Evaluate Peers', icon: IconClipboardList },
+    { label: 'Peer Feedback', icon: IconMessageCircle }
+  ];
+
+  const navBarData = tabs.map((data) => (
+    <NavLink
+      key={data.label}
+      leftSection={<data.icon size='1rem' stroke='1.5' />}
+      label={data.label}
+      active={data.label === active}
+      variant="light"
+      component="button"
+      onClick={() => setActive(data.label)}
+    />
+  ));
+
+  // Rows for displaying student information
+  const studentRows = students
+    ? students
+        .filter((student) => student.name.toLowerCase().includes(query.toLowerCase()) || student.id.toString().includes(query.toLowerCase()))
+        .map((student) => (
+          <Table.Tr key={student.id}>
+            <Table.Td>{student.name || 'No name'}</Table.Td>
+            <Table.Td>{student.id || 'No ID'}</Table.Td>
+            <Table.Td>{student.email || 'No email'}</Table.Td>
+          </Table.Tr>
+        ))
+    : [];
+
+  return (
+    <AppShell navbar={{ width: 250 }}>
+      <AppShell.Navbar>{navBarData}</AppShell.Navbar>
+      
+      {(active === 'Students') && (
+        <AppShell.Main>
+          <Space h="md" />
+          <Group justify="space-between">
+            <Title>Students</Title>
+            <Button>Add New User</Button>
+          </Group>
+          <Space h="xl" />
+          <Group justify="space-between">
+            <TextInput
+              value={query}
+              placeholder="Search"
+              leftSectionPointerEvents="none"
+              leftSection={<IconSearch style={{ width: rem(16), height: rem(16) }} stroke={1.5} />}
+              onChange={(event) => setQuery(event.currentTarget.value)}
             />
-            <Space h="md" />
-            <Table.ScrollContainer>
-              <Table>
-                <Table.Thead>
-                  <Table.Tr>
-                    <Table.Th>Team</Table.Th>
-                  </Table.Tr>
-                </Table.Thead>
-                <Table.Tbody>{rows}</Table.Tbody>
-              </Table>
-            </Table.ScrollContainer>
-          </AppShell.Main>
-        )}
-      </AppShell>
-    );
-  };
-  
-  export default StudentDashboard;
-  
+          </Group>
+          <Space h="lg" />
+          <Table.ScrollContainer minWidth={500}>
+            <Table stickyHeader verticalSpacing="md" striped highlightOnHover withTableBorder>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>Name</Table.Th>
+                  <Table.Th>Student ID</Table.Th>
+                  <Table.Th>Email Address</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>{studentRows}</Table.Tbody>
+            </Table>
+          </Table.ScrollContainer>
+        </AppShell.Main>
+      )}
+
+      {(active === 'Evaluate Peers') && (
+        <AppShell.Main>
+          <Space h="md" />
+          <Title>Evaluate Peers</Title>
+          <PeerEvaluationForm teams={teams} /> 
+        </AppShell.Main>
+      )}
+
+      {(active === 'Peer Feedback') && (
+        <AppShell.Main>
+          <Space h="md" />
+          <Title>Peer Feedback</Title>
+          <PeerFeedback feedbackData={feedbackData} /> {/* Pass feedback data */}
+        </AppShell.Main>
+      )}
+    </AppShell>
+  );
+};
+
+export default StudentDashboard;
