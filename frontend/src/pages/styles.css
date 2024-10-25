@@ -204,3 +204,65 @@ body {
   font-size: 18px; /* Sets a consistent font size for team member names */
   color: #402C03; /* Uses the same color as the rest of the app */
 }
+
+/* .dashboard-container {
+  display: flex;
+}
+
+.mainContent {
+  margin-left: 260px; 
+  padding: 60px;
+  flex-grow: 1;
+}
+
+.navbar {
+  width: 250px; 
+  background-color: #1f2937;
+  padding: 55px;
+  color: white;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+} */
+
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.dashboard-content {
+  flex-grow: 1;
+  padding: 20px;
+  margin-left: 200px; /* Adjust based on your sidebar width */
+}
+
+.sidebar {
+  width: 200px;
+  background-color: #f8f9fa;
+  height: 100vh;
+  padding-top: 20px;
+  position: fixed;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  padding: 10px 15px;
+}
+
+.sidebar ul li a {
+  text-decoration: none;
+  font-size: 16px;
+  color: #000;
+  display: flex;
+  align-items: center;
+}
+
+.sidebar ul li a:hover {
+  background-color: #e0e0e0;
+  border-radius: 5px;
+}
