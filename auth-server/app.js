@@ -44,7 +44,7 @@ app.post("/", (req, res) => {
 
 // The auth endpoint that creates a new user record or logs a user based on an existing record
 app.post("/auth", (req, res) => {
-    
+
     const { role, email, password } = req.body;
 
     // Look up the user entry in the database
@@ -70,16 +70,16 @@ app.post("/auth", (req, res) => {
                 res.status(200).json({ message: "success", id: user[0].id, token });
             }
         });
-    } 
+    }
 
 })
 
 app.post("/create-account", (req, res) => {
-    
+
     const { role, firstName, lastName, id, email, password } = req.body;
 
     bcrypt.hash(password, 10, function (_err, hash) {
-        
+
         db.get("users").push({ id: email, email, password: hash, role, name : firstName + " " + lastName, organization_id : "" }).write();
         let creationData = {
             id,
@@ -127,7 +127,7 @@ app.post('/check-account', (req, res) => {
     const user = db.get("users").value().filter(user => email === user.email)
 
     console.log("user: ", user)
-    
+
     res.status(200).json({
         status: user.length > 0 ? "User exists" : "User does not exist", // Check length instead of truthy
         userExists: user.length > 0 // Update to check length
@@ -141,13 +141,13 @@ app.get("/teams", (req, res) => {
 
     try {
         const verified = jwt.verify(authToken, jwtSecretKey);
-        
+
         // If the user is an instructor, return all teams they manage
         if (verified.role === "instructor") {
             const instructorTeams = db.get("teams").filter({ instructorId: verified.email }).value();
             console.log("mario", instructorTeams);
             return res.status(200).json({ message: "success", teams: instructorTeams });
-        
+
         // If the user is a student, return the team they belong to
         } else if (verified.role === "student") {
             const studentTeams = db.get("teams").filter(team => {
@@ -178,7 +178,7 @@ app.get("/courses", (req, res) => {
     try {
         const verified = jwt.verify(authToken, jwtSecretKey);
         console.log("verified", verified);
-        
+
         // If the user is an instructor, return all teams they manage
         if (verified.role === "instructor") {
             const courses = db.get("courses").filter({ instructor_id: verified.id }).value();
@@ -203,15 +203,15 @@ app.get("/courses", (req, res) => {
             console.log("organization", organizations);
             const organization_name = organizations.map(organization => organization.name);
             console.log("organization_name", organization_name);
-            return res.status(200).json({ 
-                message: "success", 
-                organization_info: organizations, 
-                course_info: courses, 
+            return res.status(200).json({
+                message: "success",
+                organization_info: organizations,
+                course_info: courses,
                 team_info: teams,
                 student_info: students,
                 membership_info: team_membership,
              });
-        
+
         // If the user is a student, return the team they belong to
         } else if (verified.role === "student") {
             const studentCourses = db.get("team_memberships").filter(team => {
@@ -235,7 +235,7 @@ app.get("/courses", (req, res) => {
 
 app.post('/create-team', (req, res) => {
     const { organization_id, new_org_name, course_id, new_course_name, team_name, max_size, instructor_id, selected_students } = req.body;
-  
+
     try {
       // Step 1: Add new organization if needed
       let final_org_id = organization_id;
@@ -243,24 +243,24 @@ app.post('/create-team', (req, res) => {
         final_org_id = newId;
         db.get('organizations').push({ id: final_org_id, name: new_org_name }).write();
       }
-  
+
       // Step 2: Add new course if needed
       let final_course_id = course_id;
       if (new_course_name) {
         final_course_id = newId
         db.get('courses').push({ id: final_course_id, name: new_course_name, instructor_id, organization_id: final_org_id }).write();
       }
-  
+
       // Step 3: Add the new team
       const new_team = { id: newId, name: team_name, max_size, course_id: final_course_id, instructor_id };
       db.get('teams').push(new_team).write();
-  
+
       // Step 4: Add students to the team
       selected_students.forEach((student_id) => {
         const membership = { id: newId, team_id: new_team.id, student_id };
         db.get('team_memberships').push(membership).write();
       });
-  
+
       res.status(200).json({ message: "Team created successfully" });
     } catch (error) {
       console.error("Error creating team:", error);
@@ -309,31 +309,31 @@ function isInstructor(req, res, next) {
         res.status(401).json({ message: "Invalid token" });
     }
 }
-  
+
 // API to create a team (instructors only)
 app.post("/teams", isInstructor, (req, res) => {
     const { name, instructorId, maxSize, courseId } = req.body;
-  
+
     // Check if courseId is valid
     isCourseValid(courseId).then((valid) => {
       if (!valid) {
         return res.status(400).json({ message: "Invalid course ID" });
       }
-  
+
       const newTeam = { id: Date.now().toString(), name, instructorId, maxSize, courseId, students: [] }; //change id for random num generator?
       db.get("teams").push(newTeam).write();
-  
+
       res.status(201).json({ message: "Team created successfully", team: newTeam });
     }).catch((error) => {
       res.status(500).json({ message: "Error creating team", error });
     });
 });
-  
+
 // API to add a student to a team
 app.post("/teams/:id/students", (req, res) => {
     const teamId = req.params.id;
     const { studentId, name, email } = req.body;
-  
+
     // Find the team
     const team = db.get("teams").find({ id: teamId }).value();
     if (!team) {
@@ -353,24 +353,64 @@ app.post("/teams/:id/students", (req, res) => {
 
     const newStudent = { studentId, name, email };
     db.get("teams").find({ id: teamId }).get("students").push(newStudent).write();
-  
-    res.status(201).json({ 
-        message: "Student added to team", 
+
+    res.status(201).json({
+        message: "Student added to team",
         student: newStudent,
         warning: registeredStudent ? null : "Warning: Student is not registered in the database."
     });
 });
-  
+
+app.post('/submit-evaluation', (req, res) => {
+  const {
+    evaluator_id,
+    evaluatee_id,
+    cooperation,
+    conceptualContribution,
+    practicalContribution,
+    workEthic,
+    cooperationComment,
+    conceptualComment,
+    practicalComment,
+    ethicComment,
+    team_id
+  } = req.body;
+
+  if (!evaluator_id || !evaluatee_id) {
+    return res.status(400).send({ message: "Evaluator and evaluatee IDs are required." });
+  }
+
+  const id = db.get('peer_evaluations').size().value() + 1;
+  db.get('peer_evaluations')
+    .push({
+      id,
+      evaluator_id,
+      evaluatee_id,
+      cooperation,
+      conceptual_contribution: conceptualContribution,
+      practical_contribution: practicalContribution,
+      work_ethic: workEthic,
+      cooperation_comment: cooperationComment,
+      conceptual_comment: conceptualComment,
+      practical_comment: practicalComment,
+      ethic_comment: ethicComment,
+      team_id,
+      timestamp: new Date().toISOString()
+    })
+    .write();
+
+  res.send({ message: 'success' });
+});
 // API to update team size (instructors only)
 app.put("/teams/:id/size", isInstructor, (req, res) => {
     const teamId = req.params.id;
     const { newSize } = req.body;
-  
+
     db.get("teams").find({ id: teamId }).assign({ maxSize: newSize }).write();
-  
+
     res.status(200).json({ message: "Team size updated successfully" });
 });
-  
+
 // API to remove a student from a team
 app.delete("/teams/:id/students/:studentId", isInstructor, (req, res) => {
     const teamId = req.params.id;
@@ -387,10 +427,10 @@ app.delete("/teams/:id/students/:studentId", isInstructor, (req, res) => {
       .get("students")
       .remove({ studentId })
       .write();
-  
+
     res.status(200).json({ message: "Student removed from team" });
 });
-  
+
 // Function to validate course ID based on uploaded CSV
 function isCourseValid(courseId) {
     const courses = [];
@@ -417,7 +457,7 @@ function isCourseValid(courseId) {
         });
     });
 }
-  
+
 // Real-time Socket.IO connection handler
 io.on('connection', (socket) => {
     console.log('A user connected');

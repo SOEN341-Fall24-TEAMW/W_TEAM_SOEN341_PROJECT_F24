@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import './peerEvaluationForm.css'; // New CSS for styling
+import './peerEvaluationForm.css';
 
-function PeerEvaluationForm() {
+function PeerEvaluationForm({ evaluatorId, evaluateeId, teamId }) {
   const [evaluation, setEvaluation] = useState({
     cooperation: '',
     conceptualContribution: '',
@@ -17,20 +17,44 @@ function PeerEvaluationForm() {
     setEvaluation((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    alert('Evaluation submitted: ' + JSON.stringify(evaluation, null, 2));
+
+    try {
+      const response = await fetch('http://localhost:3080/submit-evaluation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          evaluator_id: evaluatorId,
+          evaluatee_id: evaluateeId,
+          team_id: teamId,
+          ...evaluation,
+        }),
+      });
+
+      const result = await response.json();
+      if (result.message === 'success') {
+        alert('Evaluation submitted successfully');
+      } else {
+        alert('Failed to submit evaluation');
+      }
+    } catch (error) {
+      console.error('Error submitting evaluation:', error);
+      alert('An error occurred while submitting the evaluation');
+    }
   };
 
   return (
     <div className="form-container">
       <form className="evaluation-form" onSubmit={handleSubmit}>
-        <div className='titleContainer'>Peer Evaluation Form</div>
+        <div className="titleContainer">Peer Evaluation Form</div>
 
         {/* Cooperation */}
         <div className="form-group">
           <label>Cooperation</label>
-            <p>This measures how well your teammate worked with others, attended meetings, helped the team, and contributed to group tasks.</p>
+          <p>This measures how well your teammate worked with others, attended meetings, helped the team, and contributed to group tasks.</p>
           <div className="rating-container">
             {Array.from({ length: 7 }, (_, i) => (
               <label key={i} className="rating-label">

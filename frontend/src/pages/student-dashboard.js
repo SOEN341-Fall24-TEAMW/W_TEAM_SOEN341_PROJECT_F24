@@ -2,14 +2,17 @@ import React, { useState } from 'react';
 import { NavLink, AppShell, Table, Group, Space, Button, Title, TextInput, rem } from '@mantine/core';
 import { IconUsers, IconClipboardList, IconMessageCircle, IconSearch } from '@tabler/icons-react';
 import { NavbarStudentDashboard } from './NavbarStudentDashboard.js';
-import PeerEvaluationForm from './peerEvaluationForm.js'; 
+import PeerEvaluationForm from './peerEvaluationForm.js';
 import PeerFeedback from './peerFeedback.js';
 import './styles.css';
 
 
-const StudentDashboard = ({ students, email, teams, courses, feedbackData }) => {
-  const [active, setActive] = useState('Students'); 
-  const [query, setQuery] = useState(''); 
+const StudentDashboard = ({ students = [], email = '', teams = [], courses = [], feedbackData = [] }) => {
+  const [active, setActive] = useState('Students');
+  const [query, setQuery] = useState('');
+
+// Extract evaluatorId based on the logged-in user's email
+  const evaluatorId = students?.find(student => student.email === email)?.id;
 
   const tabs = [
     { label: 'Students', icon: IconUsers },
@@ -45,7 +48,7 @@ const StudentDashboard = ({ students, email, teams, courses, feedbackData }) => 
   return (
     <AppShell navbar={{ width: 250 }}>
       <AppShell.Navbar>{navBarData}</AppShell.Navbar>
-      
+
       {(active === 'Students') && (
         <AppShell.Main>
           <Space h="md" />
@@ -83,8 +86,21 @@ const StudentDashboard = ({ students, email, teams, courses, feedbackData }) => 
         <AppShell.Main>
           <Space h="md" />
           <Title>Evaluate Peers</Title>
-          <PeerEvaluationForm teams={teams} /> 
-        </AppShell.Main>
+          {students.length > 0 && evaluatorId ? (
+              students
+                .filter(student => student.id !== evaluatorId) // Only show other students
+                .map((student) => (
+                  <PeerEvaluationForm
+                    key={student.id}
+                    evaluatorId={evaluatorId}
+                    evaluateeId={student.id}
+                    teamId={student.team_id || ''} // Assuming each student has a `team_id` attribute
+                  />
+                ))
+            ) : (
+              <p>No students available for evaluation.</p>
+            )}
+          </AppShell.Main>
       )}
 
       {(active === 'Peer Feedback') && (
