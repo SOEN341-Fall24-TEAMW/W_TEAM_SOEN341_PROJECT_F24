@@ -1,7 +1,8 @@
 import React from 'react';
-import { NavLink } from '@mantine/core'; // Or your preferred UI framework
-import { IconUsers, IconClipboardList, IconMessageCircle } from '@tabler/icons-react'; // Icons for the links
+import { NavLink } from '@mantine/core'; 
+import { IconUsers, IconClipboardList, IconMessageCircle } from '@tabler/icons-react'; // Icons
 
+// Define tabs available in the navigation bar
 const tabs = [
   { label: 'Students', icon: IconUsers },
   { label: 'Evaluate Peers', icon: IconClipboardList },
@@ -18,7 +19,7 @@ export function NavbarStudentDashboard({ active, setActive }) {
               label={data.label}
               leftSection={<data.icon size={16} />}
               active={active === data.label}
-              onClick={() => setActive(data.label)}
+              onClick={() => setActive(data.label)} 
             />
           </li>
         ))}

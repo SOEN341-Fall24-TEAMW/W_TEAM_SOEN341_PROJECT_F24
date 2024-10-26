@@ -91,7 +91,7 @@ function App() {
             <Route path='/Teams' element={<Teams/>} />
             <Route path='/CreateTeams' element={<CreateTeams/>} />
             <Route path='/TeamList' element={<TeamList/>} />
-            <Route path='/peer-evaluation' element={<PeerEvaluationForm/>} />
+            <Route path='/peer-evaluation' element={<PeerEvaluationForm teams={teams} />} />
           </Routes>
           <Footer />
         </BrowserRouter>

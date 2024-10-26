@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, AppShell, Table, Group, Space, Button, Title, TextInput, rem } from '@mantine/core';
 import { IconUsers, IconClipboardList, IconMessageCircle, IconSearch } from '@tabler/icons-react';
 import { NavbarStudentDashboard } from './NavbarStudentDashboard.js';
-import PeerEvaluationForm from './peerEvaluationForm.js'; 
+import PeerEvaluationIntro from './peerEvaluationIntro.js';
 import PeerFeedback from './peerFeedback.js';
 import './styles.css';
 
@@ -10,6 +10,7 @@ import './styles.css';
 const StudentDashboard = ({ students, email, teams, courses, feedbackData }) => {
   const [active, setActive] = useState('Students'); 
   const [query, setQuery] = useState(''); 
+  const [setShowForm] = useState(false);
 
   const tabs = [
     { label: 'Students', icon: IconUsers },
@@ -41,6 +42,8 @@ const StudentDashboard = ({ students, email, teams, courses, feedbackData }) => 
           </Table.Tr>
         ))
     : [];
+
+
 
   return (
     <AppShell navbar={{ width: 250 }}>
@@ -82,8 +85,12 @@ const StudentDashboard = ({ students, email, teams, courses, feedbackData }) => 
       {(active === 'Evaluate Peers') && (
         <AppShell.Main>
           <Space h="md" />
-          <Title>Evaluate Peers</Title>
-          <PeerEvaluationForm teams={teams} /> 
+          <Title>Peer Evaluation</Title>
+          
+          {/* Introduction Paragraph with Button */}
+          <PeerEvaluationIntro setShowForm={setShowForm} /> {/* This will render the intro text and button */}
+          
+          <Space h="md" />
         </AppShell.Main>
       )}
 
