@@ -7,6 +7,50 @@
     {
       "id": "org2",
       "name": "McGill University"
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "org"
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "Org2"
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "Org1"
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "Org1"
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "Org1"
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "org1"
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "ORG2"
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "Org3"
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "ORG22"
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "Org1"
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "Org1"
     }
   ],
   "users": [
@@ -329,6 +373,30 @@
       "role": "instructor",
       "name": "In struct",
       "organization_id": ""
+    },
+    {
+      "id": "instinst22@gmail.com",
+      "email": "instinst22@gmail.com",
+      "password": "$2b$10$7x6NK6bcYsXqTrLPrCHT4Oy5rjx8F.iDCPUBCqab.svdNFQeX5Br6",
+      "role": "instructor",
+      "name": "Inst Inst",
+      "organization_id": ""
+    },
+    {
+      "id": "studentPerson@gmail.com",
+      "email": "studentPerson@gmail.com",
+      "password": "$2b$10$dMV5HyyF8GNZ4EdslND12ev1Rzymc.V/SJhxGa9PorEwPtGMWyE/C",
+      "role": "",
+      "name": "Pers On",
+      "organization_id": ""
+    },
+    {
+      "id": "Voltage@gmail.com",
+      "email": "Voltage@gmail.com",
+      "password": "$2b$10$V8LHf0gnEgWRWvAsD9poDOWvKRyzgGBmNnRLlbJOesU4qey2myeLC",
+      "role": "student",
+      "name": "Low High",
+      "organization_id": ""
     }
   ],
   "courses": [
@@ -373,6 +441,72 @@
       "name": "Statistics",
       "instructor_id": "qwe@qwe.qwe",
       "organization_id": "org1"
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "BIOL 333",
+      "instructor_id": "instinst22@gmail.com",
+      "organization_id": "004f9ea1-def2-4353-af81-2f2f000dab32"
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "CHEM 200",
+      "instructor_id": "",
+      "organization_id": "004f9ea1-def2-4353-af81-2f2f000dab32"
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "CHEM 300",
+      "instructor_id": "",
+      "organization_id": "004f9ea1-def2-4353-af81-2f2f000dab32"
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "CHEM 200",
+      "instructor_id": "",
+      "organization_id": "004f9ea1-def2-4353-af81-2f2f000dab32"
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "STAT 281",
+      "instructor_id": "",
+      "organization_id": "004f9ea1-def2-4353-af81-2f2f000dab32"
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "BIOL 200",
+      "instructor_id": "",
+      "organization_id": "004f9ea1-def2-4353-af81-2f2f000dab32"
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "BIOL 400",
+      "instructor_id": "",
+      "organization_id": "004f9ea1-def2-4353-af81-2f2f000dab32"
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "CHEM 211",
+      "instructor_id": "",
+      "organization_id": "004f9ea1-def2-4353-af81-2f2f000dab32"
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "CHEM 101",
+      "instructor_id": "instinst22@gmail.com",
+      "organization_id": "004f9ea1-def2-4353-af81-2f2f000dab32"
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "Chem 101",
+      "instructor_id": "",
+      "organization_id": "004f9ea1-def2-4353-af81-2f2f000dab32"
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "CHEM 101",
+      "instructor_id": "",
+      "organization_id": "004f9ea1-def2-4353-af81-2f2f000dab32"
     }
   ],
   "teams": [
@@ -508,6 +642,83 @@
       "max_size": 5,
       "course_id": "a47a166c-dccf-44cf-872b-2349109a7b3d",
       "instructor_id": "qwe@qwe.qwe"
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "Team Lithium",
+      "max_size": 3,
+      "course_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "instructor_id": "instinst22@gmail.com"
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "Team Hydrogen",
+      "max_size": 4,
+      "course_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "instructor_id": ""
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "Team H2O",
+      "max_size": 3,
+      "course_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "instructor_id": ""
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "Team Scapula",
+      "max_size": 5,
+      "course_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "instructor_id": ""
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "Team SD",
+      "max_size": 5,
+      "course_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "instructor_id": ""
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "Team Germs",
+      "max_size": 5,
+      "course_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "instructor_id": ""
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "TEAM BURN",
+      "max_size": 5,
+      "course_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "instructor_id": ""
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "Team Flame",
+      "max_size": 5,
+      "course_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "instructor_id": ""
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "Team Rain",
+      "max_size": 5,
+      "course_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "instructor_id": "instinst22@gmail.com"
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "Team Run",
+      "max_size": 5,
+      "course_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "instructor_id": ""
+    },
+    {
+      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "name": "Team Walk",
+      "max_size": 4,
+      "course_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "instructor_id": ""
     }
   ],
   "team_memberships": [
@@ -985,6 +1196,22 @@
       "id": "a47a166c-dccf-44cf-872b-2349109a7b3d",
       "team_id": "a47a166c-dccf-44cf-872b-2349109a7b3d",
       "student_id": "s5"
+    },
+    {
+      "id": "tm1729758963788",
+      "team_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "student_id": "Voltage@gmail.com"
+    },
+    {
+      "id": "tm1729759114829",
+      "team_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "student_id": "Voltage@gmail.com"
+    },
+    {
+      "id": "tm1729759121470",
+      "team_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "student_id": "Voltage@gmail.com"
     }
-  ]
+  ],
+  "organization": []
 }

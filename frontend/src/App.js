@@ -11,6 +11,7 @@ import InstructorDashboard from './pages/instructor-dashboard.js';
 import CreateTeams from './pages/CreateTeams.js';
 import Teams from './pages/Teams.js';
 import TeamList from './pages/TeamList.js';
+import TeamDetails from './pages/TeamDetails.js'; // Import TeamDetails component
 import PeerEvaluationForm from './pages/peerEvaluationForm.js';
 import Footer from './footer.js';
 
@@ -91,6 +92,7 @@ function App() {
             <Route path='/Teams' element={<Teams/>} />
             <Route path='/CreateTeams' element={<CreateTeams/>} />
             <Route path='/TeamList' element={<TeamList/>} />
+            <Route path='/teams/:teamId' element={<TeamDetails />} />
             <Route path='/peer-evaluation' element={<PeerEvaluationForm/>} />
           </Routes>
           <Footer />
