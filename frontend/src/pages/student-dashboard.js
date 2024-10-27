@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { NavLink, AppShell, Table, Group, Space, Button, Title, TextInput, rem } from '@mantine/core';
-import { IconUsers, IconClipboardList, IconMessageCircle, IconSearch } from '@tabler/icons-react';
+import { IconUsers,IconUsersGroup, IconClipboardList, IconMessageCircle, IconSearch } from '@tabler/icons-react';
+
 import { NavbarStudentDashboard } from './NavbarStudentDashboard.js';
 import PeerEvaluationIntro from './peerEvaluationIntro.js';
 import PeerFeedback from './peerFeedback.js';
+import TeammatesList from './TeammatesList.js';
+
 import './styles.css';
 
 
-const StudentDashboard = ({ organizations, courses, memberships, students, email, teams, courses, feedbackData }) => {
+const StudentDashboard = ({ organizations, courses, memberships, students, email, teams, feedbackData }) => {
   const navigate = useNavigate();
 
   const [selectedTeam, setSelectedTeam] = useState(null);
@@ -15,6 +19,7 @@ const StudentDashboard = ({ organizations, courses, memberships, students, email
   const [query, setQuery] = useState(''); 
   const [setShowForm] = useState(false);
   const [filteredTeamsByQuery, setFilteredTeamsByQuery] = useState([]); // State for filtered teams
+  
 
 
   const tabs = [
