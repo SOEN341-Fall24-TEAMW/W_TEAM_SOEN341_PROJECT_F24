@@ -1,54 +1,75 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Button, Title, List, Center, Text } from '@mantine/core';
-import { useNavigate } from 'react-router-dom';
+import { Button, Title, List, Table, Center, Text } from '@mantine/core';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import PeerEvaluationIntro from './peerEvaluationIntro.js';
 
 
-const TeammatesList = ({ teamId }) => { // Accept teamId as a prop
-    const [teammates, setTeammates] = useState([]);
+const TeammatesList = ({ teams, memberships, students, email }) => {
     const navigate = useNavigate();
+    const { teamId } = useParams(); // Extract teamId from URL parameters
 
-    useEffect(() => {
-        const fetchTeammates = async () => {
-            try {
-                const response = await axios.get(`/teams/${teamId}/members`, { // Adjust endpoint to fetch members
-                    headers: { 'jwt-token': localStorage.getItem('jwt-token') } // Assuming you store the token in local storage
-                });
-                setTeammates(response.data.teammates || []); // Adjust based on your backend response structure
-            } catch (error) {
-                console.error('Error fetching teammates:', error);
-            }
-        };
+    // Determine the current user's ID from the email
+    const currentUserId = students.find(student => student.email === email)?.id;
 
-        if (teamId) { // Fetch only if teamId is available
-            fetchTeammates();
-        }
-    }, [teamId]); // Re-fetch when teamId changes
+
+    // Filter teammates based on memberships and teams, or however the data is structured.
+    const filteredTeammates = memberships
+        .filter(membership => membership.team_id === teamId) 
+        .map(membership => {
+            const student = students.find(student => student.id === membership.student_id);
+            return {
+                ...student,
+                hasSubmittedFeedback: membership.hasSubmittedFeedback,
+            };
+        });
+
+    // Logging the received props to confirm the data passed down
+    console.log("Teams:", teams);
+    console.log("Memberships:", memberships);
+    console.log("Students:", students);
+    console.log("Filtered Teammates:", filteredTeammates); 
+
+
 
     return (
-        <div style={{ paddingTop: '60px' }}> {/* Added padding to move content down */}
+        <div style={{ paddingTop: '60px' }}>
             <Title order={2}>Teammates</Title>
-            {teammates.length === 0 ? ( // Check if teammates array is empty
+            {filteredTeammates.length === 0 ? (
                 <Center>
                     <Text size="lg" color="dimmed">No Members Found</Text>
                 </Center>
             ) : (
-                <List spacing="sm" size="sm" center>
-                    {teammates.map((teammate, index) => (
-                        <List.Item key={index}>{teammate.name}</List.Item> 
-                    ))}
-                </List>
+                <Table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Feedback Submitted</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {filteredTeammates.map((teammate, index) => (
+                            <tr key={index}>
+                            <td>
+                                {teammate.name || 'Unknown Name'}
+                                {teammate.id === currentUserId ? ' (YOU)' : ''}
+                            </td>
+                            <td>{teammate.hasSubmittedFeedback ? 'Yes' : 'No'}</td>
+                                <td>
+                                    <Button 
+                                        variant="outline" 
+                                        color="blue" 
+                                        onClick={() => navigate('/PeerEvaluationIntro', { state: { student: teammate } })}
+                                        >
+                                        Rate Student
+                                    </Button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
             )}
-            <Center>
-                <Button 
-                    variant="filled" 
-                    color="blue" 
-                    style={{ marginTop: '20px' }} // Add margin for spacing
-                    onClick={() => navigate('/PeerEvaluationIntro')} >Rate Teammates!
-                </Button>
-            </Center>
         </div>
     );
 };

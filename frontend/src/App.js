@@ -96,7 +96,11 @@ function App() {
             <Route path='/Teams' element={<Teams/>} />
             <Route path='/CreateTeams' element={<CreateTeams/>} />
             <Route path='/TeamList' element={<TeamList/>} />
-            <Route path='/teams/:teamId' element={userRole === 'instructor' ? <TeamDetails /> : <TeammatesList />} />
+            <Route path='/teams/:teamId' element={userRole === 'instructor' ? <TeamDetails /> 
+                    : <TeammatesList 
+                        teams={teams} memberships={memberships} students={students} email={email} 
+                      />} 
+            />          
             <Route path='/peer-evaluation' element={<PeerEvaluationForm/>} />
             <Route path='/peer-evaluation' element={<PeerEvaluationForm teams={teams} />} />
             <Route path="/PeerEvaluationIntro" element={<PeerEvaluationIntro />} />
