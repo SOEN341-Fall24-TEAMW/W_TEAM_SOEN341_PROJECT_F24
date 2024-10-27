@@ -14,6 +14,8 @@ import TeamList from './pages/TeamList.js';
 import TeamDetails from './pages/TeamDetails.js';
 import TeammatesList from './pages/TeammatesList.js';
 import PeerEvaluationForm from './pages/peerEvaluationForm.js';
+import PeerEvaluationIntro from './pages/peerEvaluationIntro.js';
+
 import Footer from './footer.js';
 
 import '@mantine/core/styles.css';
@@ -97,6 +99,7 @@ function App() {
             <Route path='/teams/:teamId' element={userRole === 'instructor' ? <TeamDetails /> : <TeammatesList />} />
             <Route path='/peer-evaluation' element={<PeerEvaluationForm/>} />
             <Route path='/peer-evaluation' element={<PeerEvaluationForm teams={teams} />} />
+            <Route path="/PeerEvaluationIntro" element={<PeerEvaluationIntro />} />
           </Routes>
           <Footer />
         </BrowserRouter>

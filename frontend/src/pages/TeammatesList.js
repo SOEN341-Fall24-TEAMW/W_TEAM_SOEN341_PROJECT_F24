@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Button, Title, List, Center, Text } from '@mantine/core';
+import { useNavigate } from 'react-router-dom';
+
+import PeerEvaluationIntro from './peerEvaluationIntro.js';
+
 
 const TeammatesList = ({ teamId }) => { // Accept teamId as a prop
     const [teammates, setTeammates] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchTeammates = async () => {
@@ -32,7 +37,7 @@ const TeammatesList = ({ teamId }) => { // Accept teamId as a prop
             ) : (
                 <List spacing="sm" size="sm" center>
                     {teammates.map((teammate, index) => (
-                        <List.Item key={index}>{teammate.name}</List.Item> // Adjust based on the teammate data structure
+                        <List.Item key={index}>{teammate.name}</List.Item> 
                     ))}
                 </List>
             )}
@@ -41,9 +46,7 @@ const TeammatesList = ({ teamId }) => { // Accept teamId as a prop
                     variant="filled" 
                     color="blue" 
                     style={{ marginTop: '20px' }} // Add margin for spacing
-                    onClick={() => console.log("Rate Teammates!")} // Add your button functionality here
-                >
-                    Rate Teammates!
+                    onClick={() => navigate('/PeerEvaluationIntro')} >Rate Teammates!
                 </Button>
             </Center>
         </div>

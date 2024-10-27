@@ -4,7 +4,6 @@ import { NavLink, AppShell, Table, Group, Space, Button, Title, TextInput, rem }
 import { IconUsers,IconUsersGroup, IconClipboardList, IconMessageCircle, IconSearch } from '@tabler/icons-react';
 
 import { NavbarStudentDashboard } from './NavbarStudentDashboard.js';
-import PeerEvaluationIntro from './peerEvaluationIntro.js';
 import PeerFeedback from './peerFeedback.js';
 import TeammatesList from './TeammatesList.js';
 
@@ -128,6 +127,14 @@ const StudentDashboard = ({ organizations, courses, memberships, students, email
 
           </AppShell.Main>
         )}
+
+        {active === 'Peer Feedback' && (
+        <AppShell.Main>
+          <Space h="md" />
+          <Title>Peer Feedback</Title>
+          <PeerFeedback feedbackData={feedbackData} />
+        </AppShell.Main>
+      )}
       </AppShell>
     );
   };
