@@ -4,9 +4,7 @@ import { NavbarStudentDashboard } from './NavbarStudentDashboard.js';
 import './peerEvaluationForm.css'; 
 
 function PeerEvaluationForm() {
-  const [active, setActive] = useState('Evaluate Peers'); 
-
-  const [evaluation, setEvaluation] = useState({
+ const [evaluation, setEvaluation] = useState({
     cooperation: '',
     conceptualContribution: '',
     practicalContribution: '',
@@ -21,9 +19,33 @@ function PeerEvaluationForm() {
     setEvaluation((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    alert('Evaluation submitted: ' + JSON.stringify(evaluation, null, 2));
+
+    try {
+      const response = await fetch('http://localhost:3080/submit-evaluation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          evaluator_id: evaluatorId,
+          evaluatee_id: evaluateeId,
+          team_id: teamId,
+          ...evaluation,
+        }),
+      });
+
+      const result = await response.json();
+      if (result.message === 'success') {
+        alert('Evaluation submitted successfully');
+      } else {
+        alert('Failed to submit evaluation');
+      }
+    } catch (error) {
+      console.error('Error submitting evaluation:', error);
+      alert('An error occurred while submitting the evaluation');
+    }
   };
 
   return (
