@@ -1,42 +1,85 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {  Space, Group, Title, TextInput, Table, NavLink, AppShell, } from '@mantine/core';
 import { IconUsersGroup, IconSettings } from '@tabler/icons-react';
+import TeammatesList from './TeammatesList.js';
 
 import './styles.css';
 
-const StudentDashboard = ({ organizations, courses, teams, email }) => {
-    const [active, setActive] = useState('My Teams');
-    const [query, setQuery] = useState('');
+const StudentDashboard = ({ organizations, org, courses, teams, students, memberships, email }) => {
+  const navigate = useNavigate();
+  const [selectedTeam, setSelectedTeam] = useState(null);
+  const [active, setActive] = useState('My Teams');
+  const [query, setQuery] = useState('');
+  const [filteredTeamsByQuery, setFilteredTeamsByQuery] = useState([]); // State for filtered teams
+
+
+  const tabs = [
+    { label: 'My Teams', icon: IconUsersGroup },
+    { label: 'Settings', icon: IconSettings }
+  ];
   
-    const tabs = [
-      { label: 'My Teams', icon: IconUsersGroup },
-      { label: 'Settings', icon: IconSettings }
-    ];
+  const navBarData = tabs.map((data) => (
+    <NavLink
+      key={data.label}
+      leftSection={<data.icon size='1rem' stroke='1.5' />}
+      label={data.label}
+      active={data.label === active}
+      variant="light"
+      component="button"
+      onClick={() => setActive(data.label)}
+    />
+  ));
+
+  const handleTeamClick = (team) => {
+    setSelectedTeam(team);
+  };
   
-    const navBarData = tabs.map((data) => (
-      <NavLink
-        key={data.label}
-        leftSection={<data.icon size='1rem' stroke='1.5' />}
-        label={data.label}
-        active={data.label === active}
-        variant="light"
-        component="button"
-        onClick={() => setActive(data.label)}
-      />
-    ));
+  useEffect(() => {
+    if (teams && memberships && email) { // Ensure data is loaded
+      console.log("Teams:", teams);
+      console.log("Email:", email);
+      
+      // Get team IDs for teams the student is part of
+      const studentTeamIds = memberships
+        .filter(membership => membership.student_id === email) // Match by student email
+        .map(membership => membership.team_id); // Extract team IDs
   
-    const rows = (teams || [])
-      .filter((team) => {
-        // Logic to filter teams based on the student's memberships
-        return team.members.includes(email); // Assuming you have a way to check memberships
-      })
-      .filter((team) => team.name.toLowerCase().includes(query.toLowerCase()))
-      .map((team) => (
-        <Table.Tr key={team.id}>
-          <Table.Td>{team.name || "No name"}</Table.Td>
-        </Table.Tr>
-      ));
+      console.log("Student Team IDs:", studentTeamIds);
   
+      // Filter teams based on the student's memberships
+      const filteredTeams = (teams || []).filter((team) => studentTeamIds.includes(team.id));
+      console.log("Filtered Teams:", filteredTeams);
+  
+      // Further filter based on the search query
+      const updatedFilteredTeamsByQuery = filteredTeams.filter((team) =>
+        team.name.toLowerCase().includes(query.toLowerCase())
+      );
+      console.log("Filtered Teams by Query:", updatedFilteredTeamsByQuery);
+  
+      // Update the state with the filtered teams
+      setFilteredTeamsByQuery(updatedFilteredTeamsByQuery);
+    }
+  }, [teams, memberships, email]); // Dependencies will trigger only on initial load when these values are available
+  
+
+  const rows = filteredTeamsByQuery.map((team) => {
+    const team_course = (courses || []).find((course) => course.id === team.course_id);
+    const course_names = team_course ? team_course.name : "No course";
+    const organization_name = (organizations.find((organization) => organization.id === team_course?.organization_id) || {}).name || "Unknown organization";
+
+    return (
+      <Table.Tr key={team.id} onClick={() => handleTeamClick(team)}>
+        <Table.Td>
+          <Link to={`/teams/${team.id}`}>{team.name || "No name"}</Link>
+        </Table.Td>
+        <Table.Td>{team.max_size || "No max size"}</Table.Td>
+        <Table.Td>{course_names || "No course"}</Table.Td>
+        <Table.Td>{organization_name || "No organization"}</Table.Td>
+      </Table.Tr>
+    );
+  });
+
     return (
         <AppShell navbar={{ width: 250 }}>
         <AppShell.Navbar>{navBarData}</AppShell.Navbar>
@@ -59,11 +102,22 @@ const StudentDashboard = ({ organizations, courses, teams, email }) => {
                 <Table.Thead>
                   <Table.Tr>
                     <Table.Th>Team</Table.Th>
+                    <Table.Th>Size</Table.Th>
+                    <Table.Th>Course</Table.Th>
+                    <Table.Th>Organization</Table.Th>
                   </Table.Tr>
                 </Table.Thead>
-                <Table.Tbody>{rows}</Table.Tbody>
-              </Table>
+                <Table.Tbody>{rows.length > 0 ? rows : <tr><td colSpan={4}>No teams found</td></tr>}</Table.Tbody>
+                </Table>
             </Table.ScrollContainer>
+
+            {selectedTeam && (
+            <div>
+              <button onClick={() => setSelectedTeam(null)} className="button3">Back to Team List</button>
+              <TeammatesList teamId={selectedTeam.id}  />
+            </div>
+          )}
+
           </AppShell.Main>
         )}
       </AppShell>

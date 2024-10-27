@@ -9,48 +9,8 @@
       "name": "McGill University"
     },
     {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "org"
-    },
-    {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "Org2"
-    },
-    {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "Org1"
-    },
-    {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "Org1"
-    },
-    {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "Org1"
-    },
-    {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "org1"
-    },
-    {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "ORG2"
-    },
-    {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "Org3"
-    },
-    {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "ORG22"
-    },
-    {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "Org1"
-    },
-    {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "Org1"
+      "id": "org3",
+      "name": "UQAM"
     }
   ],
   "users": [
@@ -108,7 +68,7 @@
       "password": "hashed_password7",
       "role": "student",
       "name": "Rand Student1",
-      "organization_id": "org1"
+      "organization_id": "org3"
     },
     {
       "id": "s2",
@@ -116,7 +76,7 @@
       "password": "hashed_password8",
       "role": "student",
       "name": "Rand Student2",
-      "organization_id": "org1"
+      "organization_id": "org3"
     },
     {
       "id": "s3",
@@ -124,7 +84,7 @@
       "password": "hashed_password9",
       "role": "student",
       "name": "Rand Student3",
-      "organization_id": "org1"
+      "organization_id": "org3"
     },
     {
       "id": "s4",
@@ -132,7 +92,7 @@
       "password": "hashed_password10",
       "role": "student",
       "name": "Rand Student4",
-      "organization_id": "org1"
+      "organization_id": "org3"
     },
     {
       "id": "s5",
@@ -140,7 +100,7 @@
       "password": "hashed_password11",
       "role": "student",
       "name": "Rand Student5",
-      "organization_id": "org1"
+      "organization_id": "org3"
     },
     {
       "id": "s6",
@@ -375,27 +335,75 @@
       "organization_id": ""
     },
     {
-      "id": "instinst22@gmail.com",
-      "email": "instinst22@gmail.com",
-      "password": "$2b$10$7x6NK6bcYsXqTrLPrCHT4Oy5rjx8F.iDCPUBCqab.svdNFQeX5Br6",
-      "role": "instructor",
-      "name": "Inst Inst",
-      "organization_id": ""
+      "id": "asd@asd.asd",
+      "email": "asd@asd.asd",
+      "password": "$2b$10$32/JwqUly7AU63Qo/Tn1rOOmlnNwXddr9CwTLYm7EqIH4kMCRWjsG",
+      "role": "student",
+      "name": "asd asd",
+      "organization_id": "org3"
     },
     {
-      "id": "studentPerson@gmail.com",
-      "email": "studentPerson@gmail.com",
-      "password": "$2b$10$dMV5HyyF8GNZ4EdslND12ev1Rzymc.V/SJhxGa9PorEwPtGMWyE/C",
-      "role": "",
-      "name": "Pers On",
+      "id": "s31",
+      "email": "student111@uqam.ca",
+      "password": "hashed_password36",
+      "role": "student",
+      "name": "Rand Student111",
+      "organization_id": "org3"
+    },
+    {
+      "id": "s32",
+      "email": "student222@uqam.ca",
+      "password": "hashed_password36",
+      "role": "student",
+      "name": "Rand Student222",
+      "organization_id": "org3"
+    },
+    {
+      "id": "s33",
+      "email": "student333@uqam.ca",
+      "password": "hashed_password36",
+      "role": "student",
+      "name": "Rand Student333",
+      "organization_id": "org3"
+    },
+    {
+      "id": "s34",
+      "email": "student444@uqam.ca",
+      "password": "hashed_password36",
+      "role": "student",
+      "name": "Rand Student444",
+      "organization_id": "org3"
+    },
+    {
+      "id": "s35",
+      "email": "student555@uqam.ca",
+      "password": "hashed_password36",
+      "role": "student",
+      "name": "Rand Student555",
+      "organization_id": "org3"
+    },
+    {
+      "id": "instinst22@gmail.com",
+      "email": "instinst22@gmail.com",
+      "password": "$2b$10$WRyTsejd/VrU7cFYcRuA5uKYMzNJCl4.m0OLJWWp45zw8bIKB7OyK",
+      "role": "instructor",
+      "name": "In Struct",
       "organization_id": ""
     },
     {
       "id": "Voltage@gmail.com",
       "email": "Voltage@gmail.com",
-      "password": "$2b$10$V8LHf0gnEgWRWvAsD9poDOWvKRyzgGBmNnRLlbJOesU4qey2myeLC",
+      "password": "$2b$10$RCs6isW/NO5ylbhVV5yAzuLlJIprEIE02069T2uYmfEWElYrti0VW",
       "role": "student",
-      "name": "Low High",
+      "name": "Vol Tage",
+      "organization_id": ""
+    },
+    {
+      "id": "Greetings@gmail.com",
+      "email": "Greetings@gmail.com",
+      "password": "$2b$10$VRzTgieul0nGgoUYRnYVb.dwqkq.AZAkOzIcVaW6opyATlwKjgfG.",
+      "role": "student",
+      "name": "Hello Goodbye",
       "organization_id": ""
     }
   ],
@@ -443,70 +451,22 @@
       "organization_id": "org1"
     },
     {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "BIOL 333",
-      "instructor_id": "instinst22@gmail.com",
-      "organization_id": "004f9ea1-def2-4353-af81-2f2f000dab32"
+      "id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
+      "name": "ENGR 232",
+      "instructor_id": "qwe@qwe.qwe",
+      "organization_id": "org3"
     },
     {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "CHEM 200",
-      "instructor_id": "",
-      "organization_id": "004f9ea1-def2-4353-af81-2f2f000dab32"
-    },
-    {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "CHEM 300",
-      "instructor_id": "",
-      "organization_id": "004f9ea1-def2-4353-af81-2f2f000dab32"
-    },
-    {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "CHEM 200",
-      "instructor_id": "",
-      "organization_id": "004f9ea1-def2-4353-af81-2f2f000dab32"
-    },
-    {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "STAT 281",
-      "instructor_id": "",
-      "organization_id": "004f9ea1-def2-4353-af81-2f2f000dab32"
-    },
-    {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "BIOL 200",
-      "instructor_id": "",
-      "organization_id": "004f9ea1-def2-4353-af81-2f2f000dab32"
-    },
-    {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "BIOL 400",
-      "instructor_id": "",
-      "organization_id": "004f9ea1-def2-4353-af81-2f2f000dab32"
-    },
-    {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "CHEM 211",
-      "instructor_id": "",
-      "organization_id": "004f9ea1-def2-4353-af81-2f2f000dab32"
-    },
-    {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
       "name": "CHEM 101",
       "instructor_id": "instinst22@gmail.com",
-      "organization_id": "004f9ea1-def2-4353-af81-2f2f000dab32"
+      "organization_id": "org1"
     },
     {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "Chem 101",
-      "instructor_id": "",
-      "organization_id": "004f9ea1-def2-4353-af81-2f2f000dab32"
-    },
-    {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "CHEM 101",
-      "instructor_id": "",
-      "organization_id": "004f9ea1-def2-4353-af81-2f2f000dab32"
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "name": "ENGR 201",
+      "instructor_id": "instinst22@gmail.com",
+      "organization_id": "org2"
     }
   ],
   "teams": [
@@ -644,81 +604,53 @@
       "instructor_id": "qwe@qwe.qwe"
     },
     {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "Team Lithium",
-      "max_size": 3,
-      "course_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
+      "name": "L'Omellete",
+      "max_size": 5,
+      "course_id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
+      "instructor_id": "qwe@qwe.qwe"
+    },
+    {
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "name": "Team WALL",
+      "max_size": 5,
+      "course_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
       "instructor_id": "instinst22@gmail.com"
     },
     {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "Team Hydrogen",
-      "max_size": 4,
-      "course_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "instructor_id": ""
-    },
-    {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "Team H2O",
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "name": "TEAM WALTZ",
       "max_size": 3,
-      "course_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "instructor_id": ""
-    },
-    {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "Team Scapula",
-      "max_size": 5,
-      "course_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "instructor_id": ""
-    },
-    {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "Team SD",
-      "max_size": 5,
-      "course_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "instructor_id": ""
-    },
-    {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "Team Germs",
-      "max_size": 5,
-      "course_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "instructor_id": ""
-    },
-    {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "TEAM BURN",
-      "max_size": 5,
-      "course_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "instructor_id": ""
-    },
-    {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "Team Flame",
-      "max_size": 5,
-      "course_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "instructor_id": ""
-    },
-    {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "Team Rain",
-      "max_size": 5,
-      "course_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "course_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
       "instructor_id": "instinst22@gmail.com"
     },
     {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "Team Run",
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "name": "JUMP",
       "max_size": 5,
-      "course_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
+      "course_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "instructor_id": "instinst22@gmail.com"
+    },
+    {
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "name": "START",
+      "max_size": 3,
+      "course_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
       "instructor_id": ""
     },
     {
-      "id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "name": "Team Walk",
-      "max_size": 4,
-      "course_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "instructor_id": ""
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "name": "SOLO",
+      "max_size": 5,
+      "course_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "instructor_id": "instinst22@gmail.com"
+    },
+    {
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "name": "LIFE",
+      "max_size": 3,
+      "course_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "instructor_id": "instinst22@gmail.com"
     }
   ],
   "team_memberships": [
@@ -1198,20 +1130,149 @@
       "student_id": "s5"
     },
     {
-      "id": "tm1729758963788",
-      "team_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "student_id": "Voltage@gmail.com"
+      "id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
+      "team_id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
+      "student_id": "s31"
     },
     {
-      "id": "tm1729759114829",
-      "team_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "student_id": "Voltage@gmail.com"
+      "id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
+      "team_id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
+      "student_id": "s32"
     },
     {
-      "id": "tm1729759121470",
-      "team_id": "004f9ea1-def2-4353-af81-2f2f000dab32",
-      "student_id": "Voltage@gmail.com"
+      "id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
+      "team_id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
+      "student_id": "s33"
+    },
+    {
+      "id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
+      "team_id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
+      "student_id": "s34"
+    },
+    {
+      "id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
+      "team_id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
+      "student_id": "s35"
+    },
+    {
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "student_id": "s7"
+    },
+    {
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "student_id": "s10"
+    },
+    {
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "student_id": "s11"
+    },
+    {
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "student_id": "s14"
+    },
+    {
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "student_id": "s12"
+    },
+    {
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "student_id": "s3"
+    },
+    {
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "student_id": "s4"
+    },
+    {
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "student_id": "s5"
+    },
+    {
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "student_id": "s17"
+    },
+    {
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "student_id": "s18"
+    },
+    {
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "student_id": "s19"
+    },
+    {
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "student_id": "s20"
+    },
+    {
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "student_id": "s21"
+    },
+    {
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "student_id": "s8"
+    },
+    {
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "student_id": "s9"
+    },
+    {
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "student_id": "s13"
+    },
+    {
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "student_id": "Greetings@gmail.com"
+    },
+    {
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "student_id": "s31"
+    },
+    {
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "student_id": "s32"
+    },
+    {
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "student_id": "s33"
+    },
+    {
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "student_id": "s34"
+    },
+    {
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "student_id": "Greetings@gmail.com"
+    },
+    {
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "student_id": "s35"
+    },
+    {
+      "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "student_id": "s31"
     }
-  ],
-  "organization": []
+  ]
 }

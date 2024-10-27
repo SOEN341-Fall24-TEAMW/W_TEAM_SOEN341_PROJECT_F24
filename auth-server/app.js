@@ -253,7 +253,7 @@ app.post("/create-team", (req, res) => {
 
     try {
         const verified = jwt.verify(authToken, jwtSecretKey);
-        const instructor_id = verified.id; // Ensure that this is the unique instructor identifier
+        const instructor_id = verified.id; 
 
         // Destructure necessary fields from the request body
         const { new_org_name, new_course_name, team_name, max_size, selected_students } = req.body;
@@ -374,7 +374,7 @@ app.delete("/delete-team/:teamId", (req, res) => {
 
     try {
         const verified = jwt.verify(authToken, jwtSecretKey);
-        const instructor_id = verified.id; // Ensure this is the unique instructor identifier
+        const instructor_id = verified.id;
         const teamId = req.params.teamId;
 
         // Check if the team exists

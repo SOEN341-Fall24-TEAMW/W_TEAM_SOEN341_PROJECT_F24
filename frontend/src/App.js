@@ -11,7 +11,8 @@ import InstructorDashboard from './pages/instructor-dashboard.js';
 import CreateTeams from './pages/CreateTeams.js';
 import Teams from './pages/Teams.js';
 import TeamList from './pages/TeamList.js';
-import TeamDetails from './pages/TeamDetails.js'; // Import TeamDetails component
+import TeamDetails from './pages/TeamDetails.js';
+import TeammatesList from './pages/TeammatesList.js';
 import PeerEvaluationForm from './pages/peerEvaluationForm.js';
 import Footer from './footer.js';
 
@@ -26,6 +27,7 @@ function App() {
   const [teams, setTeams] = useState([]);
   const [students, setStudents] = useState([]);
   const [memberships, setMemberships] = useState([]);
+  const [userRole, setUserRole] = useState([]);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -87,12 +89,12 @@ function App() {
             <Route path="/" element={<Home email={email} loggedIn={loggedIn} setLoggedIn={setLoggedIn}/>} />
             <Route path="/login" element={<Login setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
             <Route path='/create-new-account' element={<CreateNewAccount setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
-            <Route path="/student-dashboard" element={<StudentDashboard loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} />
+            <Route path="/student-dashboard" element={<StudentDashboard organizations={organizations} org={org} courses={courses} teams={teams} students={students} memberships={memberships} email={email} />} />
             <Route path="/instructor-dashboard" element={<InstructorDashboard organizations={organizations} org={org} courses={courses} teams={teams} students={students} memberships={memberships} email={email} />} />
             <Route path='/Teams' element={<Teams/>} />
             <Route path='/CreateTeams' element={<CreateTeams/>} />
             <Route path='/TeamList' element={<TeamList/>} />
-            <Route path='/teams/:teamId' element={<TeamDetails />} />
+            <Route path='/teams/:teamId' element={userRole === 'instructor' ? <TeamDetails /> : <TeammatesList />} />
             <Route path='/peer-evaluation' element={<PeerEvaluationForm/>} />
           </Routes>
           <Footer />

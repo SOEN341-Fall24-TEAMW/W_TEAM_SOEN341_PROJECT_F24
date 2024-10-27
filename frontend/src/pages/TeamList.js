@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import TeammatesList from './TeamatesList.js'; 
+import TeammatesList from './TeammatesList.js'; 
 
 function TeamList() {
   const navigate = useNavigate();
@@ -8,10 +8,9 @@ function TeamList() {
   const [selectedTeam, setSelectedTeam] = useState(null); // State to hold the selected team
 
   useEffect(() => {
-    // Fetch teams data (this could be from an API)
+    // Fetch teams data 
     const fetchTeams = async () => {
-      // Replace with your actual data fetching logic
-      const response = await fetch('/api/teams'); // Example API endpoint
+      const response = await fetch('/api/teams');
       const data = await response.json();
       setTeams(data);
     };
