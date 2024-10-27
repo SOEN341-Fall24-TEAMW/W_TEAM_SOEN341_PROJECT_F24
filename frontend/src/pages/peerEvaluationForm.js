@@ -4,7 +4,14 @@ import { NavbarStudentDashboard } from './NavbarStudentDashboard.js';
 import './peerEvaluationForm.css'; 
 
 function PeerEvaluationForm() {
- const [evaluation, setEvaluation] = useState({
+  const [active, setActive] = useState(false);
+
+  const evaluatorId = 'your-evaluator-id';  // Replace with actual logic
+  const evaluateeId = 'your-evaluatee-id';  // Replace with actual logic
+  const teamId = 'your-team-id';              // Replace with actual logic
+
+ 
+  const [evaluation, setEvaluation] = useState({
     cooperation: '',
     conceptualContribution: '',
     practicalContribution: '',
