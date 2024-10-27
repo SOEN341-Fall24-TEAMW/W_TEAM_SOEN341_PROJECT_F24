@@ -7,10 +7,10 @@ var FileSync = require("lowdb/adapters/FileSync");
 var adapter = new FileSync("./database.json");
 var db = low(adapter);
 const { v4: uuidv4 } = require('uuid');
-const newId = uuidv4();
+
 
 // Set default structure for the database
-db.defaults({ users: [], teams: [], courses: [] }).write();
+db.defaults({ users: [], teams: [], courses: [], organization: [] }).write();
 
 const fs = require("fs"); // File system module to read CSV files
 const csvParser = require("csv-parser"); // CSV parser library for reading the CSV file
@@ -136,35 +136,49 @@ app.post('/check-account', (req, res) => {
 
 // Endpoint to get teams information for students or instructors
 app.get("/teams", (req, res) => {
-    const tokenHeaderKey = "jwt-token";
-    const authToken = req.headers[tokenHeaderKey];
+    const tokenHeaderKey = "jwt-token";  // Define the token header key to extract the JWT from the headers
+    const authToken = req.headers[tokenHeaderKey];  // Get the token from the request headers
 
     try {
-        const verified = jwt.verify(authToken, jwtSecretKey);
+        const verified = jwt.verify(authToken, jwtSecretKey);  // Verify the JWT with the secret key to extract the user's information
 
-        // If the user is an instructor, return all teams they manage
+        // If the user is an instructor, fetch all teams managed by this instructor
         if (verified.role === "instructor") {
-            const instructorTeams = db.get("teams").filter({ instructorId: verified.email }).value();
-            console.log("mario", instructorTeams);
+            // Filter teams where the instructor's email matches the verified email from the token
+            const instructorTeams = db.get("teams").filter({ instructor_id: verified.email }).value();
+            
+            // Check if no teams were found for the instructor
+            if (!instructorTeams || instructorTeams.length === 0) {
+                return res.status(404).json({ message: "No teams found for instructor", teams: [] });
+            }
+
+            // Return the list of teams for the instructor
             return res.status(200).json({ message: "success", teams: instructorTeams });
 
-        // If the user is a student, return the team they belong to
+        // If the user is a student, fetch the teams they are a part of
         } else if (verified.role === "student") {
-            const studentTeams = db.get("teams").filter(team => {
-                return team.students.some(student => student.email === verified.email);
-            }).value();
+            // Find all team memberships where the student's ID (email) matches the verified email
+            const studentMemberships = db.get("team_memberships").filter({ student_id: verified.email }).value();
 
+            // Map the memberships to actual teams by finding each team based on its ID
+            const studentTeams = studentMemberships.map(membership => {
+                return db.get("teams").find({ id: membership.team_id }).value();
+            });
+
+            // Check if no teams were found for the student
+            if (!studentTeams || studentTeams.length === 0) {
+                return res.status(404).json({ message: "No teams found for student", teams: [] });
+            }
+
+            // Return the list of teams for the student
             return res.status(200).json({ message: "success", teams: studentTeams });
         }
 
-        if (!teams || teams.length === 0) {
-            return res.status(404).json({ message: "No teams found", teams: [] });
-        }
-
-        // If the role is neither student nor instructor, return an error
+        // If the role is neither student nor instructor, return a 403 forbidden error
         return res.status(403).json({ message: "Access forbidden: invalid role" });
 
     } catch (error) {
+        // If there's an error (e.g., token is invalid), return a 401 unauthorized error
         return res.status(401).json({ message: "Invalid token", error });
     }
 });
@@ -233,40 +247,161 @@ app.get("/courses", (req, res) => {
     }
 });
 
-app.post('/create-team', (req, res) => {
-    const { organization_id, new_org_name, course_id, new_course_name, team_name, max_size, instructor_id, selected_students } = req.body;
+app.post("/create-team", (req, res) => {
+    const tokenHeaderKey = "jwt-token";
+    const authToken = req.headers[tokenHeaderKey];
 
     try {
-      // Step 1: Add new organization if needed
-      let final_org_id = organization_id;
-      if (new_org_name) {
-        final_org_id = newId;
-        db.get('organizations').push({ id: final_org_id, name: new_org_name }).write();
-      }
+        const verified = jwt.verify(authToken, jwtSecretKey);
+        const instructor_id = verified.id; 
 
-      // Step 2: Add new course if needed
-      let final_course_id = course_id;
-      if (new_course_name) {
-        final_course_id = newId
-        db.get('courses').push({ id: final_course_id, name: new_course_name, instructor_id, organization_id: final_org_id }).write();
-      }
+        // Destructure necessary fields from the request body
+        const { new_org_name, new_course_name, team_name, max_size, selected_students } = req.body;
 
-      // Step 3: Add the new team
-      const new_team = { id: newId, name: team_name, max_size, course_id: final_course_id, instructor_id };
-      db.get('teams').push(new_team).write();
+        let final_org_id; // To hold the organization ID
+        let final_course_id; // To hold the course ID
 
-      // Step 4: Add students to the team
-      selected_students.forEach((student_id) => {
-        const membership = { id: newId, team_id: new_team.id, student_id };
-        db.get('team_memberships').push(membership).write();
-      });
+        // Organization creation or retrieval logic
+        try {
+            if (new_org_name) {
+                const existingOrganization = db.get('organizations')
+                    .find({ name: new_org_name })
+                    .value();
 
-      res.status(200).json({ message: "Team created successfully" });
+                if (existingOrganization) {
+                    final_org_id = existingOrganization.id;
+                } else {
+                    final_org_id = uuidv4(); // Generate a new ID for the new organization
+                    db.get('organizations')
+                        .push({ id: final_org_id, name: new_org_name })
+                        .write();
+                }
+            } else {
+                return res.status(400).json({ message: "Organization name is required." });
+            }
+
+            // Course creation or retrieval logic
+            if (new_course_name) {
+                const existingCourse = db.get('courses')
+                    .find(course => course.name.toLowerCase() === new_course_name.toLowerCase() &&
+                                    course.instructor_id === instructor_id &&
+                                    course.organization_id === final_org_id)
+                    .value();
+
+                if (existingCourse) {
+                    final_course_id = existingCourse.id;
+                } else {
+                    final_course_id = uuidv4(); // Generate a new ID for the new course
+                    db.get('courses')
+                        .push({
+                            id: final_course_id,
+                            name: new_course_name,
+                            instructor_id,
+                            organization_id: final_org_id
+                        })
+                        .write();
+                }
+            } else {
+                return res.status(400).json({ message: "Course name is required." });
+            }
+
+            // Team creation or retrieval logic
+            const existingTeam = db.get('teams')
+                .find({ name: team_name, course_id: final_course_id })
+                .value();  // Check team name uniqueness within the same course
+
+            let final_team_id;
+
+            if (!existingTeam) {
+                // Create new team if team name doesn't exist
+                final_team_id = uuidv4(); // Generate a new ID for the team
+                db.get('teams')
+                    .push({
+                        id: final_team_id,
+                        name: team_name,
+                        max_size,
+                        course_id: final_course_id,
+                        instructor_id
+                    })
+                    .write();
+            } else {
+                // Use the existing team if the name matches
+                final_team_id = existingTeam.id;
+                console.warn("Team name already exists. Using existing team ID.");
+            }
+
+            // Assign students to the team
+            selected_students.forEach((student_id) => {
+                // Check if the student is already part of the team to prevent duplicates
+                const existingMembership = db.get('team_memberships')
+                    .find({ team_id: final_team_id, student_id })
+                    .value();
+
+                if (!existingMembership) {
+                    const new_membership_id = uuidv4();
+                    db.get('team_memberships')
+                        .push({ id: new_membership_id, team_id: final_team_id, student_id })
+                        .write();
+                }
+            });
+
+            res.status(200).json({ message: "Team created successfully", team_id: final_team_id });
+        } catch (error) {
+            console.error("Error during team creation:", error);
+            res.status(500).json({ message: "Error creating team", error: error.message });
+        }
     } catch (error) {
-      console.error("Error creating team:", error);
-      res.status(500).json({ message: "Error creating team" });
+        res.status(401).json({ message: "Invalid token", error: error.message });
     }
-  });
+});
+
+
+
+
+// Helper function to generate a unique ID
+const generateUniqueId = (collection) => {
+    let newId;
+    do {
+        newId = uuidv4(); // Generate a new ID
+    } while (db.get(collection).find({ id: newId }).value()); // Check if it exists in the specified collection
+    return newId;
+};
+
+
+app.delete("/delete-team/:teamId", (req, res) => {
+    const tokenHeaderKey = "jwt-token";
+    const authToken = req.headers[tokenHeaderKey];
+
+    try {
+        const verified = jwt.verify(authToken, jwtSecretKey);
+        const instructor_id = verified.id;
+        const teamId = req.params.teamId;
+
+        // Check if the team exists
+        const existingTeam = db.get('teams').find({ id: teamId }).value();
+        
+        if (!existingTeam) {
+            return res.status(404).json({ message: "Team not found." });
+        }
+
+        // Check if the user is authorized to delete the team
+        if (existingTeam.instructor_id !== instructor_id) {
+            return res.status(403).json({ message: "Unauthorized to delete this team." });
+        }
+
+        // Remove the team from the database
+        db.get('teams').remove({ id: teamId }).write();
+
+        // Remove associated memberships
+        db.get('team_memberships').remove({ team_id: teamId }).write();
+
+        res.status(200).json({ message: "Team deleted successfully." });
+    } catch (error) {
+        console.error("Error deleting team:", error);
+        res.status(401).json({ message: "Invalid token", error: error.message });
+    }
+});
+
 
 app.get("/users", (req, res) => {
     console.log("GET /users endpoint hit");
@@ -328,6 +463,21 @@ app.post("/teams", isInstructor, (req, res) => {
       res.status(500).json({ message: "Error creating team", error });
     });
 });
+  
+// API to get a specific team by ID
+app.get("/teams/:id", (req, res) => {
+    const teamId = req.params.id;
+
+    // Find the team by its ID
+    const team = db.get("teams").find({ id: teamId }).value();
+    if (!team) {
+        return res.status(404).json({ message: "Team not found" });
+    }
+
+    // Return the team details
+    return res.status(200).json({ message: "success", team });
+});
+
 
 // API to add a student to a team
 app.post("/teams/:id/students", (req, res) => {
@@ -337,12 +487,13 @@ app.post("/teams/:id/students", (req, res) => {
     // Find the team
     const team = db.get("teams").find({ id: teamId }).value();
     if (!team) {
-      return res.status(404).json({ message: "Team not found" });
+        return res.status(404).json({ message: "Team not found" });
     }
 
     // Check if team is full
-    if (team.students.length >= team.maxSize) {
-      return res.status(400).json({ message: "Team is full" });
+    const teamMemberships = db.get("team_memberships").filter({ team_id: teamId }).value();
+    if (teamMemberships.length >= team.max_size) {
+        return res.status(400).json({ message: "Team is full" });
     }
 
     // Check if the student is registered
@@ -351,12 +502,13 @@ app.post("/teams/:id/students", (req, res) => {
         console.warn(`Warning: Student ${email} is not registered in the database.`);
     }
 
-    const newStudent = { studentId, name, email };
-    db.get("teams").find({ id: teamId }).get("students").push(newStudent).write();
+    // Create a new team membership
+    const newMembership = { id: `tm${Date.now()}`, team_id: teamId, student_id: studentId };
+    db.get("team_memberships").push(newMembership).write();
 
     res.status(201).json({
         message: "Student added to team",
-        student: newStudent,
+        membership: newMembership,
         warning: registeredStudent ? null : "Warning: Student is not registered in the database."
     });
 });

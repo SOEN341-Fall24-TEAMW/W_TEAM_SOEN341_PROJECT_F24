@@ -3,10 +3,13 @@ import { NavLink, AppShell, Table, Group, Space, Modal, Button, Title, TextInput
 import { useDisclosure } from '@mantine/hooks';
 import { IconUsers, IconUsersGroup, IconSettings, IconSearch, IconAlertTriangle } from '@tabler/icons-react';
 import { v4 as uuidv4 } from 'uuid';
+import { Link } from 'react-router-dom';
 import './styles.css';
 
 
 const InstructorDashboard = ({ organizations, org, courses, teams, students, memberships, email }) => {
+  console.log("Teams: ", teams);
+  
 
   const [active, setActive] = useState('Students');
   const [query, setQuery] = useState('');
@@ -65,14 +68,17 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
 
   // Handler for submitting the form data
   const handleSubmit = async () => {
+    console.log("Form Data Before Submit:", formData); // Debug line
+  
     // Prepare the data to be submitted in one go
     const dataToSubmit = {
       ...formData,
-      organization_id: formData.organization_id || uuidv4(), // Generate new ID if new org is created
-      course_id: formData.course_id || uuidv4(), // Generate new ID if new course is created
+      selected_students: formData.selected_students || [],
+      new_org_name: formData.new_org_name, // Send new organization name
+      new_course_name: formData.new_course_name // Send new course name
     };
-
-    try {
+  
+    try { 
       // Single API call to submit all the data at once
       await fetch("http://localhost:3080/create-team", {
         method: "POST",
@@ -81,7 +87,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
         },
         body: JSON.stringify(dataToSubmit),
       });
-
+  
       // After successful submission, close modal and reset form
       close();
       resetForm();
@@ -89,6 +95,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
       console.error("Error creating team:", error);
     }
   };
+  
 
   const tabs = [
     { label: 'Students', icon: IconUsers },
@@ -109,7 +116,30 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
     />
   ))
 
-  const rows = org
+  const handleDeleteTeam = async (teamId) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this team?");
+    if (!confirmDelete) return;
+  
+    try {
+      const response = await fetch(`http://localhost:3080/delete-team/${teamId}`, {
+        method: "DELETE",
+      });
+  
+      if (response.ok) {
+        teams = teams.filter((team) => team.id !== teamId);
+        alert("Team deleted successfully.");
+      } else {
+        throw new Error("Failed to delete team.");
+      }
+    } catch (error) {
+      console.error("Error deleting team:", error);
+      alert("Error deleting team. Please try again.");
+    }
+  };
+  
+
+  // Table rows for Students tab
+  const studentRows = org
     ? (students || [])
       .filter(
         (student) =>
@@ -151,7 +181,8 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
       })
     : [];
 
-  const rows2 = org
+  // Table rows for Teams tab
+  const teamRows = org && org.trim() !== ""
     ? (teams || [])
       .filter((team) => {
         const selected_org_id = (organizations.find((organization) => organization.name === org) || {}).id;
@@ -173,21 +204,56 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
 
         return (
           <Table.Tr key={team.id}>
-            <Table.Td>{team.name || "No name"}</Table.Td>
+            <Table.Td>
+              <Link to={`/teams/${team.id}`}>{team.name || "No name"}</Link>
+            </Table.Td>            
             <Table.Td>{student_names || "No members"}</Table.Td>
             <Table.Td>{team.max_size || "No members"}</Table.Td>
             <Table.Td>{course_names || "No course"}</Table.Td>
             <Table.Td>{organization_name || "No organization"}</Table.Td>
+            <Table.Td>
+            <Button color="red" onClick={() => handleDeleteTeam(team.id)}>Delete</Button>
+            </Table.Td>
           </Table.Tr>
         );
       })
-    : [];
+      : (teams || [])
+      .filter((team) => team.name.toLowerCase().includes(query.toLowerCase())) // Filter teams based on query when no organization is selected
+      .map((team) => {
+        const team_memberships = (memberships || []).filter((membership) => membership.team_id === team.id);
+  
+        const student_names = team_memberships
+          .map((membership) => (students || []).find((student) => student.id === membership.student_id)?.name)
+          .filter((student_name) => student_name)
+          .join(", ");
+  
+        const team_course = (courses || []).find((course) => course.id === team.course_id);
+        const course_names = team_course ? team_course.name : "No course";
+        const organization_name = (organizations.find((organization) => organization.id === team_course?.organization_id) || {}).name || "Unknown organization";
+  
+        return (
+          <Table.Tr key={team.id}>
+            <Table.Td>
+              <Link to={`/teams/${team.id}`}>{team.name || "No name"}</Link>
+            </Table.Td>
+            <Table.Td>{student_names || "No members"}</Table.Td>
+            <Table.Td>{team.max_size || "No max size"}</Table.Td>
+            <Table.Td>{course_names || "No course"}</Table.Td>
+            <Table.Td>{organization_name || "No organization"}</Table.Td>
+            <Table.Td>
+            <Button color="red" onClick={() => handleDeleteTeam(team.id)}>Delete</Button>
+            </Table.Td>
+          </Table.Tr>
+        );
+      });
 
 
 
   return (
     <AppShell navbar={{ width: 250 }}>
       <AppShell.Navbar>{navBarData}</AppShell.Navbar>
+
+      {/* Students Tab */}
       {(active === 'Students') && (<AppShell.Main>
         <Space h="md" />
         <Group justify="space-between">
@@ -217,11 +283,15 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
                 <Table.Th>Organization</Table.Th>
               </Table.Tr>
             </Table.Thead>
-            <Table.Tbody>{rows}</Table.Tbody>
+            <Table.Tbody>{studentRows}</Table.Tbody>
           </Table>
         </Table.ScrollContainer>
       </AppShell.Main>)}
+
+      {/* Teams Tab */}
       {(active === 'Teams') && (<AppShell.Main>
+        {console.log("Teams tab opened")} {/* Add this line */}
+
         <Space h="md" />
         <Group justify="space-between">
           <Title>Teams</Title>
@@ -319,7 +389,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
             {/* Step 4: Add Students to the Team */}
             {step === 4 && (
               <>
-                <Title order={4}>Add Students to the Team</Title>
+                <Title order={4}>Add Students to the Team (Optional)</Title>
                 <MultiSelect
                   label="Select Students"
                   placeholder="Select students"
@@ -374,7 +444,14 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
                 <Table.Th>Organization</Table.Th>
               </Table.Tr>
             </Table.Thead>
-            <Table.Tbody>{rows2}</Table.Tbody>
+            <Table.Tbody>
+              {teamRows.length > 0 ? teamRows : (
+            <Table.Tr>
+              <Table.Td colSpan={5} style={{ textAlign: 'center' }}>
+                No teams available.
+              </Table.Td>
+            </Table.Tr>
+          )}</Table.Tbody>
           </Table>
         </Table.ScrollContainer>
       </AppShell.Main>)}
