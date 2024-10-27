@@ -96,6 +96,7 @@ function App() {
             <Route path='/TeamList' element={<TeamList/>} />
             <Route path='/teams/:teamId' element={userRole === 'instructor' ? <TeamDetails /> : <TeammatesList />} />
             <Route path='/peer-evaluation' element={<PeerEvaluationForm/>} />
+            <Route path='/peer-evaluation' element={<PeerEvaluationForm teams={teams} />} />
           </Routes>
           <Footer />
         </BrowserRouter>

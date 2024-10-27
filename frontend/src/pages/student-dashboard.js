@@ -1,24 +1,27 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import {  Space, Group, Title, TextInput, Table, NavLink, AppShell, } from '@mantine/core';
-import { IconUsersGroup, IconSettings } from '@tabler/icons-react';
-import TeammatesList from './TeammatesList.js';
-
+import React, { useState } from 'react';
+import { NavLink, AppShell, Table, Group, Space, Button, Title, TextInput, rem } from '@mantine/core';
+import { IconUsers, IconClipboardList, IconMessageCircle, IconSearch } from '@tabler/icons-react';
+import { NavbarStudentDashboard } from './NavbarStudentDashboard.js';
+import PeerEvaluationIntro from './peerEvaluationIntro.js';
+import PeerFeedback from './peerFeedback.js';
 import './styles.css';
 
-const StudentDashboard = ({ organizations, org, courses, teams, students, memberships, email }) => {
+
+const StudentDashboard = ({ organizations, courses, memberships, students, email, teams, courses, feedbackData }) => {
   const navigate = useNavigate();
+
   const [selectedTeam, setSelectedTeam] = useState(null);
-  const [active, setActive] = useState('My Teams');
-  const [query, setQuery] = useState('');
+  const [active, setActive] = useState('Students'); 
+  const [query, setQuery] = useState(''); 
+  const [setShowForm] = useState(false);
   const [filteredTeamsByQuery, setFilteredTeamsByQuery] = useState([]); // State for filtered teams
 
 
   const tabs = [
     { label: 'My Teams', icon: IconUsersGroup },
-    { label: 'Settings', icon: IconSettings }
+    { label: 'Peer Feedback', icon: IconMessageCircle }
   ];
-  
+
   const navBarData = tabs.map((data) => (
     <NavLink
       key={data.label}
