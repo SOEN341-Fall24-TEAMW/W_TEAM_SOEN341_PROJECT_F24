@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, AppShell, Table, Group, Space, Button, Title, TextInput, rem } from '@mantine/core';
 import { IconUsers, IconClipboardList, IconMessageCircle, IconSearch } from '@tabler/icons-react';
 import { NavbarStudentDashboard } from './NavbarStudentDashboard.js';
-import PeerEvaluationForm from './peerEvaluationForm.js';
+import PeerEvaluationIntro from './peerEvaluationIntro.js';
 import PeerFeedback from './peerFeedback.js';
 import './styles.css';
 
@@ -48,7 +48,7 @@ const StudentDashboard = ({ students, email, teams, courses, feedbackData }) => 
   return (
     <AppShell navbar={{ width: 250 }}>
       <AppShell.Navbar>{navBarData}</AppShell.Navbar>
-
+      
       {(active === 'Students') && (
         <AppShell.Main>
           <Space h="md" />

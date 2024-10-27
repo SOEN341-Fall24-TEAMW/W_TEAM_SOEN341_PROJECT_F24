@@ -381,22 +381,6 @@
       "role": "student",
       "name": "Rand Student555",
       "organization_id": "org3"
-    },
-    {
-      "id": "stu@concordia.ca",
-      "email": "stu@concordia.ca",
-      "password": "$2b$10$Z/wI2TaaJk1Mmohpsojcj.RZFyqPtHhkwviA7t6QwngCfxFDDxBBS",
-      "role": "student",
-      "name": "Vlad Tita",
-      "organization_id": ""
-    },
-    {
-      "id": "nicolasvladtita@yahoo.com",
-      "email": "nicolasvladtita@yahoo.com",
-      "password": "$2b$10$NwfzCULwNf7syZLuxHEVZeJZe1rRX1tRQEywQebNE4ywCoIU0mTv.",
-      "role": "instructor",
-      "name": "Vlad student1@concordia.ca",
-      "organization_id": ""
     }
   ],
   "courses": [
@@ -1091,23 +1075,6 @@
       "id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
       "team_id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
       "student_id": "s35"
-    }
-  ],
-  "peer_evaluations": [
-    {
-      "id": 1,
-      "evaluator_id": 123,
-      "evaluatee_id": 456,
-      "cooperation": 5,
-      "conceptual_contribution": 6,
-      "practical_contribution": 7,
-      "work_ethic": 8,
-      "cooperation_comment": "Great teammate",
-      "conceptual_comment": "Contributed good ideas",
-      "practical_comment": "Helped a lot with documentation",
-      "ethic_comment": "Always met deadlines",
-      "team_id": 789,
-      "timestamp": "2024-10-01T10:00:00Z"
     }
   ]
 }
