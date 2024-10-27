@@ -7,12 +7,10 @@ import PeerFeedback from './peerFeedback.js';
 import './styles.css';
 
 
-const StudentDashboard = ({ students = [], email = '', teams = [], courses = [], feedbackData = [] }) => {
-  const [active, setActive] = useState('Students');
-  const [query, setQuery] = useState('');
-
-// Extract evaluatorId based on the logged-in user's email
-  const evaluatorId = students?.find(student => student.email === email)?.id;
+const StudentDashboard = ({ students, email, teams, courses, feedbackData }) => {
+  const [active, setActive] = useState('Students'); 
+  const [query, setQuery] = useState(''); 
+  const [setShowForm] = useState(false);
 
   const tabs = [
     { label: 'Students', icon: IconUsers },
@@ -44,6 +42,8 @@ const StudentDashboard = ({ students = [], email = '', teams = [], courses = [],
           </Table.Tr>
         ))
     : [];
+
+
 
   return (
     <AppShell navbar={{ width: 250 }}>
@@ -85,22 +85,13 @@ const StudentDashboard = ({ students = [], email = '', teams = [], courses = [],
       {(active === 'Evaluate Peers') && (
         <AppShell.Main>
           <Space h="md" />
-          <Title>Evaluate Peers</Title>
-          {students.length > 0 && evaluatorId ? (
-              students
-                .filter(student => student.id !== evaluatorId) // Only show other students
-                .map((student) => (
-                  <PeerEvaluationForm
-                    key={student.id}
-                    evaluatorId={evaluatorId}
-                    evaluateeId={student.id}
-                    teamId={student.team_id || ''} // Assuming each student has a `team_id` attribute
-                  />
-                ))
-            ) : (
-              <p>No students available for evaluation.</p>
-            )}
-          </AppShell.Main>
+          <Title>Peer Evaluation</Title>
+          
+          {/* Introduction Paragraph with Button */}
+          <PeerEvaluationIntro setShowForm={setShowForm} /> {/* This will render the intro text and button */}
+          
+          <Space h="md" />
+        </AppShell.Main>
       )}
 
       {(active === 'Peer Feedback') && (
