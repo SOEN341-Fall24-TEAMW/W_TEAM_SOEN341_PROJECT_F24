@@ -164,18 +164,33 @@ app.get("/teams", (req, res) => {
             // If the user is a student, fetch the teams they are a part of
         } 
 else if (verified.role === "student") {
-// Map over the student's memberships to get their teams and anonymize student data
-const studentTeams = studentMemberships.map(membership => {
-    const team = db.get("teams").find({ id: membership.team_id }).value(); // Find the team
-    return {
-        ...team,
-        students: team.students.map(student => ({
-            ...student, // Copy student details
-            name: anonymizeData(student.name), // Anonymize student name
-            email: anonymizeData(student.email) // Anonymize student email
-        }))
-    };
-});
+
+else if (verified.role === "student") {
+    // Find all team memberships where the student's ID (email) matches the verified email
+    const studentMemberships = db.get("team_memberships").filter({ student_id: verified.email }).value();
+
+    // Map the memberships to actual teams and anonymize student data
+    const studentTeams = studentMemberships.map(membership => {
+        const team = db.get("teams").find({ id: membership.team_id }).value();
+        return {
+            ...team,
+            students: team.students.map(student => ({
+                ...student,
+                name: anonymizeData(student.name), // Anonymize student name
+                email: anonymizeData(student.email) // Anonymize student email
+            }))
+        };
+    });
+
+    // Check if no teams were found for the student
+    if (!studentTeams || studentTeams.length === 0) {
+        return res.status(404).json({ message: "No teams found for student", teams: [] });
+    }
+
+    // Return the list of teams for the student
+    return res.status(200).json({ message: "success", teams: studentTeams });
+}
+
 
             // Find all team memberships where the student's ID (email) matches the verified email
             const studentMemberships = db.get("team_memberships").filter({ student_id: verified.email }).value();
