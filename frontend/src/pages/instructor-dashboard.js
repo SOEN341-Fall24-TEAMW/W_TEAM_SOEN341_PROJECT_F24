@@ -218,7 +218,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
         },
         body: JSON.stringify(teamData),
       });
-  
+
       // After successful submission, close modal and reset form
       close();
       resetForm();
@@ -227,7 +227,6 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
       console.error("Error creating team:", error);
     }
   };
-  
 
   const tabs = [
     { label: 'Students', icon: IconUsers },
@@ -248,30 +247,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
     />
   ))
 
-  const handleDeleteTeam = async (teamId) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this team?");
-    if (!confirmDelete) return;
-  
-    try {
-      const response = await fetch(`http://localhost:3080/delete-team/${teamId}`, {
-        method: "DELETE",
-      });
-  
-      if (response.ok) {
-        teams = teams.filter((team) => team.id !== teamId);
-        alert("Team deleted successfully.");
-      } else {
-        throw new Error("Failed to delete team.");
-      }
-    } catch (error) {
-      console.error("Error deleting team:", error);
-      alert("Error deleting team. Please try again.");
-    }
-  };
-  
-
-  // Table rows for Students tab
-  const studentRows = org
+  const rows = org
     ? (students || [])
       .filter(
         (student) =>
@@ -313,8 +289,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
       })
     : [];
 
-  // Table rows for Teams tab
-  const teamRows = org && org.trim() !== ""
+  const rows2 = org
     ? (teams || [])
       .filter((team) => {
         const selected_org_id = (organizations.find((organization) => organization.name === org) || {}).id;
@@ -336,55 +311,20 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
 
         return (
           <Table.Tr key={team.id}>
-            <Table.Td>
-              <Link to={`/teams/${team.id}`}>{team.name || "No name"}</Link>
-            </Table.Td>            
+            <Table.Td>{team.name || "No name"}</Table.Td>
             <Table.Td>{student_names || "No members"}</Table.Td>
             <Table.Td>{team.max_size || "No members"}</Table.Td>
             <Table.Td>{course_names || "No course"}</Table.Td>
             <Table.Td>{organization_name || "No organization"}</Table.Td>
-            <Table.Td>
-            <Button color="red" onClick={() => handleDeleteTeam(team.id)}>Delete</Button>
-            </Table.Td>
           </Table.Tr>
         );
       })
-      : (teams || [])
-      .filter((team) => team.name.toLowerCase().includes(query.toLowerCase())) // Filter teams based on query when no organization is selected
-      .map((team) => {
-        const team_memberships = (memberships || []).filter((membership) => membership.team_id === team.id);
-  
-        const student_names = team_memberships
-          .map((membership) => (students || []).find((student) => student.id === membership.student_id)?.name)
-          .filter((student_name) => student_name)
-          .join(", ");
-  
-        const team_course = (courses || []).find((course) => course.id === team.course_id);
-        const course_names = team_course ? team_course.name : "No course";
-        const organization_name = (organizations.find((organization) => organization.id === team_course?.organization_id) || {}).name || "Unknown organization";
-  
-        return (
-          <Table.Tr key={team.id}>
-            <Table.Td>
-              <Link to={`/teams/${team.id}`}>{team.name || "No name"}</Link>
-            </Table.Td>
-            <Table.Td>{student_names || "No members"}</Table.Td>
-            <Table.Td>{team.max_size || "No max size"}</Table.Td>
-            <Table.Td>{course_names || "No course"}</Table.Td>
-            <Table.Td>{organization_name || "No organization"}</Table.Td>
-            <Table.Td>
-            <Button color="red" onClick={() => handleDeleteTeam(team.id)}>Delete</Button>
-            </Table.Td>
-          </Table.Tr>
-        );
-      });
+    : [];
 
 
   return (
     <AppShell navbar={{ width: 250 }}>
       <AppShell.Navbar>{navBarData}</AppShell.Navbar>
-
-      {/* Students Tab */}
       {(active === 'Students') && (<AppShell.Main>
         <Space h="md" />
         <Group justify="space-between">

@@ -146,7 +146,7 @@ app.get("/teams", (req, res) => {
         if (verified.role === "instructor") {
             // Filter teams where the instructor's email matches the verified email from the token
             const instructorTeams = db.get("teams").filter({ instructor_id: verified.email }).value();
-            
+
             // Check if no teams were found for the instructor
             if (!instructorTeams || instructorTeams.length === 0) {
                 return res.status(404).json({ message: "No teams found for instructor", teams: [] });
@@ -155,7 +155,7 @@ app.get("/teams", (req, res) => {
             // Return the list of teams for the instructor
             return res.status(200).json({ message: "success", teams: instructorTeams });
 
-        // If the user is a student, fetch the teams they are a part of
+            // If the user is a student, fetch the teams they are a part of
         } else if (verified.role === "student") {
             // Find all team memberships where the student's ID (email) matches the verified email
             const studentMemberships = db.get("team_memberships").filter({ student_id: verified.email }).value();
@@ -227,7 +227,7 @@ app.post("/courses", (req, res) => {
                 membership_info: team_membership,
             });
 
-        // If the user is a student, return the team they belong to
+            // If the user is a student, return the team they belong to
         } else if (verified.role === "student") {
             const studentCourses = db.get("team_memberships").filter(team => {
                 return team.some(team => team.student_id === verified.id);
@@ -444,16 +444,16 @@ app.post("/teams", isInstructor, (req, res) => {
             return res.status(400).json({ message: "Invalid course ID" });
         }
 
-        const newTeam = { id: Date.now().toString(), name, instructorId, maxSize, courseId, students: [] }; //change id for random num generator?
+        const newTeam = { id: Date.now().toString(), name, instructorId, maxSize, courseId, students: [] }; // You can change `Date.now()` to a random number generator if preferred
         db.get("teams").push(newTeam).write();
 
         res.status(201).json({ message: "Team created successfully", team: newTeam });
-).json({ message: "Team created successfully", team: newTeam });
     }).catch((error) => {
         res.status(500).json({ message: "Error creating team", error });
     });
 });
-  
+
+
 // API to get a specific team by ID
 app.get("/teams/:id", (req, res) => {
     const teamId = req.params.id;
@@ -504,44 +504,44 @@ app.post("/teams/:id/students", (req, res) => {
 });
 
 app.post('/submit-evaluation', (req, res) => {
-  const {
-    evaluator_id,
-    evaluatee_id,
-    cooperation,
-    conceptualContribution,
-    practicalContribution,
-    workEthic,
-    cooperationComment,
-    conceptualComment,
-    practicalComment,
-    ethicComment,
-    team_id
-  } = req.body;
+    const {
+        evaluator_id,
+        evaluatee_id,
+        cooperation,
+        conceptualContribution,
+        practicalContribution,
+        workEthic,
+        cooperationComment,
+        conceptualComment,
+        practicalComment,
+        ethicComment,
+        team_id
+    } = req.body;
 
-  if (!evaluator_id || !evaluatee_id) {
-    return res.status(400).send({ message: "Evaluator and evaluatee IDs are required." });
-  }
+    if (!evaluator_id || !evaluatee_id) {
+        return res.status(400).send({ message: "Evaluator and evaluatee IDs are required." });
+    }
 
-  const id = db.get('peer_evaluations').size().value() + 1;
-  db.get('peer_evaluations')
-    .push({
-      id,
-      evaluator_id,
-      evaluatee_id,
-      cooperation,
-      conceptual_contribution: conceptualContribution,
-      practical_contribution: practicalContribution,
-      work_ethic: workEthic,
-      cooperation_comment: cooperationComment,
-      conceptual_comment: conceptualComment,
-      practical_comment: practicalComment,
-      ethic_comment: ethicComment,
-      team_id,
-      timestamp: new Date().toISOString()
-    })
-    .write();
+    const id = db.get('peer_evaluations').size().value() + 1;
+    db.get('peer_evaluations')
+        .push({
+            id,
+            evaluator_id,
+            evaluatee_id,
+            cooperation,
+            conceptual_contribution: conceptualContribution,
+            practical_contribution: practicalContribution,
+            work_ethic: workEthic,
+            cooperation_comment: cooperationComment,
+            conceptual_comment: conceptualComment,
+            practical_comment: practicalComment,
+            ethic_comment: ethicComment,
+            team_id,
+            timestamp: new Date().toISOString()
+        })
+        .write();
 
-  res.send({ message: 'success' });
+    res.send({ message: 'success' });
 });
 
 // API to update team size (instructors only)
@@ -566,10 +566,10 @@ app.delete("/teams/:id/students/:studentId", isInstructor, (req, res) => {
     }
 
     db.get("teams")
-      .find({ id: teamId })
-      .get("students")
-      .remove({ studentId })
-      .write();
+        .find({ id: teamId })
+        .get("students")
+        .remove({ studentId })
+        .write();
 
     res.status(200).json({ message: "Student removed from team" });
 });
