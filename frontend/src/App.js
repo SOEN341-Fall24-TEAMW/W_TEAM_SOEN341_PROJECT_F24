@@ -31,6 +31,46 @@ function App() {
   const [memberships, setMemberships] = useState([]);
   const [userRole, setUserRole] = useState([]);
 
+  const fetchData = () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user || !user.token) {
+      console.error("JWT token not found. Please log in again.");
+      setLoggedIn(false);
+      return;
+    }
+
+    if (!user || !user.token) {
+      console.error("JWT token not found. Please log in again.");
+      setLoggedIn(false);
+      return;
+    }
+    try {
+      fetch('http://localhost:3080/courses', {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          'jwt-token': user.token,
+        },
+        body: JSON.stringify({ instructor: user.email }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.message === 'success') {
+            setOrganizations(data.organization_info);
+            setCourses(data.course_info);
+            setTeams(data.team_info);
+            setStudents(data.student_info);
+            setMemberships(data.membership_info);
+          } else {
+            console.error('Failed to fetch options:', data.message);
+          }
+        })
+    } catch (error) {
+      console.error('Error fetching options:', error);
+    }
+  };
+
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
 
@@ -60,26 +100,26 @@ function App() {
       setLoggedIn(false);
       return;
     }
-
-    fetch('http://localhost:3080/courses', {
-      headers: {
-        'Content-Type': 'application/json',
-        'jwt-token': user.token,
-      },
-    })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.message === 'success') {
-        setOrganizations(data.organization_info);
-        setCourses(data.course_info);
-        setTeams(data.team_info);
-        setStudents(data.student_info);
-        setMemberships(data.membership_info);
-      } else {
-        console.error('Failed to fetch options:', data.message);
-      }
-    })
-    .catch((error) => console.error('Error fetching options:', error));
+    try {
+      fetch('http://localhost:3080/courses', {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          'jwt-token': user.token,
+        },
+        body: JSON.stringify({ instructor: user.email }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.message === 'success') {
+            fetchData();
+          } else {
+            console.error('Failed to fetch options:', data.message);
+          }
+        })
+    } catch (error) {
+      console.error('Error fetching options:', error);
+    }
   }, [loggedIn]);
 
   return (
@@ -92,15 +132,11 @@ function App() {
             <Route path="/login" element={<Login setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
             <Route path='/create-new-account' element={<CreateNewAccount setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
             <Route path="/student-dashboard" element={<StudentDashboard organizations={organizations} org={org} courses={courses} teams={teams} students={students} memberships={memberships} email={email} />} />
-            <Route path="/instructor-dashboard" element={<InstructorDashboard organizations={organizations} org={org} courses={courses} teams={teams} students={students} memberships={memberships} email={email} />} />
+            <Route path="/instructor-dashboard" element={<InstructorDashboard organizations={organizations} org={org} courses={courses} teams={teams} students={students} memberships={memberships} email={email} fetchData={fetchData} />} />
             <Route path='/Teams' element={<Teams/>} />
             <Route path='/CreateTeams' element={<CreateTeams/>} />
             <Route path='/TeamList' element={<TeamList/>} />
-            <Route path='/teams/:teamId' element={userRole === 'instructor' ? <TeamDetails /> 
-                    : <TeammatesList 
-                        teams={teams} memberships={memberships} students={students} email={email} 
-                      />} 
-            />          
+            <Route path='/teams/:teamId' element={userRole === 'instructor' ? <TeamDetails /> : <TeammatesList teams={teams} memberships={memberships} students={students} email={email} />} />          
             <Route path='/peer-evaluation' element={<PeerEvaluationForm/>} />
             <Route path='/peer-evaluation' element={<PeerEvaluationForm teams={teams} />} />
             <Route path="/PeerEvaluationIntro" element={<PeerEvaluationIntro />} />

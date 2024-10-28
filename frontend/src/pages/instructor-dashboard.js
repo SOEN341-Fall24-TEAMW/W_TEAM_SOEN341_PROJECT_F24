@@ -1,15 +1,11 @@
-import React, { useState } from "react";
-import { NavLink, AppShell, Table, Group, Space, Modal, Button, Title, TextInput, rem, Select, NumberInput, MultiSelect, Alert } from '@mantine/core';
+import React, { useState, useRef } from "react";
+import { NavLink, AppShell, Table, Group, Space, Modal, Button, Title, TextInput, rem, Select, Menu, NumberInput, MultiSelect, Alert, Text, FileInput } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconUsers, IconUsersGroup, IconSettings, IconSearch, IconAlertTriangle } from '@tabler/icons-react';
-import { v4 as uuidv4 } from 'uuid';
-import { Link } from 'react-router-dom';
+import { IconUsers, IconUsersGroup, IconSettings, IconSearch, IconDatabaseImport, IconCirclePlus } from '@tabler/icons-react';
+import Papa from "papaparse";
 import './styles.css';
 
-
-const InstructorDashboard = ({ organizations, org, courses, teams, students, memberships, email }) => {
-  console.log("Teams: ", teams);
-  
+const InstructorDashboard = ({ organizations, org, courses, teams, students, memberships, email, fetchData }) => {
 
   const [active, setActive] = useState('Students');
   const [query, setQuery] = useState('');
@@ -17,10 +13,64 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
   const [step, setStep] = useState(1);
   const [maxSizeError, setMaxSizeError] = useState("");
 
-  const icon = <IconAlertTriangle />;
+  const [firstNameError, setFirstNameError] = useState("");
+  const [lastNameError, setLastNameError] = useState("");
+  const [idError, setIdError] = useState("");
+  const [emailError, setEmailError] = useState("");
 
-  // Single state object to hold all the form data
-  const [formData, setFormData] = useState({
+  const icon = [<IconCirclePlus size={14} />, <IconDatabaseImport size={14} />];
+
+
+  const fileInputRef = useRef(null);
+
+  const handleFileInputClick = () => {
+    // the file input click
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileUpload = (event) => {
+    
+    if (!event.target) {
+      console.error("File input event structure is invalid or files are missing");
+      return;
+    }
+    const file = event.target.files[0];
+    console.log('File selected:', file);
+    // Logic to handle the file
+    if (file) {
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: async function (results) {
+          console.log("Parsed Data:", results.data);
+          try {
+            const response = await fetch("http://localhost:3080/import-student-csv", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({students: results.data, instructor: email}),
+            });
+
+            if (response.ok) {
+              console.log("Data uploaded successfully.");
+              fetchData();
+            } else {
+              console.error("Upload failed.");
+            }
+          } catch (error) {
+            console.error("Error:", error);
+          }
+        },
+      });
+    }
+  };
+
+
+  // Single state object to hold all team data
+  const [teamData, setTeamData] = useState({
     organization_id: "",
     new_org_name: "",
     course_id: "",
@@ -31,9 +81,18 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
     selected_students: [],
   });
 
-  // Handler to reset the formData and step
+  const [studentData, setStudentData] = useState({
+    student_id: "",
+    student_email: "",
+    first_name: "",
+    last_name: "",
+    organization_id: "",
+    new_org_name: "",
+  })
+
+  // Handler to reset the teamData and step
   const resetForm = () => {
-    setFormData({
+    setTeamData({
       organization_id: "",
       new_org_name: "",
       course_id: "",
@@ -43,6 +102,14 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
       instructor_id: email,
       selected_students: [],
     });
+    setStudentData({
+      student_id: "",
+      student_email: "",
+      first_name: "",
+      last_name: "",
+      organization_id: "",
+      new_org_name: "",
+    })
     setStep(1);
   };
 
@@ -51,9 +118,54 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
     setStep(step + 1);
   };
 
-  // Handler for updating formData
-  const updateFormData = (key, value) => {
-    setFormData((prevState) => ({
+  // Handler for moving to the next step
+  const validateBeforeNextStep = () => {
+
+    let hasError = false;
+
+    setFirstNameError("");
+    setLastNameError("");
+    setIdError("");
+    setEmailError("");
+
+    const { student_id, student_email, first_name, last_name } = studentData;
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    if (first_name === "") {
+      setFirstNameError("Please enter student's first name");
+      hasError = true;
+    }
+    if (last_name === "") {
+      setLastNameError("Please enter student's last name");
+      hasError = true;
+    }
+    if (student_id === "" || isNaN(student_id)) {
+      setIdError("Please enter a proper student ID");
+      hasError = true;
+    }
+    if (student_email === "" || !emailPattern.test(student_email)) {
+      setEmailError("Please enter a proper email address");
+      hasError = true;
+    }
+
+    if (hasError) {
+      return;
+
+    }
+    setStep(step + 1);
+  };
+
+  // Handler for updating teamData
+  const updateTeamData = (key, value) => {
+    setTeamData((prevState) => ({
+      ...prevState,
+      [key]: value,
+    }));
+  };
+
+  //Handler for updating studentData
+  const updateStudentData = (key, value) => {
+    setStudentData((prevState) => ({
       ...prevState,
       [key]: value,
     }));
@@ -61,36 +173,56 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
 
   // Handler for closing form
   const modalClose = () => {
+
+    setFirstNameError("");
+    setLastNameError("");
+    setIdError("");
+    setEmailError("");
+
     resetForm();
     close();
   };
 
-
-  // Handler for submitting the form data
+  // Handler for submitting the new user's form data
   const handleSubmit = async () => {
-    console.log("Form Data Before Submit:", formData); // Debug line
-  
-    // Prepare the data to be submitted in one go
-    const dataToSubmit = {
-      ...formData,
-      selected_students: formData.selected_students || [],
-      new_org_name: formData.new_org_name, // Send new organization name
-      new_course_name: formData.new_course_name // Send new course name
-    };
-  
-    try { 
-      // Single API call to submit all the data at once
+    try {
+      // Single API call to submit all the user data at once
+      await fetch("http://localhost:3080/create-student", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(studentData),
+      });
+
+      // After successful submission, close modal and reset form
+      close();
+      resetForm();
+      fetchData();
+
+    } catch (error) {
+      console.error("Error creating user:", error);
+    }
+  };
+
+
+  // Handler for submitting the new team's form data
+  const handleSubmit2 = async () => {
+
+    try {
+      // Single API call to submit all the team data at once
       await fetch("http://localhost:3080/create-team", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(dataToSubmit),
+        body: JSON.stringify(teamData),
       });
   
       // After successful submission, close modal and reset form
       close();
       resetForm();
+      fetchData();
     } catch (error) {
       console.error("Error creating team:", error);
     }
@@ -248,7 +380,6 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
       });
 
 
-
   return (
     <AppShell navbar={{ width: 250 }}>
       <AppShell.Navbar>{navBarData}</AppShell.Navbar>
@@ -258,11 +389,200 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
         <Space h="md" />
         <Group justify="space-between">
           <Title>Students</Title>
-          <Modal align="center" opened={opened} onClose={close} title="Authentication" centered>
+          <Modal
+            opened={opened}
+            onClose={modalClose}
+            title={
+              <div style={{ padding: "16px 0 0 0" }}>
+                <Title order={3}>Add a New Student</Title>
+              </div>
+            }
+            centered
+            lockScroll={false}
+            padding={0}
+            styles={{
+              header: { justifyContent: "center" },
+              close: { position: "absolute", right: "16px" },
+            }}
+          >
+            {step === 1 && (
+              <div>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "0px 0px 16px 0px" }}>
+                  <Text size="xl" style={{ color: "rgb(115, 115, 115)" }}>Enter Contact Information</Text>
+                  <div style={{ display: "flex", justifyContent: "center" }}>
+                    <img src="user-icon.svg" alt="Default User Icon"
+                      style={{
+                        display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center",
+                        margin: 25, padding: 20, backgroundColor: "#fff", border: "none", borderRadius: 100,
+                        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1)", boxSizing: "border-box"
+                      }} />
+                  </div>
+                </div>
+                <div style={{ padding: "0px 25px 25px 25px" }}>
+                  <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+                    <TextInput
+                      label="First Name"
+                      placeholder="Student's First Name"
+                      withAsterisk
+                      value={studentData.first_name}
+                      onChange={(event) => { updateStudentData("first_name", event.currentTarget.value); setFirstNameError(""); }}
+                      error={firstNameError ? firstNameError : ""}
+                      style={{ maxWidth: "fit-content" }}
+                    />
+                    <TextInput
+                      label="Last Name"
+                      placeholder="Student's Last Name"
+                      withAsterisk
+                      value={studentData.last_name}
+                      onChange={(event) => { updateStudentData("last_name", event.currentTarget.value); setLastNameError(""); }}
+                      error={lastNameError ? lastNameError : ""}
+                      style={{ maxWidth: "fit-content" }}
+                    />
+                  </div>
+                  <div>
+                    <Space h="md" />
+                    <TextInput
+                      label="I.D."
+                      placeholder="Student's Identification Number"
+                      withAsterisk
+                      value={studentData.student_id}
+                      onChange={(event) => { updateStudentData("student_id", event.currentTarget.value); setIdError(""); }}
+                      error={idError ? idError : ""}
+                    />
+                    <Space h='sm' />
+                    <TextInput
+                      label="Email"
+                      placeholder="Student's Email Address"
+                      withAsterisk
+                      value={studentData.student_email}
+                      onChange={(event) => { updateStudentData("student_email", event.currentTarget.value); setEmailError(""); }}
+                      error={emailError ? emailError : ""}
+                    />
+                    <Space h="md" />
+                  </div>
+                </div>
+                <div style={{
+                  backgroundColor: "#f8f9fa",
+                  borderTop: "1px solid #e3e3e3",
+                  padding: "16px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center"
+                }}>
+                  <Button
+                    variant="outline"
+                    style={{
+                      borderRadius: "5px",
+                      padding: "8px 16px",
+                      fontSize: "16px",
+                      color: "#6c757d",
+                      border: "1px solid #ced4da"
+                    }}
+                    onClick={modalClose}
+                  >
+                    Cancel
+                  </Button>
 
+                  <Button
+                    onClick={validateBeforeNextStep}
+                  >
+                    Continue
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 2: Select or Add Organization */}
+            {step === 2 && (
+              <div>
+                <div style={{ padding: "0px 25px 25px 25px" }}>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "0px 0px 16px 0px" }}>
+                    <Text size='xl' style={{ color: "rgb(115, 115, 115)" }}>Select an Organization</Text>
+                    <Space h='xl' />
+                    <div style={{ display: "flex", justifyContent: "center" }}>
+                      <img src="org-icon.svg" alt="Default Organization Icon"
+                        style={{
+                          display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center",
+                          margin: 25, padding: 20, backgroundColor: "#fff", border: "none", borderRadius: 100,
+                          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1)", boxSizing: "border-box"
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <Space h='lg' />
+                  <Select id="org-select"
+                    label="Choose an existing organization"
+                    placeholder="Select organization"
+                    data={organizations.map((org) => ({ value: org.id, label: org.name }))}
+                    value={studentData.organization_id}
+                    onChange={(value) => updateStudentData("organization_id", value)}
+                  />
+                  <Space h="sm" />
+                  <TextInput
+                    label="Or add a new organization"
+                    placeholder="New Organization Name"
+                    value={studentData.new_org_name}
+                    onChange={(event) => { updateStudentData("new_org_name", event.currentTarget.value); updateStudentData("organization_id", null) }}
+                  />
+                </div>
+
+                <div justify="flex-end" style={{
+                  backgroundColor: "#f8f9fa",
+                  borderTop: "1px solid #e3e3e3",
+                  padding: "16px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center"
+                }}>
+                  <Button
+                    variant="outline"
+                    style={{
+                      borderRadius: "5px",
+                      padding: "8px 16px",
+                      fontSize: "16px",
+                      color: "#6c757d",
+                      border: "1px solid #ced4da"
+                    }}
+                    onClick={modalClose}
+                  >
+                    Cancel
+                  </Button>
+                  <Button onClick={handleSubmit} disabled={!studentData.organization_id && !studentData.new_org_name} >
+                    Add Organization and Finish
+                  </Button>
+                </div>
+              </div>
+            )}
           </Modal>
+          <div>
+            <Menu>
+              <Menu.Target>
+                <Button>Add a New Student</Button>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item
+                  onClick={open}
+                  leftSection={icon[0]}
+                >
+                  Create New Student
+                </Menu.Item>
+                <Menu.Item
+                  onClick={handleFileInputClick}
+                  leftSection={icon[1]}
+                >
+                  Import From File
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+            <input
+              type="file"
+              ref={fileInputRef}
+              style={{ display: 'none' }}
+              onChange={handleFileUpload}
+              accept=".csv"
+            />
+          </div>
 
-          <Button onClick={open}>Add New User</Button>
         </Group>
         <Space h="xl" />
         <Group justify="space-between">
@@ -283,178 +603,274 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
                 <Table.Th>Organization</Table.Th>
               </Table.Tr>
             </Table.Thead>
-            <Table.Tbody>{studentRows}</Table.Tbody>
+            <Table.Tbody>{rows}</Table.Tbody>
           </Table>
         </Table.ScrollContainer>
       </AppShell.Main>)}
+      {(active === 'Teams') && (
+        <AppShell.Main>
+          <Space h="md" />
+          <Group justify="space-between">
+            <Title>Teams</Title>
+            <Modal
+              opened={opened}
+              onClose={modalClose}
+              title={
+                <div style={{ padding: "16px 0 0 0" }}>
+                  <Title order={3}>Create a New Team</Title>
+                </div>
+              }
+              centered
+              lockScroll={false}
+              padding={0}
+              styles={{
+                header: { justifyContent: "center" },
+                close: { position: "absolute", right: "16px" },
+              }}
+            >
+              {/* Step 1: Select or Add Organization */}
+              {step === 1 && (
+                <div>
+                  <div style={{ padding: "0px 25px 25px 25px" }}>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "0px 0px 16px 0px" }}>
+                      <Text size="xl" style={{ color: "rgb(115, 115, 115)" }}>Select an Organization</Text>
+                      <div style={{ display: "flex", justifyContent: "center" }}>
+                        <img src="org-icon.svg" alt="Default Organization Icon"
+                          style={{
+                            display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center",
+                            margin: 25, padding: 20, backgroundColor: "#fff", border: "none", borderRadius: 100,
+                            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1)", boxSizing: "border-box"
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <Select
+                      id="org-select"
+                      label="Choose an existing organization"
+                      placeholder="Select organization"
+                      data={organizations.map((org) => ({ value: org.id, label: org.name }))}
+                      value={teamData.organization_id}
+                      onChange={(value) => updateTeamData("organization_id", value)}
+                    />
+                    <Space h="sm" />
+                    <TextInput
+                      label="Or add a new organization"
+                      placeholder="New Organization Name"
+                      value={teamData.new_org_name}
+                      onChange={(event) => { updateTeamData("new_org_name", event.currentTarget.value); updateTeamData("organization_id", null); }}
+                    />
+                  </div>
+                  <Space h="md" />
+                  <div style={{
+                    backgroundColor: "#f8f9fa",
+                    borderTop: "1px solid #e3e3e3",
+                    padding: "16px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center"
+                  }}>
+                    <Button variant="outline" onClick={modalClose}>Cancel</Button>
+                    <Button onClick={handleNextStep} disabled={!teamData.organization_id && !teamData.new_org_name}>
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
 
-      {/* Teams Tab */}
-      {(active === 'Teams') && (<AppShell.Main>
-        {console.log("Teams tab opened")} {/* Add this line */}
+              {/* Step 2: Select or Add Course */}
+              {step === 2 && (
+                <div>
+                  <div style={{ padding: "0px 25px 25px 25px" }}>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "0px 0px 16px 0px" }}>
+                      <Text size="xl" style={{ color: "rgb(115, 115, 115)" }}>Select a Course</Text>
+                      <div style={{ display: "flex", justifyContent: "center" }}>
+                        <img src="class-icon.svg" alt="Default Organization Icon"
+                          style={{
+                            display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center",
+                            margin: 25, padding: 20, backgroundColor: "#fff", border: "none", borderRadius: 100,
+                            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1)", boxSizing: "border-box"
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <Select
+                      label="Choose an existing course"
+                      placeholder="Select course"
+                      data={courses.filter((course) => course.organization_id === teamData.organization_id).map((course) => ({ value: course.id, label: course.name }))}
+                      value={teamData.course_id}
+                      onChange={(value) => updateTeamData("course_id", value)}
+                    />
+                  </div>
+                  <Space h="md" />
+                  <div style={{
+                    backgroundColor: "#f8f9fa",
+                    borderTop: "1px solid #e3e3e3",
+                    padding: "16px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center"
+                  }}>
+                    <Button variant="outline" onClick={modalClose}>Cancel</Button>
+                    <Button onClick={handleNextStep} disabled={!teamData.course_id}>Next</Button>
+                  </div>
+                </div>
+              )}
 
-        <Space h="md" />
-        <Group justify="space-between">
-          <Title>Teams</Title>
-          <Modal opened={opened} onClose={modalClose} title={<div><Title order={3}>Create a New Team</Title></div>} centered lockScroll={false}>
-            {/* Step 1: Select or Add Organization */}
-            {step === 1 && (
-              <>
-                <Title order={4}>Select an Organization</Title>
-                <Select id="org-select"
-                  label="Choose an existing organization"
-                  placeholder="Select organization"
-                  data={organizations.map((org) => ({ value: org.id, label: org.name }))}
-                  value={formData.organization_id}
-                  onChange={(value) => updateFormData("organization_id", value)}
-                />
-                <Space h="sm" />
-                <TextInput
-                  label="Or add a new organization"
-                  placeholder="New Organization Name"
-                  value={formData.new_org_name}
-                  onChange={(event) => { updateFormData("new_org_name", event.currentTarget.value); updateFormData("organization_id", null) }}
-                />
-                <Space h="md" />
-                <Group justify="flex-end">
-                  <Button
-                    onClick={handleNextStep}
-                    disabled={!formData.organization_id && !formData.new_org_name}
+              {/* Step 3: Enter Team Details */}
+              {step === 3 && (
+                <div>
+                  <div style={{ padding: "0px 25px 25px 25px" }}>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "0px 0px 16px 0px" }}>
+                      <Text size="xl" style={{ color: "rgb(115, 115, 115)" }}>Enter Team Details</Text>
+                      <div style={{ display: "flex", justifyContent: "center" }}>
+                        <img src="team-icon.svg" alt="Default Organization Icon"
+                          style={{
+                            display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center",
+                            margin: 25, padding: 20, backgroundColor: "#fff", border: "none", borderRadius: 100,
+                            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1)", boxSizing: "border-box"
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <TextInput
+                      label="Team Name"
+                      placeholder="Team Name"
+                      value={teamData.team_name}
+                      onChange={(event) => updateTeamData("team_name", event.currentTarget.value)}
+                    />
+                    <Space h="sm" />
+                    <NumberInput
+                      label="Max Team Size"
+                      placeholder="Max Size"
+                      value={teamData.max_size}
+                      onChange={(value) => updateTeamData("max_size", value)}
+                      min={1}
+                      max={30}
+                    />
+                  </div>
+                  <Space h="md" />
+                  <div style={{
+                    backgroundColor: "#f8f9fa",
+                    borderTop: "1px solid #e3e3e3",
+                    padding: "16px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center"
+                  }}>
+                    <Button variant="outline" onClick={modalClose}>Cancel</Button>
+                    <Button onClick={handleNextStep} disabled={!teamData.team_name || teamData.max_size < 1}>Next</Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 4: Add Students to the Team */}
+              {step === 4 && (
+                <div>
+                  <div style={{ padding: "0px 25px 25px 25px" }}>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "0px 0px 16px 0px" }}>
+                      <Text size="xl" style={{ color: "rgb(115, 115, 115)" }}>Add Students to the Team</Text>
+                      <div style={{ display: "flex", justifyContent: "center" }}>
+                        <img src="org-icon.svg" alt="Default Organization Icon"
+                          style={{
+                            display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center",
+                            margin: 25, padding: 20, backgroundColor: "#fff", border: "none", borderRadius: 100,
+                            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1)", boxSizing: "border-box"
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <MultiSelect
+                      label="Select Students"
+                      placeholder="Select students"
+                      data={students.filter(student => student.organization_id === teamData.organization_id && !memberships.some(membership => membership.student_id === student.id)).map(student => ({ value: student.id, label: student.name }))}
+                      value={teamData.selected_students}
+                      onChange={(value) => {
+                        if (value.length <= teamData.max_size) {
+                          updateTeamData("selected_students", value);
+                          setMaxSizeError("");
+                        } else {
+                          setMaxSizeError("Maximum allotted size exceeded");
+                        }
+                      }}
+                      multiple
+                    />
+                    {maxSizeError && (
+                      <><Space h="sm" /><Alert variant="light" color="red" title="Max Size Exceeded">{maxSizeError}</Alert></>
+                    )}
+                  </div>
+                  <Space h="md" />
+                  <div style={{
+                    backgroundColor: "#f8f9fa",
+                    borderTop: "1px solid #e3e3e3",
+                    padding: "16px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center"
+                  }}>
+                    <Button variant="outline" onClick={modalClose}>Cancel</Button>
+                    <Button onClick={handleSubmit2} disabled={!teamData.selected_students.length || teamData.selected_students.length > teamData.max_size}>
+                      Add Students and Finish
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </Modal>
+            <div>
+              <Menu>
+                <Menu.Target>
+                  <Button>Add a New Team</Button>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Item
+                    onClick={open}
+                    leftSection={icon[0]}
                   >
-                    Next
-                  </Button>
-                </Group>
-              </>
-            )}
-
-            {/* Step 2: Select or Add Course */}
-            {step === 2 && (
-              <>
-                <Title order={4}>Select a Course</Title>
-                <Select
-                  label="Choose an existing course"
-                  placeholder="Select course"
-                  data={courses
-                    .filter((course) => course.organization_id === formData.organization_id)
-                    .map((course) => ({ value: course.id, label: course.name }))}
-                  value={formData.course_id}
-                  onChange={(value) => updateFormData("course_id", value)}
-                />
-                <Space h="sm" />
-                <TextInput
-                  label="Or add a new course"
-                  placeholder="New Course Name"
-                  value={formData.new_course_name}
-                  onChange={(event) => { updateFormData("new_course_name", event.currentTarget.value); updateFormData("course_id", null) }}
-                />
-                <Space h="md" />
-                <Group justify="flex-end">
-                  <Button
-                    onClick={handleNextStep}
-                    disabled={!formData.course_id && !formData.new_course_name}
+                    Create New Team
+                  </Menu.Item>
+                  <Menu.Item
+                    onClick={handleFileInputClick}
+                    leftSection={icon[1]}
                   >
-                    Next
-                  </Button>
-                </Group>
-              </>
-            )}
+                    Import From File
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
+              <FileInput
+                ref={fileInputRef}
+                style={{ display: 'none' }}
+                onChange={handleFileUpload}
+                accept="text/csv"
+              />
+            </div>
+          </Group>
+          <Space h="xl" />
+          <Group justify="space-between">
+            <TextInput
+              value={query}
+              placeholder="Search"
+              leftSectionPointerEvents="none"
+              leftSection={<IconSearch style={{ width: rem(16), height: rem(16) }} stroke={1.5} />}
+              onChange={(event) => setQuery(event.currentTarget.value)}
+            />
+          </Group>
+          <Space h="lg" />
+          <Table.ScrollContainer minWidth={500}>
+            <Table stickyHeader verticalSpacing="md" striped highlightOnHover withTableBorder>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>Team</Table.Th>
+                  <Table.Th>Members</Table.Th>
+                  <Table.Th>Maximum Size</Table.Th>
+                  <Table.Th>Course</Table.Th>
+                  <Table.Th>Organization</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>{rows2}</Table.Tbody>
+            </Table>
+          </Table.ScrollContainer>
+        </AppShell.Main>
+      )}
 
-            {/* Step 3: Enter Team Details */}
-            {step === 3 && (
-              <>
-                <Title order={4}>Enter Team Details</Title>
-                <TextInput
-                  label="Team Name"
-                  placeholder="Team Name"
-                  value={formData.team_name}
-                  onChange={(event) => updateFormData("team_name", event.currentTarget.value)}
-                />
-                <Space h="sm" />
-                <NumberInput
-                  label="Max Team Size"
-                  placeholder="Max Size"
-                  value={formData.max_size}
-                  onChange={(value) => updateFormData("max_size", value)}
-                  min={1}
-                  max={30}
-                />
-                <Space h="md" />
-                <Group justify="flex-end">
-                  <Button onClick={handleNextStep} disabled={!formData.team_name || formData.max_size < 1}>
-                    Next
-                  </Button>
-                </Group>
-              </>
-            )}
-
-            {/* Step 4: Add Students to the Team */}
-            {step === 4 && (
-              <>
-                <Title order={4}>Add Students to the Team (Optional)</Title>
-                <MultiSelect
-                  label="Select Students"
-                  placeholder="Select students"
-                  // Filter students based on the selected organization_id
-                  data={students
-                    .filter(
-                      (student) =>
-                        student.organization_id === formData.organization_id && // Filter by organization
-                        !memberships.some((membership) => membership.student_id === student.id) // Exclude students already in teams
-                    )
-                    .map((student) => ({ value: student.id, label: student.name }))
-                  }
-                  value={formData.selected_students}
-                  onChange={(value) => {
-                    if (value.length <= formData.max_size) {
-                      updateFormData("selected_students", value);
-                      setMaxSizeError("");
-                    } else {
-                      updateFormData("selected_students", value);
-                      setMaxSizeError("Maximum allotted size exceeded");
-                    }
-                  }}
-                  multiple
-                />
-                {(maxSizeError !== "") && (<> <Space h="sm" /><Alert variant="light" color="red" title="Max Size Exceeded" icon={icon} style={{ width: 335.14 }}>{maxSizeError}</Alert> </>)}
-                <Space h="md" />
-                <Group justify="flex-end">
-                  <Button onClick={handleSubmit} disabled={(formData.selected_students.length === 0) || (formData.selected_students.length > formData.max_size) || (formData.selected_students.length < formData.max_size)}>
-                    Add Students and Finish
-                  </Button>
-                </Group>
-              </>
-            )}
-          </Modal>
-          <Button onClick={open}>Add a New Team</Button>
-        </Group>
-        <Space h="xl" />
-        <Group justify="space-between">
-          <TextInput value={query} placeholder="Search" leftSectionPointerEvents="none" leftSection={<IconSearch style={{ width: rem(16), height: rem(16) }} stroke={1.5} />} onChange={(event) => setQuery(event.currentTarget.value)} />
-          {/*<Button variant="default">Second</Button>
-              <Button variant="default">Third</Button>*/}
-        </Group>
-        <Space h="lg" />
-        <Table.ScrollContainer minWidth={500}>
-          <Table stickyHeader verticalSpacing="md" striped highlightOnHover withTableBorder >
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th>Team</Table.Th>
-                <Table.Th>Members</Table.Th>
-                <Table.Th>Maximum Size</Table.Th>
-                <Table.Th>Course</Table.Th>
-                <Table.Th>Organization</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {teamRows.length > 0 ? teamRows : (
-            <Table.Tr>
-              <Table.Td colSpan={5} style={{ textAlign: 'center' }}>
-                No teams available.
-              </Table.Td>
-            </Table.Tr>
-          )}</Table.Tbody>
-          </Table>
-        </Table.ScrollContainer>
-      </AppShell.Main>)}
 
     </AppShell>
   );
