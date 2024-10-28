@@ -8,6 +8,12 @@ var adapter = new FileSync("./database.json");
 var db = low(adapter);
 const { v4: uuidv4 } = require('uuid');
 
+// Helper function to anonymize data
+function anonymizeData(data) {
+    if (!data) return data;
+    return data.replace(/./g, '*'); // Replace all characters with asterisks
+}
+
 // Set default structure for the database
 db.defaults({ users: [], teams: [], courses: [], organization: [] }).write();
 
@@ -156,7 +162,21 @@ app.get("/teams", (req, res) => {
             return res.status(200).json({ message: "success", teams: instructorTeams });
 
             // If the user is a student, fetch the teams they are a part of
-        } else if (verified.role === "student") {
+        } 
+else if (verified.role === "student") {
+// Map over the student's memberships to get their teams and anonymize student data
+const studentTeams = studentMemberships.map(membership => {
+    const team = db.get("teams").find({ id: membership.team_id }).value(); // Find the team
+    return {
+        ...team,
+        students: team.students.map(student => ({
+            ...student, // Copy student details
+            name: anonymizeData(student.name), // Anonymize student name
+            email: anonymizeData(student.email) // Anonymize student email
+        }))
+    };
+});
+
             // Find all team memberships where the student's ID (email) matches the verified email
             const studentMemberships = db.get("team_memberships").filter({ student_id: verified.email }).value();
 
@@ -229,6 +249,19 @@ app.post("/courses", (req, res) => {
 
             // If the user is a student, return the team they belong to
         } else if (verified.role === "student") {
+// Map over courses and anonymize student data in teams
+const studentCourses = db.get("courses").value().map(course => ({
+    ...course, // Copy course details
+    teams: db.get("teams").filter({ course_id: course.id }).value().map(team => ({
+        ...team, // Copy team details
+        students: team.students.map(student => ({
+            ...student, // Copy student details
+            name: anonymizeData(student.name), // Anonymize student name
+            email: anonymizeData(student.email) // Anonymize student email
+        }))
+    }))
+}));
+
             const studentCourses = db.get("team_memberships").filter(team => {
                 return team.some(team => team.student_id === verified.id);
             }).value();
@@ -406,6 +439,14 @@ app.get("/users", (req, res) => {
             console.log("bowser", students);
             return res.status(200).json({ message: "success", data: students });
         }
+	// Anonymize student data if the requester is a student
+            if (verified.role === "student") {
+                console.log("Anonymizing data for student requester...");
+                students.forEach(student => {
+                    student.name = anonymizeData(student.name); // Anonymize student name
+                    student.email = anonymizeData(student.email); // Anonymize student email
+                });
+            }
 
         // If the role is neither student nor instructor, return an error
         return res.status(403).json({ message: "Access forbidden: invalid role" });
