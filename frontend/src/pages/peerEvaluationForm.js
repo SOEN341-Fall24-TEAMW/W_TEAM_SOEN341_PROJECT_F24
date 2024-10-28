@@ -23,8 +23,43 @@ function PeerEvaluationForm() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    alert('Evaluation submitted: ' + JSON.stringify(evaluation, null, 2));
+
+
+    const coopEvaluation = {
+      rating: evaluation.cooperation,
+      comment: evaluation.cooperationComment
+    };
+    const authToken = localStorage.getItem("jwt-token");
+ 
+ 
+    fetch('http://localhost:3080/rating',{
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+        'jwt-token': authToken
+      },
+      body: JSON.stringify(coopEvaluation)
+    })
+    .then(res =>{
+      if(!res.ok) {
+        throw new Error(res.status);
+      }
+      return res.json();
+
+    })
+    .then(data => {
+      alert('Evaluation submitted: ' +  JSON.stringify(data, null, 2));
+ 
+ 
+    })
+    .catch(err =>
+      {
+        alert("Error"+ err);
+      });
+ 
+ 
   };
+ 
 
   return (
     <AppShell

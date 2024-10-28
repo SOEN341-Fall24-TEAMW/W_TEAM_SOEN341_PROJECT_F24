@@ -417,6 +417,40 @@ function isCourseValid(courseId) {
         });
     });
 }
+
+app.post("/rating",(req,res)=>{
+
+    const tokenHeader = "jwt-token";
+    const authToken = req.headers[tokenHeader];
+
+    try{
+         const student_v = jwt.verify(authToken, jwtSecretKey);
+     
+ 
+   if(student_v.role === "student") {
+  
+        const studentId = student_v.id;
+        const{ comment, rating } = req.body
+
+        const ratings = {studentId, rating, comment};
+    
+        db.get("ratings_cooperation")
+        .push(ratings)
+        .write();
+   
+    return res.status(200).json({message: "You have successfully submitted for cooperation"});
+   }
+   else
+    {
+        return res.status(400).json({ message: "You are not allowed to evaluate. "})
+    }
+    }
+    catch(err) {
+        return res.status(401).json({message: "Invalid token", err});
+    }
+ });
+  
+
   
 // Real-time Socket.IO connection handler
 io.on('connection', (socket) => {

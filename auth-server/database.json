@@ -381,6 +381,14 @@
       "role": "student",
       "name": "Rand Student555",
       "organization_id": "org3"
+    },
+    {
+      "id": "abcabc@cs.ca",
+      "email": "abcabc@cs.ca",
+      "password": "$2b$10$guEMgoMywLidbcxUr4nCfedLFvQXHAeFeE8cKeoNZNj7UVNeBeecy",
+      "role": "student",
+      "name": "abc def",
+      "organization_id": ""
     }
   ],
   "courses": [
@@ -1075,6 +1083,13 @@
       "id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
       "team_id": "f9ded360-a3d3-4d2c-8940-8ade0a94a51b",
       "student_id": "s35"
+    }
+  ],
+  "ratings_cooperation": [
+    {
+      "studentId": "abc@abc.ca",
+      "rating": 5,
+      "comment": "Amazing!"
     }
   ]
 }
