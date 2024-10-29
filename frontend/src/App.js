@@ -101,7 +101,6 @@ function App() {
                         teams={teams} memberships={memberships} students={students} email={email} 
                       />} 
             />          
-            <Route path='/peer-evaluation' element={<PeerEvaluationForm/>} />
             <Route path='/peer-evaluation' element={<PeerEvaluationForm teams={teams} />} />
             <Route path="/PeerEvaluationIntro" element={<PeerEvaluationIntro />} />
           </Routes>

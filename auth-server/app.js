@@ -513,8 +513,8 @@ app.post("/teams/:id/students", (req, res) => {
     });
 });
 
-app.post('/submit-evaluation', (req, res) => {
-  const {
+app.post('/submit-evaluation', (req, res) => {  
+    const {
     evaluator_id,
     evaluatee_id,
     cooperation,
@@ -553,6 +553,34 @@ app.post('/submit-evaluation', (req, res) => {
 
   res.send({ message: 'success' });
 });
+
+app.get("/peer-evaluations/check", (req, res) => {
+    const { evaluator_id, evaluatee_id, team_id } = req.query;
+
+    if (!evaluator_id || !evaluatee_id || !team_id) {
+        return res.status(400).json({ message: "Evaluator ID, evaluatee ID, and team ID are required." });
+    }
+
+    console.log("Received query:", req.query); // Log the incoming query
+
+    // Find the evaluation that matches the evaluator_id, evaluatee_id, and team_id
+    const evaluation = db.get("peer_evaluations")
+        .find({ evaluator_id, evaluatee_id, team_id })
+        .value();
+
+    // Log the evaluation result
+    console.log("Evaluation found:", evaluation);
+
+    // Check if evaluation exists
+    if (evaluation) {
+        return res.status(200).json({ hasFeedback: true });
+    } else {
+        return res.status(200).json({ hasFeedback: false });
+    }
+});
+
+
+
 // API to update team size (instructors only)
 app.put("/teams/:id/size", isInstructor, (req, res) => {
     const teamId = req.params.id;
