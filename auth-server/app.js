@@ -8,6 +8,11 @@ var adapter = new FileSync("./database.json");
 var db = low(adapter);
 const { v4: uuidv4 } = require('uuid');
 
+// Helper function to anonymize data
+function anonymizeData(data) {
+    if (!data) return data;
+    return data.replace(/./g, '*'); // Replace all characters with asterisks
+}
 
 // Set default structure for the database
 db.defaults({ users: [], teams: [], courses: [], organization: [] }).write();
@@ -80,12 +85,13 @@ app.post("/create-account", (req, res) => {
 
     bcrypt.hash(password, 10, function (_err, hash) {
 
-        db.get("users").push({ id: email, email, password: hash, role, name : firstName + " " + lastName, organization_id : "" }).write();
+        db.get("users").push({ id: email, email, password: hash, role, name: firstName + " " + lastName, organization_id: "" }).write();
+
         let creationData = {
             id,
             email,
             role,
-            name : firstName + " " + lastName,
+            name: firstName + " " + lastName,
             creationTime: Date.now(),
         };
         console.log(creationData);
@@ -103,17 +109,17 @@ app.post('/verify', (req, res) => {
 
     console.log("Received Token:", authToken);
     try {
-      const verified = jwt.verify(authToken, jwtSecretKey);
-      console.log("verified 1: ", verified);
-      if (verified) {
-        return res.status(200).json({ status: "logged in", message: "success", role: verified.role });
-      } else {
+        const verified = jwt.verify(authToken, jwtSecretKey);
+        console.log("verified 1: ", verified);
+        if (verified) {
+            return res.status(200).json({ status: "logged in", message: "success", role: verified.role });
+        } else {
+            // Access Denied
+            return res.status(401).json({ status: "invalid auth", message: "error" });
+        }
+    } catch (error) {
         // Access Denied
         return res.status(401).json({ status: "invalid auth", message: "error" });
-      }
-    } catch (error) {
-      // Access Denied
-      return res.status(401).json({ status: "invalid auth", message: "error" });
     }
 
 })
@@ -146,7 +152,7 @@ app.get("/teams", (req, res) => {
         if (verified.role === "instructor") {
             // Filter teams where the instructor's email matches the verified email from the token
             const instructorTeams = db.get("teams").filter({ instructor_id: verified.email }).value();
-            
+
             // Check if no teams were found for the instructor
             if (!instructorTeams || instructorTeams.length === 0) {
                 return res.status(404).json({ message: "No teams found for instructor", teams: [] });
@@ -155,8 +161,37 @@ app.get("/teams", (req, res) => {
             // Return the list of teams for the instructor
             return res.status(200).json({ message: "success", teams: instructorTeams });
 
-        // If the user is a student, fetch the teams they are a part of
-        } else if (verified.role === "student") {
+            // If the user is a student, fetch the teams they are a part of
+        } 
+else if (verified.role === "student") {
+
+else if (verified.role === "student") {
+    // Find all team memberships where the student's ID (email) matches the verified email
+    const studentMemberships = db.get("team_memberships").filter({ student_id: verified.email }).value();
+
+    // Map the memberships to actual teams and anonymize student data
+    const studentTeams = studentMemberships.map(membership => {
+        const team = db.get("teams").find({ id: membership.team_id }).value();
+        return {
+            ...team,
+            students: team.students.map(student => ({
+                ...student,
+                name: anonymizeData(student.name), // Anonymize student name
+                email: anonymizeData(student.email) // Anonymize student email
+            }))
+        };
+    });
+
+    // Check if no teams were found for the student
+    if (!studentTeams || studentTeams.length === 0) {
+        return res.status(404).json({ message: "No teams found for student", teams: [] });
+    }
+
+    // Return the list of teams for the student
+    return res.status(200).json({ message: "success", teams: studentTeams });
+}
+
+
             // Find all team memberships where the student's ID (email) matches the verified email
             const studentMemberships = db.get("team_memberships").filter({ student_id: verified.email }).value();
 
@@ -184,13 +219,14 @@ app.get("/teams", (req, res) => {
 });
 
 // Endpoint to get course information for students or instructors
-app.get("/courses", (req, res) => {
+app.post("/courses", (req, res) => {
     const tokenHeaderKey = "jwt-token";
     const authToken = req.headers[tokenHeaderKey];
+    const instructor = req.body.instructor;
     console.log("Courses Token:", authToken);
 
     try {
-        const verified = jwt.verify(authToken, jwtSecretKey);
+        const verified = db.get('users').find(user => (user.email === instructor)).value();
         console.log("verified", verified);
 
         // If the user is an instructor, return all teams they manage
@@ -207,7 +243,7 @@ app.get("/courses", (req, res) => {
             console.log("team ids: ", team_id);
             const team_membership = db.get("team_memberships").filter(membership => team_id.includes(membership.team_id)).value();
             console.log("team membership: ", team_membership);
-            const student_id =  db.get("users").filter(user => (user.role === "student")).map(user => user.id).value();
+            const student_id = db.get("users").filter(user => (user.role === 'student')).map(student => student.id).value();
             console.log("student_id", student_id);
             const students = db.get("users").filter(student => student_id.includes(student.id)).value();
             console.log("students", students);
@@ -224,10 +260,23 @@ app.get("/courses", (req, res) => {
                 team_info: teams,
                 student_info: students,
                 membership_info: team_membership,
-             });
+            });
 
-        // If the user is a student, return the team they belong to
+            // If the user is a student, return the team they belong to
         } else if (verified.role === "student") {
+// Map over courses and anonymize student data in teams
+const studentCourses = db.get("courses").value().map(course => ({
+    ...course, // Copy course details
+    teams: db.get("teams").filter({ course_id: course.id }).value().map(team => ({
+        ...team, // Copy team details
+        students: team.students.map(student => ({
+            ...student, // Copy student details
+            name: anonymizeData(student.name), // Anonymize student name
+            email: anonymizeData(student.email) // Anonymize student email
+        }))
+    }))
+}));
+
             const studentCourses = db.get("team_memberships").filter(team => {
                 return team.some(team => team.student_id === verified.id);
             }).value();
@@ -247,161 +296,149 @@ app.get("/courses", (req, res) => {
     }
 });
 
-app.post("/create-team", (req, res) => {
-    const tokenHeaderKey = "jwt-token";
-    const authToken = req.headers[tokenHeaderKey];
+
+app.post("/create-student", async (req, res) => {
+    const { student_id, student_email, first_name, last_name, organization_id, new_org_name } = req.body;
+    try {
+        // Create new organization if needed
+        let final_org_id = organization_id;
+        if (new_org_name) {
+            final_org_id = uuidv4();
+            db.get('organizations').push({ id: final_org_id, name: new_org_name }).write();
+        }
+
+        // Hash password
+        const account_password = student_email;
+        const hashed_password = await bcrypt.hash(account_password, 10);
+
+        // Add the new student
+        const new_student = { id: student_id, email: student_email, password: hashed_password, role: "student", name: first_name + " " + last_name, organization_id: final_org_id };
+        db.get("users").push(new_student).write();
+
+        res.status(200).json({ message: "New student created successfully" });
+    } catch (error) {
+        console.error("Error creating new student:", error);
+        res.status(500).json({ message: "Error creating new user" });
+    }
+});
+
+app.post('/create-team', (req, res) => {
+    const { organization_id, new_org_name, course_id, new_course_name, team_name, max_size, instructor_id, selected_students } = req.body;
 
     try {
-        const verified = jwt.verify(authToken, jwtSecretKey);
-        const instructor_id = verified.id; 
+        // Step 1: Add new organization if needed
+        let final_org_id = organization_id;
+        if (new_org_name) {
+            final_org_id = uuidv4();
+            db.get('organizations').push({ id: final_org_id, name: new_org_name }).write();
+        }
 
-        // Destructure necessary fields from the request body
-        const { new_org_name, new_course_name, team_name, max_size, selected_students } = req.body;
+        // Step 2: Add new course if needed
+        let final_course_id = course_id;
+        if (new_course_name) {
+            final_course_id = uuidv4();
+            db.get('courses').push({ id: final_course_id, name: new_course_name, instructor_id, organization_id: final_org_id }).write();
+        }
 
-        let final_org_id; // To hold the organization ID
-        let final_course_id; // To hold the course ID
+        // Step 3: Add the new team
+        const new_team = { id: uuidv4(), name: team_name, max_size, course_id: final_course_id, instructor_id };
+        db.get('teams').push(new_team).write();
 
-        // Organization creation or retrieval logic
-        try {
-            if (new_org_name) {
-                const existingOrganization = db.get('organizations')
-                    .find({ name: new_org_name })
-                    .value();
+        // Step 4: Add students to the team
+        selected_students.forEach((student_id) => {
+            const membership = { id: uuidv4(), team_id: new_team.id, student_id };
+            db.get('team_memberships').push(membership).write();
+        });
 
-                if (existingOrganization) {
-                    final_org_id = existingOrganization.id;
-                } else {
-                    final_org_id = uuidv4(); // Generate a new ID for the new organization
-                    db.get('organizations')
-                        .push({ id: final_org_id, name: new_org_name })
-                        .write();
-                }
-            } else {
-                return res.status(400).json({ message: "Organization name is required." });
+        res.status(200).json({ message: "Team created successfully" });
+    } catch (error) {
+        console.error("Error creating team:", error);
+        res.status(500).json({ message: "Error creating team" });
+    }
+});
+
+app.post("/import-student-csv", async (req, res) => {
+    console.log("Received data:", req.body);
+    const instructor_email = req.body.instructor;
+    const data = req.body.students;
+
+    try {
+        const errors = [];
+        for (const student of data) {
+
+            const { student_id, student_email, name, course_name, team_name, org_name } = student;
+            console.log(student);
+            // Check database for organization name
+            let organization = db.get("organizations").find((org) => org.name === org_name).value();
+
+            if (!organization) {
+                // Add new organization to database if it doesn’t exist
+                organization = { id: uuidv4(), name: org_name };
+                db.get("organizations").push(organization).write();
             }
 
-            // Course creation or retrieval logic
-            if (new_course_name) {
-                const existingCourse = db.get('courses')
-                    .find(course => course.name.toLowerCase() === new_course_name.toLowerCase() &&
-                                    course.instructor_id === instructor_id &&
-                                    course.organization_id === final_org_id)
-                    .value();
-
-                if (existingCourse) {
-                    final_course_id = existingCourse.id;
-                } else {
-                    final_course_id = uuidv4(); // Generate a new ID for the new course
-                    db.get('courses')
-                        .push({
-                            id: final_course_id,
-                            name: new_course_name,
-                            instructor_id,
-                            organization_id: final_org_id
-                        })
-                        .write();
-                }
-            } else {
-                return res.status(400).json({ message: "Course name is required." });
+            // Check if student already exists
+            const student_matched = db.get("users").find((user) => user.role === "student" && user.id === student_id).value();
+            if (student_matched) {
+                errors.push(`Student: ${name} with ID ${student_id} already exists`);
+                continue;
             }
 
-            // Team creation or retrieval logic
-            const existingTeam = db.get('teams')
-                .find({ name: team_name, course_id: final_course_id })
-                .value();  // Check team name uniqueness within the same course
+            if (!student_email) {
+                console.error("Missing student_email for student:", student_matched);
+                errors.push(`Email is required for student ${name || student_id}`);
+                continue;
+            }
+            // Hash password
+            const account_password = student_email;
+            const hashed_password = await bcrypt.hash(account_password, 10);
 
-            let final_team_id;
+            // Add new student
+            db.get("users")
+                .push({
+                    id: student_id,
+                    email: student_email,
+                    password: hashed_password,
+                    role: "student",
+                    name: name,
+                    organization_id: organization.id
+                })
+                .write();
 
-            if (!existingTeam) {
-                // Create new team if team name doesn't exist
-                final_team_id = uuidv4(); // Generate a new ID for the team
-                db.get('teams')
-                    .push({
-                        id: final_team_id,
-                        name: team_name,
-                        max_size,
-                        course_id: final_course_id,
-                        instructor_id
-                    })
+            // Check for course
+            let course = db.get("courses").find((course) => course.name === course_name && course.organization_id === organization.id).value();
+            if (!course) {
+                course = { id: uuidv4(), name: course_name, instructor_id: instructor_email, organization_id: organization.id };
+                db.get("courses").push(course).write();
+            }
+
+            // Check for team
+            let team = db.get("teams").find((team) => team.name === team_name && team.course_id === course.id).value();
+            if (!team) {
+                team = { id: uuidv4(), name: team_name, course_id: course.id, instructor_id: instructor_email, max_size: 5 };
+                db.get("teams").push(team).write();
+            }
+
+            // Add student to team if not at max capacity
+            const team_membership = db.get("team_memberships").filter((membership) => membership.team_id === team.id).value();
+            if (team_membership.length < team.max_size) {
+                db.get("team_memberships")
+                    .push({ id: uuidv4(), team_id: team.id, student_id: student_id })
                     .write();
             } else {
-                // Use the existing team if the name matches
-                final_team_id = existingTeam.id;
-                console.warn("Team name already exists. Using existing team ID.");
+                errors.push(`Team: ${team_name} is already at max limit`);
             }
-
-            // Assign students to the team
-            selected_students.forEach((student_id) => {
-                // Check if the student is already part of the team to prevent duplicates
-                const existingMembership = db.get('team_memberships')
-                    .find({ team_id: final_team_id, student_id })
-                    .value();
-
-                if (!existingMembership) {
-                    const new_membership_id = uuidv4();
-                    db.get('team_memberships')
-                        .push({ id: new_membership_id, team_id: final_team_id, student_id })
-                        .write();
-                }
-            });
-
-            res.status(200).json({ message: "Team created successfully", team_id: final_team_id });
-        } catch (error) {
-            console.error("Error during team creation:", error);
-            res.status(500).json({ message: "Error creating team", error: error.message });
+        }
+        if (errors.length > 0) {
+            res.status(400).json({ message: "Some students could not be added", errors });
+        } else {
+            res.status(200).json({ message: "All students created and added to teams successfully" });
         }
     } catch (error) {
-        res.status(401).json({ message: "Invalid token", error: error.message });
+        console.error("Error creating new student:", error);
+        res.status(500).json({ message: "Error creating new user" });
     }
 });
-
-
-
-
-// Helper function to generate a unique ID
-const generateUniqueId = (collection) => {
-    let newId;
-    do {
-        newId = uuidv4(); // Generate a new ID
-    } while (db.get(collection).find({ id: newId }).value()); // Check if it exists in the specified collection
-    return newId;
-};
-
-
-app.delete("/delete-team/:teamId", (req, res) => {
-    const tokenHeaderKey = "jwt-token";
-    const authToken = req.headers[tokenHeaderKey];
-
-    try {
-        const verified = jwt.verify(authToken, jwtSecretKey);
-        const instructor_id = verified.id;
-        const teamId = req.params.teamId;
-
-        // Check if the team exists
-        const existingTeam = db.get('teams').find({ id: teamId }).value();
-        
-        if (!existingTeam) {
-            return res.status(404).json({ message: "Team not found." });
-        }
-
-        // Check if the user is authorized to delete the team
-        if (existingTeam.instructor_id !== instructor_id) {
-            return res.status(403).json({ message: "Unauthorized to delete this team." });
-        }
-
-        // Remove the team from the database
-        db.get('teams').remove({ id: teamId }).write();
-
-        // Remove associated memberships
-        db.get('team_memberships').remove({ team_id: teamId }).write();
-
-        res.status(200).json({ message: "Team deleted successfully." });
-    } catch (error) {
-        console.error("Error deleting team:", error);
-        res.status(401).json({ message: "Invalid token", error: error.message });
-    }
-});
-
 
 app.get("/users", (req, res) => {
     console.log("GET /users endpoint hit");
@@ -417,6 +454,14 @@ app.get("/users", (req, res) => {
             console.log("bowser", students);
             return res.status(200).json({ message: "success", data: students });
         }
+	// Anonymize student data if the requester is a student
+            if (verified.role === "student") {
+                console.log("Anonymizing data for student requester...");
+                students.forEach(student => {
+                    student.name = anonymizeData(student.name); // Anonymize student name
+                    student.email = anonymizeData(student.email); // Anonymize student email
+                });
+            }
 
         // If the role is neither student nor instructor, return an error
         return res.status(403).json({ message: "Access forbidden: invalid role" });
@@ -451,19 +496,20 @@ app.post("/teams", isInstructor, (req, res) => {
 
     // Check if courseId is valid
     isCourseValid(courseId).then((valid) => {
-      if (!valid) {
-        return res.status(400).json({ message: "Invalid course ID" });
-      }
+        if (!valid) {
+            return res.status(400).json({ message: "Invalid course ID" });
+        }
 
-      const newTeam = { id: Date.now().toString(), name, instructorId, maxSize, courseId, students: [] }; //change id for random num generator?
-      db.get("teams").push(newTeam).write();
+        const newTeam = { id: Date.now().toString(), name, instructorId, maxSize, courseId, students: [] }; // You can change `Date.now()` to a random number generator if preferred
+        db.get("teams").push(newTeam).write();
 
-      res.status(201).json({ message: "Team created successfully", team: newTeam });
+        res.status(201).json({ message: "Team created successfully", team: newTeam });
     }).catch((error) => {
-      res.status(500).json({ message: "Error creating team", error });
+        res.status(500).json({ message: "Error creating team", error });
     });
 });
-  
+
+
 // API to get a specific team by ID
 app.get("/teams/:id", (req, res) => {
     const teamId = req.params.id;
@@ -513,46 +559,48 @@ app.post("/teams/:id/students", (req, res) => {
     });
 });
 
-app.post('/submit-evaluation', (req, res) => {  
+
+app.post('/submit-evaluation', (req, res) => {
     const {
-    evaluator_id,
-    evaluatee_id,
-    cooperation,
-    conceptualContribution,
-    practicalContribution,
-    workEthic,
-    cooperationComment,
-    conceptualComment,
-    practicalComment,
-    ethicComment,
-    team_id
-  } = req.body;
+        evaluator_id,
+        evaluatee_id,
+        cooperation,
+        conceptualContribution,
+        practicalContribution,
+        workEthic,
+        cooperationComment,
+        conceptualComment,
+        practicalComment,
+        ethicComment,
+        team_id
+    } = req.body;
 
-  if (!evaluator_id || !evaluatee_id) {
-    return res.status(400).send({ message: "Evaluator and evaluatee IDs are required." });
-  }
+    if (!evaluator_id || !evaluatee_id) {
+        return res.status(400).send({ message: "Evaluator and evaluatee IDs are required." });
+    }
 
-  const id = db.get('peer_evaluations').size().value() + 1;
-  db.get('peer_evaluations')
-    .push({
-      id,
-      evaluator_id,
-      evaluatee_id,
-      cooperation,
-      conceptual_contribution: conceptualContribution,
-      practical_contribution: practicalContribution,
-      work_ethic: workEthic,
-      cooperation_comment: cooperationComment,
-      conceptual_comment: conceptualComment,
-      practical_comment: practicalComment,
-      ethic_comment: ethicComment,
-      team_id,
-      timestamp: new Date().toISOString()
-    })
-    .write();
+    const id = db.get('peer_evaluations').size().value() + 1;
+    db.get('peer_evaluations')
+        .push({
+            id,
+            evaluator_id,
+            evaluatee_id,
+            cooperation,
+            conceptual_contribution: conceptualContribution,
+            practical_contribution: practicalContribution,
+            work_ethic: workEthic,
+            cooperation_comment: cooperationComment,
+            conceptual_comment: conceptualComment,
+            practical_comment: practicalComment,
+            ethic_comment: ethicComment,
+            team_id,
+            timestamp: new Date().toISOString()
+        })
+        .write();
 
-  res.send({ message: 'success' });
+    res.send({ message: 'success' });
 });
+
 
 app.get("/peer-evaluations/check", (req, res) => {
     const { evaluator_id, evaluatee_id, team_id } = req.query;
@@ -580,7 +628,6 @@ app.get("/peer-evaluations/check", (req, res) => {
 });
 
 
-
 // API to update team size (instructors only)
 app.put("/teams/:id/size", isInstructor, (req, res) => {
     const teamId = req.params.id;
@@ -599,14 +646,14 @@ app.delete("/teams/:id/students/:studentId", isInstructor, (req, res) => {
     // Find the team
     const team = db.get("teams").find({ id: teamId }).value();
     if (!team) {
-      return res.status(404).json({ message: "Team not found" });
+        return res.status(404).json({ message: "Team not found" });
     }
 
     db.get("teams")
-      .find({ id: teamId })
-      .get("students")
-      .remove({ studentId })
-      .write();
+        .find({ id: teamId })
+        .get("students")
+        .remove({ studentId })
+        .write();
 
     res.status(200).json({ message: "Student removed from team" });
 });
@@ -615,26 +662,26 @@ app.delete("/teams/:id/students/:studentId", isInstructor, (req, res) => {
 function isCourseValid(courseId) {
     const courses = [];
     return new Promise((resolve, reject) => {
-      const stream = fs.createReadStream("../CU_SR_OPEN_DATA_CATALOG_utf8.csv")
-      stream.on("error", (error) => {
-        console.error("Error reading the file:", error.message); // Log the error message
-        reject(error);
-    });
-
-    stream.pipe(csvParser())
-        .on("data", (row) => {
-            // console.log("Parsed Row: ", row); // Log each parsed row
-            if (row["Course ID"]) {
-                const courseID = row["Course ID"].trim();
-                console.log("Found Course ID: ", courseID);
-                courses.push(courseID);
-            }
-        })
-        .on("end", () => {
-            // console.log("Available Course IDs: ", courses); // Log available course IDs
-            const validCourse = courses.includes(courseId);
-            resolve(validCourse);
+        const stream = fs.createReadStream("../CU_SR_OPEN_DATA_CATALOG_utf8.csv")
+        stream.on("error", (error) => {
+            console.error("Error reading the file:", error.message); // Log the error message
+            reject(error);
         });
+
+        stream.pipe(csvParser())
+            .on("data", (row) => {
+                // console.log("Parsed Row: ", row); // Log each parsed row
+                if (row["Course ID"]) {
+                    const courseID = row["Course ID"].trim();
+                    console.log("Found Course ID: ", courseID);
+                    courses.push(courseID);
+                }
+            })
+            .on("end", () => {
+                // console.log("Available Course IDs: ", courses); // Log available course IDs
+                const validCourse = courses.includes(courseId);
+                resolve(validCourse);
+            });
     });
 }
 
