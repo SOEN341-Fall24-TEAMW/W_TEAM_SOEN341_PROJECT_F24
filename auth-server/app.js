@@ -162,42 +162,21 @@ app.get("/teams", (req, res) => {
             return res.status(200).json({ message: "success", teams: instructorTeams });
 
             // If the user is a student, fetch the teams they are a part of
-        } 
-else if (verified.role === "student") {
-
-else if (verified.role === "student") {
-    // Find all team memberships where the student's ID (email) matches the verified email
-    const studentMemberships = db.get("team_memberships").filter({ student_id: verified.email }).value();
-
-    // Map the memberships to actual teams and anonymize student data
-    const studentTeams = studentMemberships.map(membership => {
-        const team = db.get("teams").find({ id: membership.team_id }).value();
-        return {
-            ...team,
-            students: team.students.map(student => ({
-                ...student,
-                name: anonymizeData(student.name), // Anonymize student name
-                email: anonymizeData(student.email) // Anonymize student email
-            }))
-        };
-    });
-
-    // Check if no teams were found for the student
-    if (!studentTeams || studentTeams.length === 0) {
-        return res.status(404).json({ message: "No teams found for student", teams: [] });
-    }
-
-    // Return the list of teams for the student
-    return res.status(200).json({ message: "success", teams: studentTeams });
-}
-
-
+        } else if (verified.role === "student") {
             // Find all team memberships where the student's ID (email) matches the verified email
             const studentMemberships = db.get("team_memberships").filter({ student_id: verified.email }).value();
 
-            // Map the memberships to actual teams by finding each team based on its ID
+            // Map the memberships to actual teams and anonymize student data
             const studentTeams = studentMemberships.map(membership => {
-                return db.get("teams").find({ id: membership.team_id }).value();
+                const team = db.get("teams").find({ id: membership.team_id }).value();
+                return {
+                    ...team,
+                    students: team.students.map(student => ({
+                        ...student,
+                        name: anonymizeData(student.name), // Anonymize student name
+                        email: anonymizeData(student.email) // Anonymize student email
+                    }))
+                };
             });
 
             // Check if no teams were found for the student
@@ -208,6 +187,24 @@ else if (verified.role === "student") {
             // Return the list of teams for the student
             return res.status(200).json({ message: "success", teams: studentTeams });
         }
+
+
+        // Find all team memberships where the student's ID (email) matches the verified email
+        const studentMemberships = db.get("team_memberships").filter({ student_id: verified.email }).value();
+
+        // Map the memberships to actual teams by finding each team based on its ID
+        const studentTeams = studentMemberships.map(membership => {
+            return db.get("teams").find({ id: membership.team_id }).value();
+        });
+
+        // Check if no teams were found for the student
+        if (!studentTeams || studentTeams.length === 0) {
+            return res.status(404).json({ message: "No teams found for student", teams: [] });
+        }
+
+        // Return the list of teams for the student
+        return res.status(200).json({ message: "success", teams: studentTeams });
+        
 
         // If the role is neither student nor instructor, return a 403 forbidden error
         return res.status(403).json({ message: "Access forbidden: invalid role" });
@@ -262,29 +259,26 @@ app.post("/courses", (req, res) => {
                 membership_info: team_membership,
             });
 
-            // If the user is a student, return the team they belong to
+        // If the user is a student, return the team they belong to
         } else if (verified.role === "student") {
-// Map over courses and anonymize student data in teams
-const studentCourses = db.get("courses").value().map(course => ({
-    ...course, // Copy course details
-    teams: db.get("teams").filter({ course_id: course.id }).value().map(team => ({
-        ...team, // Copy team details
-        students: team.students.map(student => ({
-            ...student, // Copy student details
-            name: anonymizeData(student.name), // Anonymize student name
-            email: anonymizeData(student.email) // Anonymize student email
-        }))
-    }))
-}));
-
-            const studentCourses = db.get("team_memberships").filter(team => {
-                return team.some(team => team.student_id === verified.id);
-            }).value();
+            const studentMemberships = db.get("team_memberships").filter({ student_id: verified.email }).value();
+            
+            const studentTeams = studentMemberships.map(membership => {
+                const team = db.get("teams").find({ id: membership.team_id }).value();
+                return {
+                    ...team,
+                    students: team.students.map(student => ({
+                        ...student,
+                        name: anonymizeData(student.name), // Anonymize student name
+                        email: anonymizeData(student.email) // Anonymize student email
+                    }))
+                };
+            });
 
             return res.status(200).json({ message: "success", teams: studentCourses });
         }
 
-        if (!teams || teams.length === 0) {
+        if (!studentTeams || studentTeams.length === 0) {
             return res.status(404).json({ message: "No teams found", teams: [] });
         }
 
