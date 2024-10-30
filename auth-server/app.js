@@ -669,3 +669,31 @@ io.on('connection', (socket) => {
 app.listen(3080, () => {
     console.log("Server running on port 3080");
 });
+// Create a new roster
+app.post('/rosters', (req, res) => {
+    const { teamID, courseName } = req.body;
+
+    const newRoster = {
+        rosterID: uuidv4(),
+        teamID,
+        courseName
+    };
+
+    db.get('rosters').push(newRoster).write();  // Store the roster in the database
+    res.status(201).send(newRoster);  // Send the created roster as a response
+});
+// Store a score for a team
+app.post('/scores', (req, res) => {
+    const { teamID, score } = req.body;
+
+    const newScore = {
+        scoreID: uuidv4(),
+        teamID,
+        score,
+        date: new Date().toISOString()  // Store the timestamp
+    };
+
+    db.get('scores').push(newScore).write();  // Store the score in the database
+    res.status(201).send(newScore);  // Send the created score as a response
+});
+
