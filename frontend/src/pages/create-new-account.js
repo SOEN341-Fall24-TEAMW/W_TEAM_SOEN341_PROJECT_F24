@@ -54,7 +54,7 @@ const CreateNewAccount = (props) => {
             hasError = true;
         }
 
-        if (/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+        if (!(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email))) {
             setEmailError("Please enter a valid email")
             hasError = true;
         }

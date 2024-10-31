@@ -193,8 +193,7 @@ app.get("/teams", (req, res) => {
             return res.status(200).json({ message: "success", teams: instructorTeams });
 
             // If the user is a student, fetch the teams they are a part of
-        } 
-else if (verified.role === "student") {
+        }
 
 else if (verified.role === "student") {
     // Find all team memberships where the student's ID (email) matches the verified email

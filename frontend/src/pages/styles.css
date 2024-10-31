@@ -74,6 +74,17 @@
   width: 400px;
 }
 
+.notification {
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  padding: 10px;
+}
+
+.notification-show {
+  opacity: 1;
+  padding: 10px;
+}
+
 .header {
   display: flex;
   justify-content: space-between;

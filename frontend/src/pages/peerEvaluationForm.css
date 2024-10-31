@@ -139,8 +139,7 @@ th, td {
 }
 
 th {
-  background-color: #2563eb; /* Blue header for the table */
-  color: white;
+  color: auto;
   font-weight: bold;
 }
 

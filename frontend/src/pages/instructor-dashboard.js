@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
-import { NavLink, AppShell, Table, Group, Space, Modal, Button, Title, TextInput, rem, Select, Menu, NumberInput, MultiSelect, Alert, Text, FileInput } from '@mantine/core';
+import { NavLink, AppShell, Table, Group, Space, Modal, Button, Title, TextInput, rem, Select, Menu, NumberInput, MultiSelect, Alert, Text, FileInput, Notification } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconUsers, IconUsersGroup, IconSettings, IconSearch, IconDatabaseImport, IconCirclePlus } from '@tabler/icons-react';
+import { IconUsers, IconUsersGroup, IconSettings, IconSearch, IconDatabaseImport, IconCirclePlus, IconX, IconCheck } from '@tabler/icons-react';
 import Papa from "papaparse";
 import './styles.css';
 
@@ -13,13 +13,19 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
   const [step, setStep] = useState(1);
   const [maxSizeError, setMaxSizeError] = useState("");
 
+  const [importSuccess, setImportSuccess] = useState(false);
+  const [importFail, setImportFail] = useState(false);
+  const [notifySuccess, setNotifySuccess] = useState(false);
+  const [notifyError, setNotifyError] = useState(false);
+
   const [firstNameError, setFirstNameError] = useState("");
   const [lastNameError, setLastNameError] = useState("");
   const [idError, setIdError] = useState("");
   const [emailError, setEmailError] = useState("");
 
   const icon = [<IconCirclePlus size={14} />, <IconDatabaseImport size={14} />];
-
+  const xIcon = <IconX style={{ width: rem(20), height: rem(20) }} />;
+  const checkIcon = <IconCheck style={{ width: rem(20), height: rem(20) }} />;
 
   const fileInputRef = useRef(null);
 
@@ -31,7 +37,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
   };
 
   const handleFileUpload = (event) => {
-    
+
     if (!event.target) {
       console.error("File input event structure is invalid or files are missing");
       return;
@@ -51,14 +57,23 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({students: results.data, instructor: email}),
+              body: JSON.stringify({ students: results.data, instructor: email }),
             });
 
             if (response.ok) {
               console.log("Data uploaded successfully.");
+              setImportSuccess(true);
+              setNotifySuccess(true);
               fetchData();
+              setTimeout(() => { setImportSuccess(false); }, 5000);
+              setTimeout(() => { setNotifySuccess(false); }, 10000);
             } else {
               console.error("Upload failed.");
+              setImportFail(true);
+              setNotifyError(true);
+              fetchData();
+              setTimeout(() => { setImportFail(false); }, 5000);
+              setTimeout(() => { setNotifyError(false); }, 10000);
             }
           } catch (error) {
             console.error("Error:", error);
@@ -522,15 +537,18 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
               accept=".csv"
             />
           </div>
-
         </Group>
         <Space h="xl" />
-        <Group justify="space-between">
-          <TextInput value={query} placeholder="Search" leftSectionPointerEvents="none" leftSection={<IconSearch style={{ width: rem(16), height: rem(16) }} stroke={1.5} />} onChange={(event) => setQuery(event.currentTarget.value)} />
-          {/*<Button variant="default">Second</Button>
-              <Button variant="default">Third</Button>*/}
+        <Group justify="space-between" style={{ alignItems: "center", height: "62.59px" }}>
+          <TextInput value={query} placeholder="Search" leftSectionPointerEvents="none" leftSection={<IconSearch style={{ width: rem(20), height: rem(20) }} stroke={1.5} />} onChange={(event) => setQuery(event.currentTarget.value)} />
+          {(notifySuccess) && (<Notification icon={checkIcon} color="teal" title="Import Success!" mt="md" withCloseButton="false" style={{ opacity: `${importSuccess ? '1' : '0'}`, transition: `opacity 0.5s ease-in-out` }}>
+            New Students were successfully imported from file!
+          </Notification>)}
+          {(notifyError) && (<Notification icon={xIcon} color="red" title="Oops..." withCloseButton={false} style={{ opacity: `${importFail ? '1' : '0'}`, transition: `opacity 0.5s ease-in-out` }}>
+            Something went wrong
+          </Notification>)}
         </Group>
-        <Space h="lg" />
+        <Space h="sm" />
         <Table.ScrollContainer minWidth={500}>
           <Table stickyHeader verticalSpacing="md" striped highlightOnHover withTableBorder >
             <Table.Thead>
