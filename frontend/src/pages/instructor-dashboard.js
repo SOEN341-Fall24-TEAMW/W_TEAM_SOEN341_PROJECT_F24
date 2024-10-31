@@ -477,7 +477,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
                     label="Or add a new organization"
                     placeholder="New Organization Name"
                     value={studentData.new_org_name}
-                    onChange={(event) => { updateStudentData("new_org_name", event.currentTarget.value); updateStudentData("organization_id", null) }}
+                    onChange={(event) => { updateStudentData("new_org_name", event.currentTarget.value); updateStudentData("course_id", null) }}
                   />
                 </div>
 
@@ -657,6 +657,13 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
                       data={courses.filter((course) => course.organization_id === teamData.organization_id).map((course) => ({ value: course.id, label: course.name }))}
                       value={teamData.course_id}
                       onChange={(value) => updateTeamData("course_id", value)}
+                    />
+
+                    <TextInput
+                      label="Or add a new course"
+                      placeholder="New Course Name"
+                      value={teamData.new_course_name}
+                      onChange={(event) => { updateTeamData("new_course_name", event.currentTarget.value); updateTeamData("organization_id", null); }}
                     />
                   </div>
                   <Space h="md" />
