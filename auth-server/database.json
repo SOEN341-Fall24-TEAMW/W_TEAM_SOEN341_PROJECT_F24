@@ -11,6 +11,18 @@
     {
       "id": "org3",
       "name": "Université de Montréal"
+    },
+    {
+      "id": "org4",
+      "name": "Université du Québec à Montréal"
+    },
+    {
+      "id": "org5",
+      "name": "École de technologie supérieure"
+    },
+    {
+      "id": "org6",
+      "name": "Polytechnique Montréal"
     }
   ],
   "users": [
@@ -373,6 +385,126 @@
       "role": "instructor",
       "name": "Vlad student1@concordia.ca",
       "organization_id": ""
+    },
+    {
+      "id": "22222222",
+      "email": "jane@dawson.com",
+      "password": "$2b$10$9jhvLBlCGuSlNALpMDGmuu47Ca4Ma0e5qsNuGQLBmQ3K62nxezVty",
+      "role": "student",
+      "name": "Jane Dawson",
+      "organization_id": "org3"
+    },
+    {
+      "id": "33333333",
+      "email": "james@cameron.com",
+      "password": "$2b$10$9jhvLBlCGuSlNALpMDGmuu47Ca4Ma0e5qsNuGQLBmQ3K62nxezVty",
+      "role": "student",
+      "name": "James Cameron",
+      "organization_id": "org3"
+    },
+    {
+      "id": "44444444",
+      "email": "coh@carnage.com",
+      "password": "$2b$10$9jhvLBlCGuSlNALpMDGmuu47Ca4Ma0e5qsNuGQLBmQ3K62nxezVty",
+      "role": "student",
+      "name": "Coh Carnage",
+      "organization_id": "org3"
+    },
+    {
+      "id": "55555555",
+      "email": "jack@daniels.com",
+      "password": "$2b$10$9jhvLBlCGuSlNALpMDGmuu47Ca4Ma0e5qsNuGQLBmQ3K62nxezVty",
+      "role": "student",
+      "name": "Jack Daniels",
+      "organization_id": "org3"
+    },
+    {
+      "id": "s12345",
+      "email": "student1@university.com",
+      "password": "$2b$10$W3xhSno9xkdV48TpA5JLduAlajjIzu.row4vaIeqOj5MhkRgOPeH6",
+      "role": "student",
+      "name": "John Doe",
+      "organization_id": "org1"
+    },
+    {
+      "id": "s22345",
+      "email": "student2@university.com",
+      "password": "$2b$10$4eJrVsXu1GihwAPulVkcT.gQh1s2ugKroPKsFUCEhe3se3lW7jwF.",
+      "role": "student",
+      "name": "Jane Smith",
+      "organization_id": "org1"
+    },
+    {
+      "id": "s33455",
+      "email": "student3@university.com",
+      "password": "$2b$10$j723EebXyI0eckp5fLVBWOpugNG3ydxw9vRhDeTezeyWKNUW9woBq",
+      "role": "student",
+      "name": "Tom Brown",
+      "organization_id": "org1"
+    },
+    {
+      "id": "s44454",
+      "email": "student4@university.com",
+      "password": "$2b$10$0gJ99Z1ajMIyzbJrBDg5NO4WA8DxivSJPHN4UyKiPCoIC9c1cd0uW",
+      "role": "student",
+      "name": "Lisa White",
+      "organization_id": "org1"
+    },
+    {
+      "id": "s56456",
+      "email": "student5@university.com",
+      "password": "$2b$10$1CZRF9N784zw/ab.l7cFLO0CpCIM19zsZBc8q9Tvfoko9eBivtbGS",
+      "role": "student",
+      "name": "Mark Green",
+      "organization_id": "org1"
+    },
+    {
+      "id": "s64566",
+      "email": "student6@university.com",
+      "password": "$2b$10$zFFjbRPGzgoaNzlXExPbSeWXugbdyoSm8yy2AMh1rVEXmGpq4zLEK",
+      "role": "student",
+      "name": "Susan Black",
+      "organization_id": "org1"
+    },
+    {
+      "id": "s76545",
+      "email": "student7@university.com",
+      "password": "$2b$10$p/JEiZyPRf/paQpeUY8PwurY8YOPmEmMWxfFHeQ8Mi/2DP1m25x2u",
+      "role": "student",
+      "name": "Jim Blue",
+      "organization_id": "org1"
+    },
+    {
+      "id": "s86654",
+      "email": "student8@university.com",
+      "password": "$2b$10$Cqso.EbVFaHhZ550JI9Yx.PJPRrr9PIHyHGP.nDM9RkeBS0JgzO86",
+      "role": "student",
+      "name": "Alice Yellow",
+      "organization_id": "org1"
+    },
+    {
+      "id": "s97655",
+      "email": "student9@university.com",
+      "password": "$2b$10$s2wYW5jS2vSZKED5BnGTK.fP8VhX9xKHquk005F5pB5A5rMrf5CwC",
+      "role": "student",
+      "name": "Chris Red",
+      "organization_id": "org1"
+    },
+    {
+      "id": "s10456",
+      "email": "student10@university.com",
+      "password": "$2b$10$Aink6bG6XIFyUyE6lFmPu..Z6YYX/d4hUT/bid88ocNa.i5WeEAQa",
+      "role": "student",
+      "name": "Kate Violet",
+      "organization_id": "org1"
+    },
+    {
+      "id": "11111111",
+      "email": "sara@james.com",
+      "password": "$2b$10$SFbPRaBarnnk6nrbLTukseccdESEr4woi2YsRxdCYaJeUvNY/XMAK",
+      "role": "student",
+      "name": "Sara James",
+      "organization_id": "org3"
     }
   ],
   "courses": [
@@ -423,6 +555,24 @@
       "name": "ENGR 201",
       "instructor_id": "instinst22@gmail.com",
       "organization_id": "org2"
+    },
+    {
+      "id": "569e87c4-c92f-4ff2-b745-b61e208dd7d2",
+      "name": "Data Science",
+      "instructor_id": "qwe@qwe.qwe",
+      "organization_id": "org1"
+    },
+    {
+      "id": "1a6cbb3b-b08e-472c-9f77-d319b532b46b",
+      "name": "Artificial Intelligence",
+      "instructor_id": "qwe@qwe.qwe",
+      "organization_id": "org1"
+    },
+    {
+      "id": "b8422960-a4a4-47e6-8b73-c9e38107e516",
+      "name": "ENGR 233",
+      "instructor_id": "qwe@qwe.qwe",
+      "organization_id": "org3"
     }
   ],
   "teams": [
@@ -509,6 +659,27 @@
       "max_size": 3,
       "course_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
       "instructor_id": "instinst22@gmail.com"
+    },
+    {
+      "id": "f9026d24-19bb-4d05-bfea-e0f562a8c39b",
+      "name": "Team Phoenix",
+      "course_id": "569e87c4-c92f-4ff2-b745-b61e208dd7d2",
+      "instructor_id": "qwe@qwe.qwe",
+      "max_size": 5
+    },
+    {
+      "id": "5f9864f2-3ed4-4995-bf02-e689272d4c33",
+      "name": "Team Jojo",
+      "course_id": "1a6cbb3b-b08e-472c-9f77-d319b532b46b",
+      "instructor_id": "qwe@qwe.qwe",
+      "max_size": 5
+    },
+    {
+      "id": "a0d2e034-df4b-4947-982a-8b86d921b33a",
+      "name": "Jojo",
+      "max_size": 5,
+      "course_id": "b8422960-a4a4-47e6-8b73-c9e38107e516",
+      "instructor_id": "qwe@qwe.qwe"
     }
   ],
   "team_memberships": [
@@ -831,6 +1002,81 @@
       "id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
       "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
       "student_id": "s31"
+    },
+    {
+      "id": "731430a2-5a72-4a76-8772-175ea5f28552",
+      "team_id": "f9026d24-19bb-4d05-bfea-e0f562a8c39b",
+      "student_id": "s12345"
+    },
+    {
+      "id": "975ea4f8-4fd7-4b44-89d9-c460de453c31",
+      "team_id": "f9026d24-19bb-4d05-bfea-e0f562a8c39b",
+      "student_id": "s22345"
+    },
+    {
+      "id": "8240b6f5-ba82-450e-82b8-76ba7a3b2e88",
+      "team_id": "f9026d24-19bb-4d05-bfea-e0f562a8c39b",
+      "student_id": "s33455"
+    },
+    {
+      "id": "92470bdd-f5b9-4174-9186-7e607fb39854",
+      "team_id": "f9026d24-19bb-4d05-bfea-e0f562a8c39b",
+      "student_id": "s44454"
+    },
+    {
+      "id": "9424115c-8ce5-4f9b-8395-bacec29c1540",
+      "team_id": "f9026d24-19bb-4d05-bfea-e0f562a8c39b",
+      "student_id": "s56456"
+    },
+    {
+      "id": "522e57bb-221c-4ba0-87b4-c49e2d85e47e",
+      "team_id": "5f9864f2-3ed4-4995-bf02-e689272d4c33",
+      "student_id": "s64566"
+    },
+    {
+      "id": "6562954d-84b1-4bbb-bcdb-5ca0521fdfe6",
+      "team_id": "5f9864f2-3ed4-4995-bf02-e689272d4c33",
+      "student_id": "s76545"
+    },
+    {
+      "id": "c838c4da-e763-44bb-985f-5d1202e9e60e",
+      "team_id": "5f9864f2-3ed4-4995-bf02-e689272d4c33",
+      "student_id": "s86654"
+    },
+    {
+      "id": "c71cde7b-a018-4f60-a17f-ec93dcca4e6b",
+      "team_id": "5f9864f2-3ed4-4995-bf02-e689272d4c33",
+      "student_id": "s97655"
+    },
+    {
+      "id": "31546c83-1d6f-4e7e-b118-2816bb148007",
+      "team_id": "5f9864f2-3ed4-4995-bf02-e689272d4c33",
+      "student_id": "s10456"
+    },
+    {
+      "id": "171a3d9c-8451-40cf-937b-a67f4ad56cd7",
+      "team_id": "a0d2e034-df4b-4947-982a-8b86d921b33a",
+      "student_id": "22222222"
+    },
+    {
+      "id": "6d0a665d-30fc-473a-858f-5235bf96b07e",
+      "team_id": "a0d2e034-df4b-4947-982a-8b86d921b33a",
+      "student_id": "33333333"
+    },
+    {
+      "id": "b15bbfd0-5d13-4f66-9224-30e0be418f70",
+      "team_id": "a0d2e034-df4b-4947-982a-8b86d921b33a",
+      "student_id": "44444444"
+    },
+    {
+      "id": "41ce671e-b17b-42a1-bde3-456dbadd620e",
+      "team_id": "a0d2e034-df4b-4947-982a-8b86d921b33a",
+      "student_id": "55555555"
+    },
+    {
+      "id": "b0b59c4b-0e2a-4ffe-8ca3-2e2c808310aa",
+      "team_id": "a0d2e034-df4b-4947-982a-8b86d921b33a",
+      "student_id": "11111111"
     }
   ],
   "peer_evaluations": [
@@ -908,6 +1154,21 @@
       "ethic_comment": "",
       "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
       "timestamp": "2024-10-29T01:48:20.035Z"
+    },
+    {
+      "id": 6,
+      "evaluator_id": "11111111",
+      "evaluatee_id": "22222222",
+      "cooperation": "7",
+      "conceptual_contribution": "7",
+      "practical_contribution": "7",
+      "work_ethic": "7",
+      "cooperation_comment": "",
+      "conceptual_comment": "",
+      "practical_comment": "",
+      "ethic_comment": "",
+      "team_id": "a0d2e034-df4b-4947-982a-8b86d921b33a",
+      "timestamp": "2024-11-01T06:11:12.288Z"
     }
   ],
   "organization": []

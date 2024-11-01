@@ -11,12 +11,14 @@ const CreateNewAccount = (props) => {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [id, setId] = useState("");
+    const [organizationId, setOrganizationId] = useState("");
     const [emailError, setEmailError] = useState("")
     const [passwordError, setPasswordError] = useState("")
     const [roleError, setRoleError] = useState("");
     const [firstNameError, setFirstNameError] = useState("");
     const [lastNameError, setLastNameError] = useState("");
     const [idError, setIdError] = useState("");
+    const [organizationIdError, setOrganizationIdError] = useState("");
 
     const navigate = useNavigate();
 
@@ -31,6 +33,7 @@ const CreateNewAccount = (props) => {
         setIdError("");
         setEmailError("");
         setPasswordError("");
+        setOrganizationIdError("");
 
         let hasError = false;
 
@@ -69,8 +72,13 @@ const CreateNewAccount = (props) => {
             hasError = true;
         }
 
-        if (role === "Select Role") {
+        if (role === "") {
             setRoleError("Please select a role");
+            hasError = true;
+        }
+
+        if (organizationId === "") {
+            setOrganizationIdError("Please select an organization");
             hasError = true;
         }
 
@@ -95,6 +103,8 @@ const CreateNewAccount = (props) => {
 
     }
 
+    const organization_list = [{ name: 'Concordia University', id: 'org1'}, { name: 'McGill University', id: 'org2'}, {name: 'Université de Montréal', id: 'org3'}, {name: 'Université du Québec à Montréal', id: 'org4'}, {name: 'École de technologie supérieure', id: 'org5'}, {name: 'Polytechnique Montréal', id: 'org6'}];
+
     // Call the server API to check if the given email ID already exists
     const checkAccountExists = (callback) => {
         fetch("http://localhost:3080/check-account", {
@@ -116,7 +126,7 @@ const CreateNewAccount = (props) => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ role, firstName, lastName, id, email, password })
+            body: JSON.stringify({ role, firstName, lastName, id, email, password, organizationId })
         })
             .then(r => r.json())
             .then(r => {
@@ -150,7 +160,7 @@ const CreateNewAccount = (props) => {
                     value={id}
                     label="Enter your student ID:"
                     placeholder="Student ID"
-                    onChange={ev => {setId(ev.target.value); setIdError(""); }}
+                    onChange={ev => { setId(ev.target.value); setIdError(""); }}
                     style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
                 />
                 <Space h="sm" />
@@ -160,7 +170,7 @@ const CreateNewAccount = (props) => {
                 value={firstName}
                 label="Enter your first name:"
                 placeholder="First Name"
-                onChange={ev => {setFirstName(ev.target.value); setFirstNameError("");}}
+                onChange={ev => { setFirstName(ev.target.value); setFirstNameError(""); }}
                 style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
             />
             <Space h="sm" />
@@ -169,7 +179,7 @@ const CreateNewAccount = (props) => {
                 value={lastName}
                 label="Enter your last name:"
                 placeholder="Last Name"
-                onChange={ev => {setLastName(ev.target.value); setLastNameError(""); }}
+                onChange={ev => { setLastName(ev.target.value); setLastNameError(""); }}
                 style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
             />
             <Space h="sm" />
@@ -178,7 +188,7 @@ const CreateNewAccount = (props) => {
                 value={email}
                 label="Enter your email address:"
                 placeholder="Email Adress"
-                onChange={ev => {setEmail(ev.target.value); setEmailError(""); }}
+                onChange={ev => { setEmail(ev.target.value); setEmailError(""); }}
                 style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
             />
             <Space h="sm" />
@@ -188,11 +198,22 @@ const CreateNewAccount = (props) => {
                 label="Password"
                 placeholder="Password"
                 type="password"
-                onChange={ev => {setPassword(ev.target.value); setPasswordError(""); }}
+                onChange={ev => { setPassword(ev.target.value); setPasswordError(""); }}
                 style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
             />
             <Space h="sm" />
             {(passwordError !== "") && (<> <Space h="sm" /><Alert variant="light" color="red" title="Password Error" icon={icon} style={{ width: 335.14 }}>{passwordError}</Alert> </>)}
+            <Space h="sm" />
+            <Select
+                label="Choose an existing organization"
+                placeholder="Select Organization"
+                data={organization_list.map((org) => ({ value: org.id, label: org.name }))}
+                value={organizationId}
+                style={{ width: 335.14, fontSize: 24, borderRadius: 11, margin: 0, padding: 0 }}
+                onChange={(value) => {setOrganizationId(value); setOrganizationIdError('');}}
+            />
+            <Space h="sm" />
+            {(organizationIdError !== "") && (<> <Space h="sm" /><Alert variant="light" color="red" title="Organization ID Error" icon={icon} style={{ width: 335.14 }}>{organizationIdError}</Alert> </>)}
             <Space h="lg" />
             <Button
                 variant="gradient"

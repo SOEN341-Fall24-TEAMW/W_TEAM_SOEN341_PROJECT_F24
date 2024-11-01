@@ -40,11 +40,6 @@ function App() {
       return;
     }
 
-    if (!user || !user.token) {
-      console.error("JWT token not found. Please log in again.");
-      setLoggedIn(false);
-      return;
-    }
     try {
       fetch('http://localhost:3080/courses', {
         method: "POST",
@@ -131,14 +126,13 @@ function App() {
             <Route path="/" element={<Home email={email} loggedIn={loggedIn} setLoggedIn={setLoggedIn}/>} />
             <Route path="/login" element={<Login setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
             <Route path='/create-new-account' element={<CreateNewAccount setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
-            <Route path="/student-dashboard" element={<StudentDashboard organizations={organizations} org={org} courses={courses} teams={teams} students={students} memberships={memberships} email={email} />} />
+            <Route path="/student-dashboard" element={<StudentDashboard email={email} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} />
             <Route path="/instructor-dashboard" element={<InstructorDashboard organizations={organizations} org={org} courses={courses} teams={teams} students={students} memberships={memberships} email={email} fetchData={fetchData} />} />
             <Route path='/Teams' element={<Teams/>} />
             <Route path='/CreateTeams' element={<CreateTeams/>} />
             <Route path='/TeamList' element={<TeamList/>} />
             <Route path='/teams/:teamId' element={userRole === 'instructor' ? <TeamDetails /> 
-                    : <TeammatesList 
-                        teams={teams} memberships={memberships} students={students} email={email} 
+                    : <TeammatesList  
                       />} 
             />          
             <Route path='/peer-evaluation' element={<PeerEvaluationForm teams={teams} />} />

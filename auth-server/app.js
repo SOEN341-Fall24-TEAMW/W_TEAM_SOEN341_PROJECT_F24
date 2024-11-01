@@ -112,11 +112,11 @@ function assignStudentsToTeams(students, teams) {
 }
 app.post("/create-account", (req, res) => {
 
-    const { role, firstName, lastName, id, email, password } = req.body;
+    const { role, firstName, lastName, id, email, password, organizationId } = req.body;
 
     bcrypt.hash(password, 10, function (_err, hash) {
 
-        db.get("users").push({ id: email, email, password: hash, role, name: firstName + " " + lastName, organization_id: "" }).write();
+        db.get("users").push({ id, email, password: hash, role, name: firstName + " " + lastName, organization_id: organizationId }).write();
 
         let creationData = {
             id,
@@ -195,39 +195,21 @@ app.get("/teams", (req, res) => {
             // If the user is a student, fetch the teams they are a part of
         }
 
-else if (verified.role === "student") {
-    // Find all team memberships where the student's ID (email) matches the verified email
-    const studentMemberships = db.get("team_memberships").filter({ student_id: verified.email }).value();
-
-    // Map the memberships to actual teams and anonymize student data
-    const studentTeams = studentMemberships.map(membership => {
-        const team = db.get("teams").find({ id: membership.team_id }).value();
-        return {
-            ...team,
-            students: team.students.map(student => ({
-                ...student,
-                name: anonymizeData(student.name), // Anonymize student name
-                email: anonymizeData(student.email) // Anonymize student email
-            }))
-        };
-    });
-
-    // Check if no teams were found for the student
-    if (!studentTeams || studentTeams.length === 0) {
-        return res.status(404).json({ message: "No teams found for student", teams: [] });
-    }
-
-    // Return the list of teams for the student
-    return res.status(200).json({ message: "success", teams: studentTeams });
-}
-
-
+        else if (verified.role === "student") {
             // Find all team memberships where the student's ID (email) matches the verified email
             const studentMemberships = db.get("team_memberships").filter({ student_id: verified.email }).value();
 
-            // Map the memberships to actual teams by finding each team based on its ID
+            // Map the memberships to actual teams and anonymize student data
             const studentTeams = studentMemberships.map(membership => {
-                return db.get("teams").find({ id: membership.team_id }).value();
+                const team = db.get("teams").find({ id: membership.team_id }).value();
+                return {
+                    ...team,
+                    students: team.students.map(student => ({
+                        ...student,
+                        name: anonymizeData(student.name), // Anonymize student name
+                        email: anonymizeData(student.email) // Anonymize student email
+                    }))
+                };
             });
 
             // Check if no teams were found for the student
@@ -237,7 +219,25 @@ else if (verified.role === "student") {
 
             // Return the list of teams for the student
             return res.status(200).json({ message: "success", teams: studentTeams });
-        
+        }
+
+
+        // Find all team memberships where the student's ID (email) matches the verified email
+        const studentMemberships = db.get("team_memberships").filter({ student_id: verified.email }).value();
+
+        // Map the memberships to actual teams by finding each team based on its ID
+        const studentTeams = studentMemberships.map(membership => {
+            return db.get("teams").find({ id: membership.team_id }).value();
+        });
+
+        // Check if no teams were found for the student
+        if (!studentTeams || studentTeams.length === 0) {
+            return res.status(404).json({ message: "No teams found for student", teams: [] });
+        }
+
+        // Return the list of teams for the student
+        return res.status(200).json({ message: "success", teams: studentTeams });
+
 
         // If the role is neither student nor instructor, return a 403 forbidden error
         return res.status(403).json({ message: "Access forbidden: invalid role" });
@@ -291,28 +291,6 @@ app.post("/courses", (req, res) => {
                 student_info: students,
                 membership_info: team_membership,
             });
-
-            // If the user is a student, return the team they belong to
-        } else if (verified.role === "student") {
-            const studentMemberships = db.get("team_memberships").filter({ student_id: verified.email }).value();
-            
-            const studentTeams = studentMemberships.map(membership => {
-                const team = db.get("teams").find({ id: membership.team_id }).value();
-                return {
-                    ...team,
-        students: team.students.map(student => ({
-                        ...student,
-            name: anonymizeData(student.name), // Anonymize student name
-            email: anonymizeData(student.email) // Anonymize student email
-        }))
-                };
-            });
-
-            return res.status(200).json({ message: "success", teams: studentCourses });
-        }
-
-        if (!studentTeams || studentTeams.length === 0) {
-            return res.status(404).json({ message: "No teams found", teams: [] });
         }
 
         // If the role is neither student nor instructor, return an error
@@ -323,6 +301,59 @@ app.post("/courses", (req, res) => {
     }
 });
 
+app.post("/courses-students", (req, res) => {
+    const tokenHeaderKey = "jwt-token";
+    const authToken = req.headers[tokenHeaderKey];
+    const student = req.body.student;
+    console.log("Courses Token:", authToken);
+
+    try {
+        const verified = db.get('users').find(user => (user.email === student)).value();
+        console.log("verified", verified);
+
+        // If the user is a student, retrieve the necessary information
+        if (verified.role === "student") {
+            const team_memberships = db.get("team_memberships").filter({ student_id: verified.id }).value();
+            console.log("student memberships: ", team_memberships);
+
+            // Fetch teams based on team IDs in memberships
+            const team_ids = team_memberships.map(membership => membership.team_id);
+            const team_list = db.get('teams').filter(team => team_ids.includes(team.id)).value();
+            console.log('student team list: ', team_list);
+
+            // Fetch teammates
+            const teammates_student_ids = db.get("team_memberships").filter(membership => team_ids.includes(membership.team_id)).map(membership => membership.student_id).value();
+            console.log("Peers' memberships: ", teammates_student_ids);
+            const teammates = db.get("users").filter(user => teammates_student_ids.includes(user.id)).value();
+            console.log("Peers: ", teammates);
+
+            // Fetch courses based on course IDs in teams
+            const course_ids = team_list.map(team => team.course_id);
+            const course_list = db.get('courses').filter(course => course_ids.includes(course.id)).value();
+            console.log('student course list: ', course_list);
+
+            // Fetch organizations based on organization IDs in courses
+            const organization_ids = course_list.map(course => course.organization_id);
+            const organizations_list = db.get('organizations').filter(org => organization_ids.includes(org.id)).value();
+            console.log('student org list: ', organizations_list);
+
+            return res.status(200).json({
+                message: "success",
+                organization_info: organizations_list, // Full list of organization objects
+                course_info: course_list,              // Full list of course objects
+                team_info: team_list,                  // Full list of team objects
+                membership_info: team_memberships,     // Full list of team membership objects
+                peers_info: teammates,
+            });
+        }
+
+        // If the role is neither student nor instructor, return an error
+        return res.status(403).json({ message: "Access forbidden: invalid role" });
+
+    } catch (error) {
+        return res.status(401).json({ message: "Invalid token", error });
+    }
+});
 
 app.post("/create-student", async (req, res) => {
     const { student_id, student_email, first_name, last_name, organization_id, new_org_name } = req.body;
@@ -481,14 +512,14 @@ app.get("/users", (req, res) => {
             console.log("bowser", students);
             return res.status(200).json({ message: "success", data: students });
         }
-	// Anonymize student data if the requester is a student
-            if (verified.role === "student") {
-                console.log("Anonymizing data for student requester...");
-                students.forEach(student => {
-                    student.name = anonymizeData(student.name); // Anonymize student name
-                    student.email = anonymizeData(student.email); // Anonymize student email
-                });
-            }
+        // Anonymize student data if the requester is a student
+        if (verified.role === "student") {
+            console.log("Anonymizing data for student requester...");
+            students.forEach(student => {
+                student.name = anonymizeData(student.name); // Anonymize student name
+                student.email = anonymizeData(student.email); // Anonymize student email
+            });
+        }
 
         // If the role is neither student nor instructor, return an error
         return res.status(403).json({ message: "Access forbidden: invalid role" });

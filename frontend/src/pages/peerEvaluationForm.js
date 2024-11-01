@@ -386,8 +386,8 @@ function PeerEvaluationForm() {
          <button 
             type="button" 
             className="back-button" 
-            onClick={() => navigate(`/teams/${teamId}`)}          >
-            Back to List of Teammates
+            onClick={() => navigate(`/student-dashboard`)}          >
+            Back to Student Dashboard
           </button>
 
       </form>

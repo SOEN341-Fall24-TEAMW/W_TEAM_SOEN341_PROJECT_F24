@@ -2,13 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { Button, Title, Table, Center, Text, Modal } from '@mantine/core';
 import { useNavigate, useParams } from 'react-router-dom';
 
-const TeammatesList = ({ teams, memberships, students, email}) => {
+const TeammatesList = ({ teams, memberships, students, email, selectedTeam }) => {
     const navigate = useNavigate();
-    const { teamId } = useParams(); // Extract teamId from URL parameters
+    const teamId = selectedTeam.id;
 
     // Determine the current user's ID from the email
     const currentUserId = students.find(student => student.email.trim().toLowerCase() === email.trim().toLowerCase())?.id;
     console.log("Current User ID:", currentUserId); // Check the value here
+    console.log("Current Peers: ", students);
+    console.log("Current Teams: ", teams);
+    console.log("Current memberships: ", memberships);
+    console.log("Current teamID: ", teamId);
 
 
     // State to hold the feedback status for each teammate
@@ -22,15 +26,13 @@ const TeammatesList = ({ teams, memberships, students, email}) => {
     };
 
     // Filter teammates based on memberships and teams
-    const filteredTeammates = memberships
-        .filter(membership => membership.team_id === teamId) 
-        .map(membership => {
-            const student = students.find(student => student.id === membership.student_id);
-            return {
-                ...student,
-                hasSubmittedFeedback: feedbackStatus[student.id] || false, // Use feedbackStatus
-            };
-        });
+    const teammates = students
+        .map(student => ({
+            ...student,
+            hasSubmittedFeedback: feedbackStatus[student.id] || false, // Add feedback status directly
+        }));
+
+    console.log("filteredTeammates: ", teammates);
 
     // Fetch feedback statuses for all teammates
     useEffect(() => {
@@ -39,7 +41,7 @@ const TeammatesList = ({ teams, memberships, students, email}) => {
                 console.error("Current user ID not found.");
                 return;
             }
-    
+
             const statusPromises = memberships
                 .filter(membership => membership.team_id === teamId)
                 .map(async membership => {
@@ -48,7 +50,7 @@ const TeammatesList = ({ teams, memberships, students, email}) => {
                         console.warn(`Teammate with ID ${membership.student_id} not found.`);
                         return null; // Skip this iteration
                     }
-    
+
                     try {
                         const hasFeedback = await fetchFeedbackStatus(currentUserId, teammate.id, teamId);
                         return {
@@ -63,10 +65,10 @@ const TeammatesList = ({ teams, memberships, students, email}) => {
                         };
                     }
                 });
-    
+
             // Wait for all fetch calls to complete
             const results = await Promise.all(statusPromises);
-            
+
             // Filter out null results from skipped teammates
             const feedbackMap = results
                 .filter(result => result) // Remove nulls
@@ -74,24 +76,24 @@ const TeammatesList = ({ teams, memberships, students, email}) => {
                     acc[curr.id] = curr.hasFeedback;
                     return acc;
                 }, {});
-    
+
             setFeedbackStatus(feedbackMap);
         };
-    
+
         fetchAllFeedbackStatus();
     }, [memberships, students, currentUserId, teamId]);
-    
+
 
     // State to control the popup visibility
     const [showPopup, setShowPopup] = useState(false);
 
     // Check if all teammates have submitted feedback
     useEffect(() => {
-        const allRated = filteredTeammates.every(teammate => teammate.hasSubmittedFeedback);
-        if (allRated && filteredTeammates.length > 0) {
+        const allRated = teammates.every(teammate => teammate.hasSubmittedFeedback);
+        if (allRated && teammates.length > 0) {
             setShowPopup(true);
         }
-    }, [filteredTeammates]);
+    }, [teammates]);
 
     return (
         <div style={{ paddingTop: '60px' }}>
@@ -107,7 +109,7 @@ const TeammatesList = ({ teams, memberships, students, email}) => {
             </Modal>
 
 
-            {filteredTeammates.length === 0 ? (
+            {teammates.length === 0 ? (
                 <Center>
                     <Text size="lg" color="dimmed">No Members Found</Text>
                 </Center>
@@ -121,28 +123,28 @@ const TeammatesList = ({ teams, memberships, students, email}) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredTeammates.map((teammate, index) => (
+                        {teammates.map((teammate, index) => (
                             <tr key={index}>
-                            <td>
-                                {teammate.name || 'Unknown Name'}
-                                {teammate.id === currentUserId ? ' (YOU)' : ''}
-                            </td>
-                            <td>{teammate.hasSubmittedFeedback ? 'Yes' : 'No'}</td>
                                 <td>
-                                    <Button 
-                                        variant="outline" 
-                                        color="blue" 
+                                    {teammate.name || 'Unknown Name'}
+                                    {teammate.id === currentUserId ? ' (YOU)' : ''}
+                                </td>
+                                <td>{teammate.hasSubmittedFeedback ? 'Yes' : 'No'}</td>
+                                <td>
+                                    <Button
+                                        variant="outline"
+                                        color="blue"
                                         onClick={() => {
                                             // Navigate to PeerEvaluationIntro and pass the IDs via state
-                                            navigate('/PeerEvaluationIntro', { 
-                                                state: { 
-                                                    evaluatorId: currentUserId, 
-                                                    evaluateeId: teammate.id, 
-                                                    teamId 
-                                                } 
+                                            navigate('/PeerEvaluationIntro', {
+                                                state: {
+                                                    evaluatorId: currentUserId,
+                                                    evaluateeId: teammate.id,
+                                                    teamId
+                                                }
                                             });
                                         }}
-                                        >
+                                    >
                                         Rate Student
                                     </Button>
                                 </td>

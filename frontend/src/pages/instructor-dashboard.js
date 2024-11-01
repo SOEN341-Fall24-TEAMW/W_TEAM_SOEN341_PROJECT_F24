@@ -608,14 +608,20 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
                       placeholder="Select organization"
                       data={organizations.map((org) => ({ value: org.id, label: org.name }))}
                       value={teamData.organization_id}
-                      onChange={(value) => updateTeamData("organization_id", value)}
+                      onChange={(value) => { updateTeamData("organization_id", value); updateTeamData("new_org_name", "") }}
                     />
                     <Space h="sm" />
                     <TextInput
                       label="Or add a new organization"
                       placeholder="New Organization Name"
                       value={teamData.new_org_name}
-                      onChange={(event) => { updateTeamData("new_org_name", event.currentTarget.value); updateTeamData("organization_id", null); }}
+                      onChange={(event) => {
+                        const newOrgName = event.currentTarget.value;
+                        updateTeamData("new_org_name", newOrgName);
+                        if (newOrgName) {
+                          updateTeamData("organization_id", null);
+                        }
+                      }}
                     />
                   </div>
                   <Space h="md" />
@@ -656,14 +662,14 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
                       placeholder="Select course"
                       data={courses.filter((course) => course.organization_id === teamData.organization_id).map((course) => ({ value: course.id, label: course.name }))}
                       value={teamData.course_id}
-                      onChange={(value) => updateTeamData("course_id", value)}
+                      onChange={(value) => {updateTeamData("course_id", value); updateTeamData("new_course_name", "");}}
                     />
 
                     <TextInput
                       label="Or add a new course"
                       placeholder="New Course Name"
                       value={teamData.new_course_name}
-                      onChange={(event) => { updateTeamData("new_course_name", event.currentTarget.value); updateTeamData("organization_id", null); }}
+                      onChange={(event) => { updateTeamData("new_course_name", event.currentTarget.value); updateTeamData("course_id", null); }}
                     />
                   </div>
                   <Space h="md" />
@@ -676,7 +682,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
                     alignItems: "center"
                   }}>
                     <Button variant="outline" onClick={modalClose}>Cancel</Button>
-                    <Button onClick={handleNextStep} disabled={!teamData.course_id}>Next</Button>
+                    <Button onClick={handleNextStep}>Next</Button>
                   </div>
                 </div>
               )}
