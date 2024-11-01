@@ -16,6 +16,7 @@ The peer assessment system for university team projects enables students to eval
 - **Mik Driver**: Computer Engineer (Backend and Frontend)
 - **Sara Razene Habte**: Software Engineer (Frontend)
 - **Youssef Tassine**: Computer Engineer (Data Management and Frontend)
+- **Nicolas Vlad Tita**: Software Engineer (Backend)
 
 ## Peer Assessment Application
 

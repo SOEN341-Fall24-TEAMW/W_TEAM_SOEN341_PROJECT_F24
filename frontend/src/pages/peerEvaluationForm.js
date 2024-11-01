@@ -1,15 +1,22 @@
 import React, { useState } from 'react';
 import { AppShell, Space } from '@mantine/core'; 
 import { NavbarStudentDashboard } from './NavbarStudentDashboard.js';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import './peerEvaluationForm.css'; 
 
 function PeerEvaluationForm() {
   const [active, setActive] = useState(false);
+  const navigate = useNavigate(); 
+  const [searchParams] = useSearchParams();
 
-  const evaluatorId = 'your-evaluator-id';  // Replace with actual logic
-  const evaluateeId = 'your-evaluatee-id';  // Replace with actual logic
-  const teamId = 'your-team-id';              // Replace with actual logic
+  const evaluatorId = searchParams.get('evaluatorId');
+  const evaluateeId = searchParams.get('evaluateeId');
+  const teamId = searchParams.get('teamId');
 
+  // Use the received IDs in your component logic
+  console.log('Evaluator ID:', evaluatorId);
+  console.log('Evaluatee ID:', evaluateeId);
+  console.log('Team ID:', teamId);
  
   const [evaluation, setEvaluation] = useState({
     cooperation: '',
@@ -374,6 +381,15 @@ function PeerEvaluationForm() {
         </div>
 
         <button type="submit" className="submit-button">Submit Evaluation</button>
+
+         {/* Back to TeammatesList button */}
+         <button 
+            type="button" 
+            className="back-button" 
+            onClick={() => navigate(`/student-dashboard`)}          >
+            Back to Student Dashboard
+          </button>
+
       </form>
     </div>
     </AppShell>

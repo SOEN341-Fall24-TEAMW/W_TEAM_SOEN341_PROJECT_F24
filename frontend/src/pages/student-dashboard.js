@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { NavLink, AppShell, Table, Group, Space, Button, Title, TextInput, rem } from '@mantine/core';
-import { IconUsers,IconUsersGroup, IconClipboardList, IconMessageCircle, IconSearch } from '@tabler/icons-react';
+import { IconUsers, IconUsersGroup, IconClipboardList, IconMessageCircle, IconSearch } from '@tabler/icons-react';
 
 import { NavbarStudentDashboard } from './NavbarStudentDashboard.js';
 import PeerFeedback from './peerFeedback.js';
@@ -10,16 +10,85 @@ import TeammatesList from './TeammatesList.js';
 import './styles.css';
 
 
-const StudentDashboard = ({ organizations, courses, memberships, students, email, teams, feedbackData }) => {
+const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
   const navigate = useNavigate();
 
   const [selectedTeam, setSelectedTeam] = useState(null);
-  const [active, setActive] = useState('Students'); 
-  const [query, setQuery] = useState(''); 
+  const [active, setActive] = useState('Students');
+  const [query, setQuery] = useState('');
   const [setShowForm] = useState(false);
   const [filteredTeamsByQuery, setFilteredTeamsByQuery] = useState([]); // State for filtered teams
-  
 
+  const [organizations, setOrganizations] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [teams, setTeams] = useState([]);
+  const [memberships, setMemberships] = useState([]);
+  const [students, setStudents] = useState([]);
+
+  const fetchData = () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user || !user.token) {
+      console.error("JWT token not found. Please log in again.");
+      setLoggedIn(false);
+      return;
+    }
+
+    try {
+      fetch('http://localhost:3080/courses-students', {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          'jwt-token': user.token,
+        },
+        body: JSON.stringify({ student: user.email }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.message === 'success') {
+            setOrganizations(data.organization_info);
+            setCourses(data.course_info);
+            setTeams(data.team_info);
+            setMemberships(data.membership_info);
+            setStudents(data.peers_info);
+          } else {
+            console.error('Failed to fetch options:', data.message);
+          }
+        })
+    } catch (error) {
+      console.error('Error fetching options:', error);
+    }
+  };
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user || !user.token) {
+      console.error("JWT token not found. Please log in again.");
+      setLoggedIn(false);
+      return;
+    }
+    try {
+      fetch('http://localhost:3080/courses-students', {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          'jwt-token': user.token,
+        },
+        body: JSON.stringify({ student: user.email }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.message === 'success') {
+            fetchData();
+          } else {
+            console.error('Failed to fetch options:', data.message);
+          }
+        })
+    } catch (error) {
+      console.error('Error fetching options:', error);
+    }
+  }, [loggedIn]);
 
   const tabs = [
     { label: 'My Teams', icon: IconUsersGroup },
@@ -41,103 +110,84 @@ const StudentDashboard = ({ organizations, courses, memberships, students, email
   const handleTeamClick = (team) => {
     setSelectedTeam(team);
   };
-  
-  useEffect(() => {
-    if (teams && memberships && email) { // Ensure data is loaded
-      console.log("Teams:", teams);
-      console.log("Email:", email);
-      
-      // Get team IDs for teams the student is part of
-      const studentTeamIds = memberships
-        .filter(membership => membership.student_id === email) // Match by student email
-        .map(membership => membership.team_id); // Extract team IDs
-  
-      console.log("Student Team IDs:", studentTeamIds);
-  
-      // Filter teams based on the student's memberships
-      const filteredTeams = (teams || []).filter((team) => studentTeamIds.includes(team.id));
-      console.log("Filtered Teams:", filteredTeams);
-  
-      // Further filter based on the search query
-      const updatedFilteredTeamsByQuery = filteredTeams.filter((team) =>
-        team.name.toLowerCase().includes(query.toLowerCase())
-      );
-      console.log("Filtered Teams by Query:", updatedFilteredTeamsByQuery);
-  
-      // Update the state with the filtered teams
-      setFilteredTeamsByQuery(updatedFilteredTeamsByQuery);
-    }
-  }, [teams, memberships, email]); // Dependencies will trigger only on initial load when these values are available
-  
 
-  const rows = filteredTeamsByQuery.map((team) => {
-    const team_course = (courses || []).find((course) => course.id === team.course_id);
-    const course_names = team_course ? team_course.name : "No course";
-    const organization_name = (organizations.find((organization) => organization.id === team_course?.organization_id) || {}).name || "Unknown organization";
+  useEffect(() => {
+    console.log("currently selected team: ", selectedTeam);
+}, [selectedTeam]);
+
+  console.log("value org: ", organizations);
+  console.log("value course: ", courses);
+  console.log("value teams: ", teams);
+  console.log("value memb: ", memberships);
+  console.log("value students", students);
+
+  //const teamsToDisplay = query ? filteredTeamsByQuery : teams;
+  //console.log("teams to display", teamsToDisplay);
+
+  const rows = teams.map((team) => {
+    const team_course = courses.find((course) => course.id === team.course_id); // Find course by course_id
+    const course_name = team_course ? team_course.name : "No course"; // Get course name or fallback
+    const organization_name = organizations.find((org) => org.id === team_course?.organization_id)?.name || "Unknown organization"; // Get organization name or fallback
 
     return (
       <Table.Tr key={team.id} onClick={() => handleTeamClick(team)}>
-        <Table.Td>
-          <Link to={`/teams/${team.id}`}>{team.name || "No name"}</Link>
-        </Table.Td>
+        <Table.Td>{team.name || "No name"}</Table.Td>
         <Table.Td>{team.max_size || "No max size"}</Table.Td>
-        <Table.Td>{course_names || "No course"}</Table.Td>
-        <Table.Td>{organization_name || "No organization"}</Table.Td>
+        <Table.Td>{course_name}</Table.Td>
+        <Table.Td>{organization_name}</Table.Td>
       </Table.Tr>
     );
   });
 
-    return (
-        <AppShell navbar={{ width: 250 }}>
-        <AppShell.Navbar>{navBarData}</AppShell.Navbar>
-        
-        {active === 'My Teams' && (
-          <AppShell.Main>
-            <Space h="md" />
-            <Group justify="space-between">
-              <Title>My Teams</Title>
-            </Group>
-            <Space h="md" />
-            <TextInput 
-              value={query} 
-              placeholder="Search Teams" 
-              onChange={(event) => setQuery(event.currentTarget.value)} 
-            />
-            <Space h="md" />
-            <Table.ScrollContainer>
-              <Table>
-                <Table.Thead>
-                  <Table.Tr>
-                    <Table.Th>Team</Table.Th>
-                    <Table.Th>Size</Table.Th>
-                    <Table.Th>Course</Table.Th>
-                    <Table.Th>Organization</Table.Th>
-                  </Table.Tr>
-                </Table.Thead>
-                <Table.Tbody>{rows.length > 0 ? rows : <tr><td colSpan={4}>No teams found</td></tr>}</Table.Tbody>
-                </Table>
-            </Table.ScrollContainer>
+  return (
+    <AppShell navbar={{ width: 250 }}>
+      <AppShell.Navbar>{navBarData}</AppShell.Navbar>
 
-            {selectedTeam && (
+      {active === 'My Teams' && (
+        <AppShell.Main>
+          <Space h="md" />
+          <Group justify="space-between">
+            <Title>My Teams</Title>
+          </Group>
+          <Space h="md" />
+          <Group justify="space-between" style={{ alignItems: "center", height: "62.59px" }}>
+            <TextInput value={query} placeholder="Search" leftSectionPointerEvents="none" leftSection={<IconSearch style={{ width: rem(20), height: rem(20) }} stroke={1.5} />} onChange={(event) => setQuery(event.currentTarget.value)} />
+          </Group>
+          <Space h="md" />
+          <Table.ScrollContainer>
+            <Table>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>Team</Table.Th>
+                  <Table.Th>Size</Table.Th>
+                  <Table.Th>Course</Table.Th>
+                  <Table.Th>Organization</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>{rows.length > 0 ? rows : <tr><td colSpan={4}>No teams found</td></tr>}</Table.Tbody>
+            </Table>
+          </Table.ScrollContainer>
+
+          {selectedTeam && (
             <div>
-              <button onClick={() => setSelectedTeam(null)} className="button3">Back to Team List</button>
-              <TeammatesList teamId={selectedTeam.id}  />
+              <Button onClick={() => setSelectedTeam(null)} className="button3">Back to Team List</Button>
+              <TeammatesList memberships={memberships.filter(m => m.team_id === selectedTeam.id)} teams={teams} students={students} email={email} selectedTeam={selectedTeam}/>
             </div>
           )}
 
-          </AppShell.Main>
-        )}
+        </AppShell.Main>
+      )}
 
-        {active === 'Peer Feedback' && (
+      {active === 'Peer Feedback' && (
         <AppShell.Main>
           <Space h="md" />
           <Title>Peer Feedback</Title>
-          <PeerFeedback feedbackData={feedbackData} />
+          <PeerFeedback />
         </AppShell.Main>
       )}
-      </AppShell>
-    );
-  };
-  
-  export default StudentDashboard;
-  
+    </AppShell>
+  );
+};
+
+export default StudentDashboard;
+

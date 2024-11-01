@@ -1,12 +1,20 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
+import { useNavigate, useLocation } from 'react-router-dom'; // Import useNavigate for redirection
 
 const PeerEvaluationIntro = () => {
   const navigate = useNavigate(); // Initialize the navigation
+  const location = useLocation();
+  const { evaluatorId, evaluateeId, teamId } = location.state || {};
+
+  // Use the received IDs in your component logic
+  console.log('Evaluator ID:', evaluatorId);
+  console.log('Evaluatee ID:', evaluateeId);
+  console.log('Team ID:', teamId);
+
 
   // Function to redirect to the Peer Evaluation Form page
   const handleGoToEvaluation = () => {
-    navigate('/peer-evaluation');  // Redirect to the correct path for the evaluation form
+    navigate(`/peer-evaluation?evaluatorId=${evaluatorId}&evaluateeId=${evaluateeId}&teamId=${teamId}`);  
   };
 
   return (

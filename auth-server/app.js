@@ -8,6 +8,12 @@ var adapter = new FileSync("./database.json");
 var db = low(adapter);
 const { v4: uuidv4 } = require('uuid');
 
+// Helper function to anonymize data
+function anonymizeData(data) {
+    if (!data) return data;
+    return data.replace(/./g, '*'); // Replace all characters with asterisks
+}
+
 // Set default structure for the database
 db.defaults({ users: [], teams: [], courses: [], organization: [] }).write();
 
@@ -72,14 +78,45 @@ app.post("/auth", (req, res) => {
     }
 
 })
+// assign-random route here
+app.post("/assign-random", (req, res) => {
+    try {
+        const { students, teams } = req.body;
 
+        if (!students || !teams || students.length === 0 || teams.length === 0) {
+            return res.status(400).json({ message: "Students or teams data missing" });
+        }
+
+        const shuffledStudents = students.sort(() => Math.random() - 0.5);
+        const assignments = assignStudentsToTeams(shuffledStudents, teams);
+
+        res.status(200).json({ message: "Students assigned successfully", assignments });
+    } catch (error) {
+        console.error("Error during student assignment:", error);
+        res.status(500).json({ message: "Internal Server Error", error });
+    }
+});
+
+function assignStudentsToTeams(students, teams) {
+    const assignments = {};
+    let teamIndex = 0;
+
+    students.forEach((student) => {
+        const team = teams[teamIndex];
+        if (!assignments[team]) assignments[team] = [];
+        assignments[team].push(student);
+        teamIndex = (teamIndex + 1) % teams.length;
+    });
+
+    return assignments;
+}
 app.post("/create-account", (req, res) => {
 
-    const { role, firstName, lastName, id, email, password } = req.body;
+    const { role, firstName, lastName, id, email, password, organizationId } = req.body;
 
     bcrypt.hash(password, 10, function (_err, hash) {
 
-        db.get("users").push({ id: email, email, password: hash, role, name: firstName + " " + lastName, organization_id: "" }).write();
+        db.get("users").push({ id, email, password: hash, role, name: firstName + " " + lastName, organization_id: organizationId }).write();
 
         let creationData = {
             id,
@@ -146,7 +183,7 @@ app.get("/teams", (req, res) => {
         if (verified.role === "instructor") {
             // Filter teams where the instructor's email matches the verified email from the token
             const instructorTeams = db.get("teams").filter({ instructor_id: verified.email }).value();
-            
+
             // Check if no teams were found for the instructor
             if (!instructorTeams || instructorTeams.length === 0) {
                 return res.status(404).json({ message: "No teams found for instructor", teams: [] });
@@ -155,14 +192,24 @@ app.get("/teams", (req, res) => {
             // Return the list of teams for the instructor
             return res.status(200).json({ message: "success", teams: instructorTeams });
 
-        // If the user is a student, fetch the teams they are a part of
-        } else if (verified.role === "student") {
+            // If the user is a student, fetch the teams they are a part of
+        }
+
+        else if (verified.role === "student") {
             // Find all team memberships where the student's ID (email) matches the verified email
             const studentMemberships = db.get("team_memberships").filter({ student_id: verified.email }).value();
 
-            // Map the memberships to actual teams by finding each team based on its ID
+            // Map the memberships to actual teams and anonymize student data
             const studentTeams = studentMemberships.map(membership => {
-                return db.get("teams").find({ id: membership.team_id }).value();
+                const team = db.get("teams").find({ id: membership.team_id }).value();
+                return {
+                    ...team,
+                    students: team.students.map(student => ({
+                        ...student,
+                        name: anonymizeData(student.name), // Anonymize student name
+                        email: anonymizeData(student.email) // Anonymize student email
+                    }))
+                };
             });
 
             // Check if no teams were found for the student
@@ -173,6 +220,24 @@ app.get("/teams", (req, res) => {
             // Return the list of teams for the student
             return res.status(200).json({ message: "success", teams: studentTeams });
         }
+
+
+        // Find all team memberships where the student's ID (email) matches the verified email
+        const studentMemberships = db.get("team_memberships").filter({ student_id: verified.email }).value();
+
+        // Map the memberships to actual teams by finding each team based on its ID
+        const studentTeams = studentMemberships.map(membership => {
+            return db.get("teams").find({ id: membership.team_id }).value();
+        });
+
+        // Check if no teams were found for the student
+        if (!studentTeams || studentTeams.length === 0) {
+            return res.status(404).json({ message: "No teams found for student", teams: [] });
+        }
+
+        // Return the list of teams for the student
+        return res.status(200).json({ message: "success", teams: studentTeams });
+
 
         // If the role is neither student nor instructor, return a 403 forbidden error
         return res.status(403).json({ message: "Access forbidden: invalid role" });
@@ -226,18 +291,6 @@ app.post("/courses", (req, res) => {
                 student_info: students,
                 membership_info: team_membership,
             });
-
-        // If the user is a student, return the team they belong to
-        } else if (verified.role === "student") {
-            const studentCourses = db.get("team_memberships").filter(team => {
-                return team.some(team => team.student_id === verified.id);
-            }).value();
-
-            return res.status(200).json({ message: "success", teams: studentCourses });
-        }
-
-        if (!teams || teams.length === 0) {
-            return res.status(404).json({ message: "No teams found", teams: [] });
         }
 
         // If the role is neither student nor instructor, return an error
@@ -248,6 +301,59 @@ app.post("/courses", (req, res) => {
     }
 });
 
+app.post("/courses-students", (req, res) => {
+    const tokenHeaderKey = "jwt-token";
+    const authToken = req.headers[tokenHeaderKey];
+    const student = req.body.student;
+    console.log("Courses Token:", authToken);
+
+    try {
+        const verified = db.get('users').find(user => (user.email === student)).value();
+        console.log("verified", verified);
+
+        // If the user is a student, retrieve the necessary information
+        if (verified.role === "student") {
+            const team_memberships = db.get("team_memberships").filter({ student_id: verified.id }).value();
+            console.log("student memberships: ", team_memberships);
+
+            // Fetch teams based on team IDs in memberships
+            const team_ids = team_memberships.map(membership => membership.team_id);
+            const team_list = db.get('teams').filter(team => team_ids.includes(team.id)).value();
+            console.log('student team list: ', team_list);
+
+            // Fetch teammates
+            const teammates_student_ids = db.get("team_memberships").filter(membership => team_ids.includes(membership.team_id)).map(membership => membership.student_id).value();
+            console.log("Peers' memberships: ", teammates_student_ids);
+            const teammates = db.get("users").filter(user => teammates_student_ids.includes(user.id)).value();
+            console.log("Peers: ", teammates);
+
+            // Fetch courses based on course IDs in teams
+            const course_ids = team_list.map(team => team.course_id);
+            const course_list = db.get('courses').filter(course => course_ids.includes(course.id)).value();
+            console.log('student course list: ', course_list);
+
+            // Fetch organizations based on organization IDs in courses
+            const organization_ids = course_list.map(course => course.organization_id);
+            const organizations_list = db.get('organizations').filter(org => organization_ids.includes(org.id)).value();
+            console.log('student org list: ', organizations_list);
+
+            return res.status(200).json({
+                message: "success",
+                organization_info: organizations_list, // Full list of organization objects
+                course_info: course_list,              // Full list of course objects
+                team_info: team_list,                  // Full list of team objects
+                membership_info: team_memberships,     // Full list of team membership objects
+                peers_info: teammates,
+            });
+        }
+
+        // If the role is neither student nor instructor, return an error
+        return res.status(403).json({ message: "Access forbidden: invalid role" });
+
+    } catch (error) {
+        return res.status(401).json({ message: "Invalid token", error });
+    }
+});
 
 app.post("/create-student", async (req, res) => {
     const { student_id, student_email, first_name, last_name, organization_id, new_org_name } = req.body;
@@ -406,6 +512,14 @@ app.get("/users", (req, res) => {
             console.log("bowser", students);
             return res.status(200).json({ message: "success", data: students });
         }
+        // Anonymize student data if the requester is a student
+        if (verified.role === "student") {
+            console.log("Anonymizing data for student requester...");
+            students.forEach(student => {
+                student.name = anonymizeData(student.name); // Anonymize student name
+                student.email = anonymizeData(student.email); // Anonymize student email
+            });
+        }
 
         // If the role is neither student nor instructor, return an error
         return res.status(403).json({ message: "Access forbidden: invalid role" });
@@ -444,16 +558,16 @@ app.post("/teams", isInstructor, (req, res) => {
             return res.status(400).json({ message: "Invalid course ID" });
         }
 
-        const newTeam = { id: Date.now().toString(), name, instructorId, maxSize, courseId, students: [] }; //change id for random num generator?
+        const newTeam = { id: Date.now().toString(), name, instructorId, maxSize, courseId, students: [] }; // You can change `Date.now()` to a random number generator if preferred
         db.get("teams").push(newTeam).write();
 
         res.status(201).json({ message: "Team created successfully", team: newTeam });
-).json({ message: "Team created successfully", team: newTeam });
     }).catch((error) => {
         res.status(500).json({ message: "Error creating team", error });
     });
 });
-  
+
+
 // API to get a specific team by ID
 app.get("/teams/:id", (req, res) => {
     const teamId = req.params.id;
@@ -504,45 +618,72 @@ app.post("/teams/:id/students", (req, res) => {
 });
 
 app.post('/submit-evaluation', (req, res) => {
-  const {
-    evaluator_id,
-    evaluatee_id,
-    cooperation,
-    conceptualContribution,
-    practicalContribution,
-    workEthic,
-    cooperationComment,
-    conceptualComment,
-    practicalComment,
-    ethicComment,
-    team_id
-  } = req.body;
+    const {
+        evaluator_id,
+        evaluatee_id,
+        cooperation,
+        conceptualContribution,
+        practicalContribution,
+        workEthic,
+        cooperationComment,
+        conceptualComment,
+        practicalComment,
+        ethicComment,
+        team_id
+    } = req.body;
 
-  if (!evaluator_id || !evaluatee_id) {
-    return res.status(400).send({ message: "Evaluator and evaluatee IDs are required." });
-  }
+    if (!evaluator_id || !evaluatee_id) {
+        return res.status(400).send({ message: "Evaluator and evaluatee IDs are required." });
+    }
 
-  const id = db.get('peer_evaluations').size().value() + 1;
-  db.get('peer_evaluations')
-    .push({
-      id,
-      evaluator_id,
-      evaluatee_id,
-      cooperation,
-      conceptual_contribution: conceptualContribution,
-      practical_contribution: practicalContribution,
-      work_ethic: workEthic,
-      cooperation_comment: cooperationComment,
-      conceptual_comment: conceptualComment,
-      practical_comment: practicalComment,
-      ethic_comment: ethicComment,
-      team_id,
-      timestamp: new Date().toISOString()
-    })
-    .write();
+    const id = db.get('peer_evaluations').size().value() + 1;
+    db.get('peer_evaluations')
+        .push({
+            id,
+            evaluator_id,
+            evaluatee_id,
+            cooperation,
+            conceptual_contribution: conceptualContribution,
+            practical_contribution: practicalContribution,
+            work_ethic: workEthic,
+            cooperation_comment: cooperationComment,
+            conceptual_comment: conceptualComment,
+            practical_comment: practicalComment,
+            ethic_comment: ethicComment,
+            team_id,
+            timestamp: new Date().toISOString()
+        })
+        .write();
 
-  res.send({ message: 'success' });
+    res.send({ message: 'success' });
 });
+
+
+app.get("/peer-evaluations/check", (req, res) => {
+    const { evaluator_id, evaluatee_id, team_id } = req.query;
+
+    if (!evaluator_id || !evaluatee_id || !team_id) {
+        return res.status(400).json({ message: "Evaluator ID, evaluatee ID, and team ID are required." });
+    }
+
+    console.log("Received query:", req.query); // Log the incoming query
+
+    // Find the evaluation that matches the evaluator_id, evaluatee_id, and team_id
+    const evaluation = db.get("peer_evaluations")
+        .find({ evaluator_id, evaluatee_id, team_id })
+        .value();
+
+    // Log the evaluation result
+    console.log("Evaluation found:", evaluation);
+
+    // Check if evaluation exists
+    if (evaluation) {
+        return res.status(200).json({ hasFeedback: true });
+    } else {
+        return res.status(200).json({ hasFeedback: false });
+    }
+});
+
 
 // API to update team size (instructors only)
 app.put("/teams/:id/size", isInstructor, (req, res) => {
@@ -566,10 +707,10 @@ app.delete("/teams/:id/students/:studentId", isInstructor, (req, res) => {
     }
 
     db.get("teams")
-      .find({ id: teamId })
-      .get("students")
-      .remove({ studentId })
-      .write();
+        .find({ id: teamId })
+        .get("students")
+        .remove({ studentId })
+        .write();
 
     res.status(200).json({ message: "Student removed from team" });
 });
@@ -613,3 +754,31 @@ io.on('connection', (socket) => {
 app.listen(3080, () => {
     console.log("Server running on port 3080");
 });
+// Create a new roster
+app.post('/rosters', (req, res) => {
+    const { teamID, courseName } = req.body;
+
+    const newRoster = {
+        rosterID: uuidv4(),
+        teamID,
+        courseName
+    };
+
+    db.get('rosters').push(newRoster).write();  // Store the roster in the database
+    res.status(201).send(newRoster);  // Send the created roster as a response
+});
+// Store a score for a team
+app.post('/scores', (req, res) => {
+    const { teamID, score } = req.body;
+
+    const newScore = {
+        scoreID: uuidv4(),
+        teamID,
+        score,
+        date: new Date().toISOString()  // Store the timestamp
+    };
+
+    db.get('scores').push(newScore).write();  // Store the score in the database
+    res.status(201).send(newScore);  // Send the created score as a response
+});
+

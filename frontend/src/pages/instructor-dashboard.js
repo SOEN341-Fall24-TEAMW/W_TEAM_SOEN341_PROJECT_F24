@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
-import { NavLink, AppShell, Table, Group, Space, Modal, Button, Title, TextInput, rem, Select, Menu, NumberInput, MultiSelect, Alert, Text, FileInput } from '@mantine/core';
+import { NavLink, AppShell, Table, Group, Space, Modal, Button, Title, TextInput, rem, Select, Menu, NumberInput, MultiSelect, Alert, Text, FileInput, Notification } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconUsers, IconUsersGroup, IconSettings, IconSearch, IconDatabaseImport, IconCirclePlus } from '@tabler/icons-react';
+import { IconUsers, IconUsersGroup, IconSettings, IconSearch, IconDatabaseImport, IconCirclePlus, IconX, IconCheck } from '@tabler/icons-react';
 import Papa from "papaparse";
 import './styles.css';
 
@@ -13,13 +13,19 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
   const [step, setStep] = useState(1);
   const [maxSizeError, setMaxSizeError] = useState("");
 
+  const [importSuccess, setImportSuccess] = useState(false);
+  const [importFail, setImportFail] = useState(false);
+  const [notifySuccess, setNotifySuccess] = useState(false);
+  const [notifyError, setNotifyError] = useState(false);
+
   const [firstNameError, setFirstNameError] = useState("");
   const [lastNameError, setLastNameError] = useState("");
   const [idError, setIdError] = useState("");
   const [emailError, setEmailError] = useState("");
 
   const icon = [<IconCirclePlus size={14} />, <IconDatabaseImport size={14} />];
-
+  const xIcon = <IconX style={{ width: rem(20), height: rem(20) }} />;
+  const checkIcon = <IconCheck style={{ width: rem(20), height: rem(20) }} />;
 
   const fileInputRef = useRef(null);
 
@@ -31,7 +37,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
   };
 
   const handleFileUpload = (event) => {
-    
+
     if (!event.target) {
       console.error("File input event structure is invalid or files are missing");
       return;
@@ -51,14 +57,23 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({students: results.data, instructor: email}),
+              body: JSON.stringify({ students: results.data, instructor: email }),
             });
 
             if (response.ok) {
               console.log("Data uploaded successfully.");
+              setImportSuccess(true);
+              setNotifySuccess(true);
               fetchData();
+              setTimeout(() => { setImportSuccess(false); }, 5000);
+              setTimeout(() => { setNotifySuccess(false); }, 10000);
             } else {
               console.error("Upload failed.");
+              setImportFail(true);
+              setNotifyError(true);
+              fetchData();
+              setTimeout(() => { setImportFail(false); }, 5000);
+              setTimeout(() => { setNotifyError(false); }, 10000);
             }
           } catch (error) {
             console.error("Error:", error);
@@ -218,7 +233,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
         },
         body: JSON.stringify(teamData),
       });
-  
+
       // After successful submission, close modal and reset form
       close();
       resetForm();
@@ -227,7 +242,6 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
       console.error("Error creating team:", error);
     }
   };
-  
 
   const tabs = [
     { label: 'Students', icon: IconUsers },
@@ -248,30 +262,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
     />
   ))
 
-  const handleDeleteTeam = async (teamId) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this team?");
-    if (!confirmDelete) return;
-  
-    try {
-      const response = await fetch(`http://localhost:3080/delete-team/${teamId}`, {
-        method: "DELETE",
-      });
-  
-      if (response.ok) {
-        teams = teams.filter((team) => team.id !== teamId);
-        alert("Team deleted successfully.");
-      } else {
-        throw new Error("Failed to delete team.");
-      }
-    } catch (error) {
-      console.error("Error deleting team:", error);
-      alert("Error deleting team. Please try again.");
-    }
-  };
-  
-
-  // Table rows for Students tab
-  const studentRows = org
+  const rows = org
     ? (students || [])
       .filter(
         (student) =>
@@ -313,8 +304,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
       })
     : [];
 
-  // Table rows for Teams tab
-  const teamRows = org && org.trim() !== ""
+  const rows2 = org
     ? (teams || [])
       .filter((team) => {
         const selected_org_id = (organizations.find((organization) => organization.name === org) || {}).id;
@@ -336,55 +326,20 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
 
         return (
           <Table.Tr key={team.id}>
-            <Table.Td>
-              <Link to={`/teams/${team.id}`}>{team.name || "No name"}</Link>
-            </Table.Td>            
+            <Table.Td>{team.name || "No name"}</Table.Td>
             <Table.Td>{student_names || "No members"}</Table.Td>
             <Table.Td>{team.max_size || "No members"}</Table.Td>
             <Table.Td>{course_names || "No course"}</Table.Td>
             <Table.Td>{organization_name || "No organization"}</Table.Td>
-            <Table.Td>
-            <Button color="red" onClick={() => handleDeleteTeam(team.id)}>Delete</Button>
-            </Table.Td>
           </Table.Tr>
         );
       })
-      : (teams || [])
-      .filter((team) => team.name.toLowerCase().includes(query.toLowerCase())) // Filter teams based on query when no organization is selected
-      .map((team) => {
-        const team_memberships = (memberships || []).filter((membership) => membership.team_id === team.id);
-  
-        const student_names = team_memberships
-          .map((membership) => (students || []).find((student) => student.id === membership.student_id)?.name)
-          .filter((student_name) => student_name)
-          .join(", ");
-  
-        const team_course = (courses || []).find((course) => course.id === team.course_id);
-        const course_names = team_course ? team_course.name : "No course";
-        const organization_name = (organizations.find((organization) => organization.id === team_course?.organization_id) || {}).name || "Unknown organization";
-  
-        return (
-          <Table.Tr key={team.id}>
-            <Table.Td>
-              <Link to={`/teams/${team.id}`}>{team.name || "No name"}</Link>
-            </Table.Td>
-            <Table.Td>{student_names || "No members"}</Table.Td>
-            <Table.Td>{team.max_size || "No max size"}</Table.Td>
-            <Table.Td>{course_names || "No course"}</Table.Td>
-            <Table.Td>{organization_name || "No organization"}</Table.Td>
-            <Table.Td>
-            <Button color="red" onClick={() => handleDeleteTeam(team.id)}>Delete</Button>
-            </Table.Td>
-          </Table.Tr>
-        );
-      });
+    : [];
 
 
   return (
     <AppShell navbar={{ width: 250 }}>
       <AppShell.Navbar>{navBarData}</AppShell.Navbar>
-
-      {/* Students Tab */}
       {(active === 'Students') && (<AppShell.Main>
         <Space h="md" />
         <Group justify="space-between">
@@ -522,7 +477,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
                     label="Or add a new organization"
                     placeholder="New Organization Name"
                     value={studentData.new_org_name}
-                    onChange={(event) => { updateStudentData("new_org_name", event.currentTarget.value); updateStudentData("organization_id", null) }}
+                    onChange={(event) => { updateStudentData("new_org_name", event.currentTarget.value); updateStudentData("course_id", null) }}
                   />
                 </div>
 
@@ -582,15 +537,18 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
               accept=".csv"
             />
           </div>
-
         </Group>
         <Space h="xl" />
-        <Group justify="space-between">
-          <TextInput value={query} placeholder="Search" leftSectionPointerEvents="none" leftSection={<IconSearch style={{ width: rem(16), height: rem(16) }} stroke={1.5} />} onChange={(event) => setQuery(event.currentTarget.value)} />
-          {/*<Button variant="default">Second</Button>
-              <Button variant="default">Third</Button>*/}
+        <Group justify="space-between" style={{ alignItems: "center", height: "62.59px" }}>
+          <TextInput value={query} placeholder="Search" leftSectionPointerEvents="none" leftSection={<IconSearch style={{ width: rem(20), height: rem(20) }} stroke={1.5} />} onChange={(event) => setQuery(event.currentTarget.value)} />
+          {(notifySuccess) && (<Notification icon={checkIcon} color="teal" title="Import Success!" mt="md" withCloseButton="false" style={{ opacity: `${importSuccess ? '1' : '0'}`, transition: `opacity 0.5s ease-in-out` }}>
+            New Students were successfully imported from file!
+          </Notification>)}
+          {(notifyError) && (<Notification icon={xIcon} color="red" title="Oops..." withCloseButton={false} style={{ opacity: `${importFail ? '1' : '0'}`, transition: `opacity 0.5s ease-in-out` }}>
+            Something went wrong
+          </Notification>)}
         </Group>
-        <Space h="lg" />
+        <Space h="sm" />
         <Table.ScrollContainer minWidth={500}>
           <Table stickyHeader verticalSpacing="md" striped highlightOnHover withTableBorder >
             <Table.Thead>
@@ -650,14 +608,20 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
                       placeholder="Select organization"
                       data={organizations.map((org) => ({ value: org.id, label: org.name }))}
                       value={teamData.organization_id}
-                      onChange={(value) => updateTeamData("organization_id", value)}
+                      onChange={(value) => { updateTeamData("organization_id", value); updateTeamData("new_org_name", "") }}
                     />
                     <Space h="sm" />
                     <TextInput
                       label="Or add a new organization"
                       placeholder="New Organization Name"
                       value={teamData.new_org_name}
-                      onChange={(event) => { updateTeamData("new_org_name", event.currentTarget.value); updateTeamData("organization_id", null); }}
+                      onChange={(event) => {
+                        const newOrgName = event.currentTarget.value;
+                        updateTeamData("new_org_name", newOrgName);
+                        if (newOrgName) {
+                          updateTeamData("organization_id", null);
+                        }
+                      }}
                     />
                   </div>
                   <Space h="md" />
@@ -698,7 +662,14 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
                       placeholder="Select course"
                       data={courses.filter((course) => course.organization_id === teamData.organization_id).map((course) => ({ value: course.id, label: course.name }))}
                       value={teamData.course_id}
-                      onChange={(value) => updateTeamData("course_id", value)}
+                      onChange={(value) => {updateTeamData("course_id", value); updateTeamData("new_course_name", "");}}
+                    />
+
+                    <TextInput
+                      label="Or add a new course"
+                      placeholder="New Course Name"
+                      value={teamData.new_course_name}
+                      onChange={(event) => { updateTeamData("new_course_name", event.currentTarget.value); updateTeamData("course_id", null); }}
                     />
                   </div>
                   <Space h="md" />
@@ -711,7 +682,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
                     alignItems: "center"
                   }}>
                     <Button variant="outline" onClick={modalClose}>Cancel</Button>
-                    <Button onClick={handleNextStep} disabled={!teamData.course_id}>Next</Button>
+                    <Button onClick={handleNextStep}>Next</Button>
                   </div>
                 </div>
               )}
