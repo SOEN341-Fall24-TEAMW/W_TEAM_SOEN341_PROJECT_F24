@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main  # or your primary branch
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest  # Choose the OS for the runner
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2  # Check out the repository code
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'  # Specify the version of Node.js you need
+
+      - name: Install dependencies
+        run: npm install  # Install project dependencies
+
+      - name: Run tests
+        run: npm test  # Run your tests
