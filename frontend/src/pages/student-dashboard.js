@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { NavLink, AppShell, Table, Group, Space, Button, Title, TextInput, rem } from '@mantine/core';
+import { NavLink, AppShell, Table, Group, Space, Button, Title, TextInput, rem, Container, Select } from '@mantine/core';
 import { IconUsers, IconUsersGroup, IconClipboardList, IconMessageCircle, IconSearch } from '@tabler/icons-react';
 
 import { NavbarStudentDashboard } from './NavbarStudentDashboard.js';
@@ -139,6 +139,40 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
     );
   });
 
+  // Peer Feedback Table (delete static data and implememt actally fetching the data)
+  const peerFeedbackTable = (
+    <Table striped highlightOnHover withBorder withColumnBorders>
+      <thead>
+        <tr>
+        <th className="other-column">Teammate</th>
+          <th className="other-column">Cooperation</th>
+          <th className="other-column">Conceptual Contribution</th>
+          <th className="other-column">Practical Contribution</th>
+          <th className="other-column">Work Ethic</th>
+          <th className="comment-column">Comments</th> {/* Wider comments column */}
+          <th className="other-column">Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>John Doe</td>
+          <td>7</td>
+          <td>7</td>
+          <td>7</td>
+          <td>7</td>
+          <td>
+            <div>Cooperation: Excellent cooperation</div>
+            <div>Conceptual: Strong conceptual input</div>
+            <div>Practical: Strong conceptual input</div>
+            <div>Ethic: Great work ethic</div>
+          </td>
+          <td>{new Date("2024-11-01T06:11:12.288Z").toLocaleDateString()}</td> {/*should be date submitted*/}
+        </tr>
+        {/* Add more rows as needed */}
+      </tbody>
+    </Table>
+  );
+
   return (
     <AppShell navbar={{ width: 250 }}>
       <AppShell.Navbar>{navBarData}</AppShell.Navbar>
@@ -178,13 +212,26 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
         </AppShell.Main>
       )}
 
+
+      {/* Peer Feedback Tab */}
       {active === 'Peer Feedback' && (
         <AppShell.Main>
           <Space h="md" />
           <Title>Peer Feedback</Title>
-          <PeerFeedback />
+
+          {/* Dropdown to select the team. Implement actuall sorting logic here. */}
+          <Select 
+            label="Filter By Team"
+            placeholder="Select a team"
+            onChange={setSelectedTeam}
+            style={{ width: '300px', marginBottom: '30px', marginTop: '20px' }}
+            />
+
+          {peerFeedbackTable}
         </AppShell.Main>
       )}
+
+
     </AppShell>
   );
 };
