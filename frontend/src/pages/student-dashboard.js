@@ -150,9 +150,11 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
           <th className="other-column">Practical Contribution</th>
           <th className="other-column">Work Ethic</th>
           <th className="comment-column">Comments</th> {/* Wider comments column */}
+          <th className="other-column">Average</th>
           <th className="other-column">Date</th>
         </tr>
       </thead>
+
       <tbody>
         <tr>
           <td>John Doe</td>
@@ -166,6 +168,7 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
             <div>Practical: Strong conceptual input</div>
             <div>Ethic: Great work ethic</div>
           </td>
+          <td>7</td>
           <td>{new Date("2024-11-01T06:11:12.288Z").toLocaleDateString()}</td> {/*should be date submitted*/}
         </tr>
         {/* Add more rows as needed */}
