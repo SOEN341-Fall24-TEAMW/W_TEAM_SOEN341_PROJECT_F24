@@ -200,9 +200,11 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
           <th className="other-column">Practical Contribution</th>
           <th className="other-column">Work Ethic</th>
           <th className="comment-column">Comments</th> {/* Wider comments column */}
+          <th className="other-column">Average</th>
           <th className="other-column">Date</th>
         </tr>
       </thead>
+
       <tbody>
         {peerFeedbackData.length > 0 ? (
           peerFeedbackData.map((feedback, index) => (
