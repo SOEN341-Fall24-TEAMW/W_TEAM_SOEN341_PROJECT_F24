@@ -684,6 +684,25 @@ app.get("/peer-evaluations/check", (req, res) => {
     }
 });
 
+app.get("/peer-evaluations/feedback", (req, res) => {
+    const { teamId } = req.query;
+
+    if (!teamId) {
+        return res.status(400).json({ message: "Team ID is required" });
+    }
+
+    // Filter peer evaluations for the specified teamId
+    const feedbackData = db.get("peer_evaluations")
+        .filter({ team_id: teamId })
+        .value();
+
+    if (feedbackData && feedbackData.length > 0) {
+        return res.status(200).json({ message: "success", data: feedbackData });
+    } else {
+        return res.status(404).json({ message: "No peer feedback found" });
+    }
+});
+
 
 // API to update team size (instructors only)
 app.put("/teams/:id/size", isInstructor, (req, res) => {
