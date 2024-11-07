@@ -72,7 +72,7 @@ function PeerEvaluationForm() {
       <div className='titleContainer'>Peer Evaluation Form</div>
       <div className="form-group">
       <label>1. Cooperation</label>
-        <div class="table-container">
+        <div className="table-container">
           <table>
             <thead>
               <tr>
@@ -128,6 +128,7 @@ function PeerEvaluationForm() {
                 <input
                   type="radio"
                   name="cooperation"
+                  role='rateCooperation'
                   value={i + 1}
                   onChange={(e) => handleChange('cooperation', e.target.value)}
                   className="rating-input"
@@ -147,7 +148,7 @@ function PeerEvaluationForm() {
         {/* Conceptual Contribution */}
         <div className="form-group">
           <label>2. Conceptual Contribution</label>
-          <div class="table-container">
+          <div className="table-container">
             <table>
               <thead>
                 <tr>
@@ -224,7 +225,7 @@ function PeerEvaluationForm() {
         {/* Practical Contribution */}
         <div className="form-group">
           <label>3. Practical Contribution</label>
-          <div class="table-container">
+          <div className="table-container">
             <table>
               <thead>
                 <tr>
@@ -304,7 +305,7 @@ function PeerEvaluationForm() {
         {/* Work Ethic */}
         <div className="form-group">
           <label>4. Work Ethic</label>
-          <div class="table-container">
+          <div className="table-container">
             <table>
               <thead>
                 <tr>
@@ -380,7 +381,7 @@ function PeerEvaluationForm() {
           />
         </div>
 
-        <button type="submit" className="submit-button">Submit Evaluation</button>
+        <button type="submit" className="submit-button" data-testid = "submit">Submit Evaluation</button>
 
          {/* Back to TeammatesList button */}
          <button 
