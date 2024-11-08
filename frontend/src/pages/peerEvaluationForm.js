@@ -205,6 +205,7 @@ function PeerEvaluationForm() {
                 <input
                   type="radio"
                   name="conceptualContribution"
+                  role='rateConceptual'
                   value={i + 1}
                   onChange={(e) => handleChange('conceptualContribution', e.target.value)}
                   className="rating-input"
@@ -285,6 +286,7 @@ function PeerEvaluationForm() {
                   <input
                     type="radio"
                     name="practicalContribution"
+                    role='ratePractical'
                     value={i + 1}
                     onChange={(e) => handleChange('practicalContribution', e.target.value)}
                     className="rating-input"
@@ -365,6 +367,7 @@ function PeerEvaluationForm() {
                 <input
                   type="radio"
                   name="workEthic"
+                  role='rateWorkEthic'
                   value={i + 1}
                   onChange={(e) => handleChange('workEthic', e.target.value)}
                   className="rating-input"

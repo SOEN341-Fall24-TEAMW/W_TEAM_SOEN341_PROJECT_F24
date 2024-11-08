@@ -48,7 +48,7 @@ afterEach(() => {
    describe("Peer Evaluation Form" , () =>{
 
 
-       it("return",  () =>{
+       it("returns",  () =>{
 
 
 
@@ -154,7 +154,7 @@ afterEach(() => {
         });
 
 
-        it("displays comment boxes for conceptual contribution", () => {
+        it("displays comment boxes for cooperation dimension", () => {
      
            render(
                <MantineProvider>
@@ -163,13 +163,67 @@ afterEach(() => {
                </MemoryRouter>
                </MantineProvider>
                );
-                   const comments = screen.getAllByPlaceholderText("Add comments on Conceptual Contribution (optional)");
+                   const comments = screen.getAllByPlaceholderText("Add comments on cooperation (optional)");
                    expect(comments.length).toBe(1);
+                   expect(screen.getByText(/1. Cooperation/i)).toBeInTheDocument();
+
                    expect(comments).toBeInTheDocument;
         });
 
 
-        it("displays 7 ratings to choose from for cooperation", () => {
+        it("displays comment boxes for conceptual contribution", () => {
+     
+            render(
+                <MantineProvider>
+                <MemoryRouter>
+                <PeerEvaluationForm/>
+                </MemoryRouter>
+                </MantineProvider>
+                );
+                    const comments = screen.getAllByPlaceholderText("Add comments on Conceptual Contribution (optional)");
+                    expect(comments.length).toBe(1);
+
+                    expect(screen.getByText(/2. Conceptual Contribution/i)).toBeInTheDocument();
+
+                    expect(comments).toBeInTheDocument;
+         });
+
+
+         it("displays comment boxes for practical contribution", () => {
+     
+            render(
+                <MantineProvider>
+                <MemoryRouter>
+                <PeerEvaluationForm/>
+                </MemoryRouter>
+                </MantineProvider>
+                );
+                    const comments = screen.getAllByPlaceholderText("Add comments on practical contribution (optional)");
+                    expect(comments.length).toBe(1);
+
+                    expect(screen.getByText(/3. Practical Contribution/i)).toBeInTheDocument();
+
+                    expect(comments).toBeInTheDocument;
+         });
+
+         it("displays comment boxes for work ethic", () => {
+     
+            render(
+                <MantineProvider>
+                <MemoryRouter>
+                <PeerEvaluationForm/>
+                </MemoryRouter>
+                </MantineProvider>
+                );
+                    const comments = screen.getAllByPlaceholderText("Add comments on work ethic (optional)");
+                    expect(comments.length).toBe(1);
+
+                    expect(screen.getByText(/4. Work Ethic/i)).toBeInTheDocument();
+
+                    expect(comments).toBeInTheDocument;
+         });
+
+        it("displays 7 ratings to choose from for cooperation dimension", () => {
 
            render(
                <MantineProvider>
@@ -181,8 +235,54 @@ afterEach(() => {
                    const btn = screen.getAllByRole("rateCooperation");
 
                expect(btn.length).toBe(7);                
+               expect()
 
         });
+
+        it("displays 7 ratings to choose from for conceptual contribution", () => {
+
+            render(
+                <MantineProvider>
+                <MemoryRouter>
+                <PeerEvaluationForm/>
+                </MemoryRouter>
+                </MantineProvider>
+                );
+                    const btn = screen.getAllByRole("rateConceptual");
+ 
+                expect(btn.length).toBe(7);                
+ 
+         });
+
+         it("displays 7 ratings to choose from for practical contribution", () => {
+
+            render(
+                <MantineProvider>
+                <MemoryRouter>
+                <PeerEvaluationForm/>
+                </MemoryRouter>
+                </MantineProvider>
+                );
+                    const btn = screen.getAllByRole("ratePractical");
+ 
+                expect(btn.length).toBe(7);                
+ 
+         });
+
+         it("displays 7 ratings to choose from for work ethic", () => {
+
+            render(
+                <MantineProvider>
+                <MemoryRouter>
+                <PeerEvaluationForm/>
+                </MemoryRouter>
+                </MantineProvider>
+                );
+                    const btn = screen.getAllByRole("rateWorkEthic");
+ 
+                expect(btn.length).toBe(7);                
+ 
+         });
 
 
    })
