@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { NavLink, AppShell, Table, Group, Space, Button, Title, TextInput, rem } from '@mantine/core';
+import { NavLink, AppShell, Table, Group, Space, Button, Title, TextInput, rem, Container, Select } from '@mantine/core';
 import { IconUsers, IconUsersGroup, IconClipboardList, IconMessageCircle, IconSearch } from '@tabler/icons-react';
 
 import { NavbarStudentDashboard } from './NavbarStudentDashboard.js';
@@ -24,6 +24,7 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
   const [teams, setTeams] = useState([]);
   const [memberships, setMemberships] = useState([]);
   const [students, setStudents] = useState([]);
+  const [peerFeedbackData, setPeerFeedbackData] = useState([]);
 
   const fetchData = () => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -60,6 +61,55 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
     }
   };
 
+  const fetchPeerFeedback = (teamId) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    fetch(`http://localhost:3080/peer-evaluations/feedback?teamId=${teamId}`, {
+      method: "GET",
+      headers: { 'jwt-token': user.token },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.message === 'success') {
+          setPeerFeedbackData(data.feedback);
+        }
+      })
+      .catch((error) => console.error("Error fetching peer feedback:", error));
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [loggedIn]);
+
+  useEffect(() => {
+    if (selectedTeam) {
+      fetch(`http://localhost:3080/peer-evaluations/feedback?teamId=${selectedTeam}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.message === "success") {
+            setPeerFeedbackData(data.data); // Store the fetched feedback data
+          } else {
+            setPeerFeedbackData([]);
+          }
+        })
+        .catch((error) => console.error("Error fetching peer feedback:", error));
+    }
+  }, [selectedTeam]);
+
+  const rows2 = teams.map((team) => {
+    const teamCourse = courses.find((course) => course.id === team.course_id);
+    const courseName = teamCourse ? teamCourse.name : "No course";
+    const organizationName = organizations.find((org) => org.id === teamCourse?.organization_id)?.name || "Unknown organization";
+
+    return (
+      <Table.Tr key={team.id} onClick={() => setSelectedTeam(team)}>
+        <Table.Td>{team.name || "No name"}</Table.Td>
+        <Table.Td>{team.max_size || "No max size"}</Table.Td>
+        <Table.Td>{courseName}</Table.Td>
+        <Table.Td>{organizationName}</Table.Td>
+      </Table.Tr>
+    );
+  });
+
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
 
@@ -92,7 +142,7 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
 
   const tabs = [
     { label: 'My Teams', icon: IconUsersGroup },
-    { label: 'Peer Feedback', icon: IconMessageCircle }
+    { label: 'Submissions', icon: IconMessageCircle }
   ];
 
   const navBarData = tabs.map((data) => (
@@ -139,6 +189,49 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
     );
   });
 
+  // Peer Feedback Table (delete static data and implememt actally fetching the data)
+  const peerFeedbackTable = (
+    <Table striped highlightOnHover withBorder withColumnBorders>
+      <thead>
+        <tr>
+        <th className="other-column">Teammate</th>
+          <th className="other-column">Cooperation</th>
+          <th className="other-column">Conceptual Contribution</th>
+          <th className="other-column">Practical Contribution</th>
+          <th className="other-column">Work Ethic</th>
+          <th className="comment-column">Comments</th> {/* Wider comments column */}
+          <th className="other-column">Average</th>
+          <th className="other-column">Date</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {peerFeedbackData.length > 0 ? (
+          peerFeedbackData.map((feedback, index) => (
+            <tr key={index}>
+              <td>{students.find(student => student.id === feedback.evaluatee_id)?.name || feedback.evaluator_id}</td>
+              <td>{feedback.cooperation}</td>
+              <td>{feedback.conceptual_contribution}</td>
+              <td>{feedback.practical_contribution}</td>
+              <td>{feedback.work_ethic}</td>
+              <td>
+                <div>Cooperation: {feedback.cooperation_comment || 'No comment'}</div>
+                <div>Conceptual: {feedback.conceptual_comment || 'No comment'}</div>
+                <div>Practical: {feedback.practical_comment || 'No comment'}</div>
+                <div>Ethic: {feedback.ethic_comment || 'No comment'}</div>
+              </td>
+              <td>{new Date(feedback.timestamp).toLocaleDateString()}</td>
+            </tr>
+          ))
+        ) : (
+          <tr>
+            <td colSpan="7">No peer feedback found.</td>
+          </tr>
+        )}
+      </tbody>
+    </Table>
+  );
+
   return (
     <AppShell navbar={{ width: 250 }}>
       <AppShell.Navbar>{navBarData}</AppShell.Navbar>
@@ -164,7 +257,7 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
                   <Table.Th>Organization</Table.Th>
                 </Table.Tr>
               </Table.Thead>
-              <Table.Tbody>{rows.length > 0 ? rows : <tr><td colSpan={4}>No teams found</td></tr>}</Table.Tbody>
+              <Table.Tbody>{rows2.length > 0 ? rows2 : <tr><td colSpan={4}>No teams found</td></tr>}</Table.Tbody>
             </Table>
           </Table.ScrollContainer>
 
@@ -178,13 +271,27 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
         </AppShell.Main>
       )}
 
-      {active === 'Peer Feedback' && (
+
+      {/* Peer Feedback Tab */}
+      {active === 'Submissions' && (
         <AppShell.Main>
           <Space h="md" />
-          <Title>Peer Feedback</Title>
-          <PeerFeedback />
+          <Title>Submissions</Title>
+
+          {/* Dropdown to select the team. Implement actuall sorting logic here. */}
+          <Select 
+            label="Filter By Team"
+            placeholder="Select a team"
+            data={teams.map(team => ({ value: team.id, label: team.name }))}
+            onChange={setSelectedTeam}
+            style={{ width: '300px', marginBottom: '30px', marginTop: '20px' }}
+            />
+
+          {peerFeedbackTable}
         </AppShell.Main>
       )}
+
+
     </AppShell>
   );
 };
