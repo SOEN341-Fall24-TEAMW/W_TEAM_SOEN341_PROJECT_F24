@@ -661,30 +661,45 @@ app.post('/submit-evaluation', (req, res) => {
         team_id
     } = req.body;
 
-    if (!evaluator_id || !evaluatee_id) {
+    if (!evaluator_id || !evaluatee_id ) {
         return res.status(400).send({ message: "Evaluator and evaluatee IDs are required." });
     }
 
-    const id = db.get('peer_evaluations').size().value() + 1;
-    db.get('peer_evaluations')
-        .push({
-            id,
-            evaluator_id,
-            evaluatee_id,
-            cooperation,
-            conceptual_contribution: conceptualContribution,
-            practical_contribution: practicalContribution,
-            work_ethic: workEthic,
-            cooperation_comment: cooperationComment,
-            conceptual_comment: conceptualComment,
-            practical_comment: practicalComment,
-            ethic_comment: ethicComment,
-            team_id,
-            timestamp: new Date().toISOString()
-        })
-        .write();
+    // Check for existing evaluation
+    const existingEvaluation = db.get('peer_evaluations')
+        .find({ evaluator_id, evaluatee_id, team_id })
+        .value();
 
-    res.send({ message: 'success' });
+    if (existingEvaluation) {
+        return res.status(400).json({ message: "Evaluation already exists for this teammate in the same team." });
+    }
+    
+    try {
+        const id = db.get('peer_evaluations').size().value() + 1;
+
+        db.get('peer_evaluations')
+            .push({
+                id,
+                evaluator_id,
+                evaluatee_id,
+                cooperation: parseInt(cooperation),
+                conceptual_contribution: parseInt(conceptualContribution),
+                practical_contribution: parseInt(practicalContribution),
+                work_ethic: parseInt(workEthic),
+                cooperation_comment: cooperationComment || "No comment",
+                conceptual_comment: conceptualComment || "No comment",
+                practical_comment: practicalComment || "No comment",
+                ethic_comment: ethicComment || "No comment",
+                team_id,
+                timestamp: new Date().toISOString()
+            })
+            .write();
+
+        res.status(200).json({ message: 'success' });
+    } catch (error) {
+        console.error("Error submitting evaluation:", error);
+        res.status(500).json({ message: "Internal Server Error", error });
+    }
 });
 
 
