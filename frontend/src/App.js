@@ -127,7 +127,7 @@ function App() {
             <Route path="/login" element={<Login setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
             <Route path='/create-new-account' element={<CreateNewAccount setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
             <Route path="/student-dashboard" element={<StudentDashboard email={email} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} />
-            <Route path="/instructor-dashboard" element={<InstructorDashboard organizations={organizations} org={org} courses={courses} teams={teams} students={students} memberships={memberships} email={email} fetchData={fetchData} />} />
+            <Route path="/instructor-dashboard" element={<InstructorDashboard organizations={organizations} org={org} courses={courses} teams={teams} students={students} memberships={memberships} email={email} fetchData={fetchData} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} />
             <Route path='/Teams' element={<Teams/>} />
             <Route path='/CreateTeams' element={<CreateTeams/>} />
             <Route path='/TeamList' element={<TeamList/>} />

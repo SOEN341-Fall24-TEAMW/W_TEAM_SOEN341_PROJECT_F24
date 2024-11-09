@@ -529,6 +529,35 @@ app.get("/users", (req, res) => {
     }
 });
 
+app.post('/get-student-feedback', (req, res) => {
+    const selected_student_id = req.body.student.id;
+    console.log("DJ KHALED ID: ", selected_student_id);
+    try {
+        const feedbacks = db.get("peer_evaluations").value();
+        const student_feedbacks = feedbacks.filter(eval => eval.evaluatee_id === selected_student_id);
+        console.log('DJ KHALED FEEDBACK SENT: ', feedbacks);
+        return res.status(200).json({ message: 'success', feedbacks: student_feedbacks });
+
+    } catch (error) {
+        return res.status(401).json({ message: "Invalid token", error });
+    }
+})
+
+app.post('/get-student-peers', (req, res) => {
+    const feedbacks = req.body;
+    console.log("DJ KHALED LOGGING: ", feedbacks);
+    const peer_ids = feedbacks.map(feedback => feedback.evaluator_id);
+    console.log("DJ KHALED IDDD: ", peer_ids);
+    try {
+        const students = db.get("users").filter((user) => (user.role === 'student' && peer_ids.includes(user.id))).value();
+        console.log('DJ KHALED FEEDBACK SENT??????: ', students);
+        return res.status(200).json({ message: 'success', peers: students });
+
+    } catch (error) {
+        return res.status(401).json({ message: "Invalid token", error });
+    }
+})
+
 // Middleware to verify if the user is an instructor
 function isInstructor(req, res, next) {
     const token = req.headers["jwt-token"];
@@ -681,6 +710,25 @@ app.get("/peer-evaluations/check", (req, res) => {
         return res.status(200).json({ hasFeedback: true });
     } else {
         return res.status(200).json({ hasFeedback: false });
+    }
+});
+
+app.get("/peer-evaluations/feedback", (req, res) => {
+    const { teamId } = req.query;
+
+    if (!teamId) {
+        return res.status(400).json({ message: "Team ID is required" });
+    }
+
+    // Filter peer evaluations for the specified teamId
+    const feedbackData = db.get("peer_evaluations")
+        .filter({ team_id: teamId })
+        .value();
+
+    if (feedbackData && feedbackData.length > 0) {
+        return res.status(200).json({ message: "success", data: feedbackData });
+    } else {
+        return res.status(404).json({ message: "No peer feedback found" });
     }
 });
 

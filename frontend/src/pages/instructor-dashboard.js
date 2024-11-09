@@ -1,11 +1,26 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { NavLink, AppShell, Table, Group, Space, Modal, Button, Title, TextInput, rem, Select, Menu, NumberInput, MultiSelect, Alert, Text, FileInput, Notification } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconUsers, IconUsersGroup, IconSettings, IconSearch, IconDatabaseImport, IconCirclePlus, IconX, IconCheck } from '@tabler/icons-react';
+import { IconUsers, IconUsersGroup, IconMessage, IconSearch, IconDatabaseImport, IconCirclePlus, IconX, IconCheck } from '@tabler/icons-react';
+
 import Papa from "papaparse";
 import './styles.css';
+import InstructorDashboardFeedbacks from "./instructor-dashboard-feedbacks.js";
 
-const InstructorDashboard = ({ organizations, org, courses, teams, students, memberships, email, fetchData }) => {
+const InstructorDashboard = ({ organizations, org, courses, teams, students, memberships, email, fetchData, loggedIn, setLoggedIn }) => {
+
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem('user'));
+
+  useEffect(() => {
+    if (!user || !user.token) {
+      console.error("JWT token not found. Please log in again.");
+      setLoggedIn(false);
+      navigate('/');
+    }
+  }, [user, navigate, setLoggedIn]);
 
   const [active, setActive] = useState('Students');
   const [query, setQuery] = useState('');
@@ -246,7 +261,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
   const tabs = [
     { label: 'Students', icon: IconUsers },
     { label: 'Teams', icon: IconUsersGroup },
-    { label: 'Admin', icon: IconSettings }
+    { label: 'Feedbacks', icon: IconMessage }
   ];
 
   const navBarData = tabs.map((data) => (
@@ -662,7 +677,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
                       placeholder="Select course"
                       data={courses.filter((course) => course.organization_id === teamData.organization_id).map((course) => ({ value: course.id, label: course.name }))}
                       value={teamData.course_id}
-                      onChange={(value) => {updateTeamData("course_id", value); updateTeamData("new_course_name", "");}}
+                      onChange={(value) => { updateTeamData("course_id", value); updateTeamData("new_course_name", ""); }}
                     />
 
                     <TextInput
@@ -840,6 +855,12 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
             </Table>
           </Table.ScrollContainer>
         </AppShell.Main>
+      )}
+
+      {(active === 'Feedbacks') && (
+        <>
+          <InstructorDashboardFeedbacks organizations={organizations} org={org} courses={courses} teams={teams} students={students} memberships={memberships} email={email} setLoggedIn={setLoggedIn}/>
+        </>
       )}
 
 
