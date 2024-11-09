@@ -207,22 +207,34 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
 
       <tbody>
         {peerFeedbackData.length > 0 ? (
-          peerFeedbackData.map((feedback, index) => (
-            <tr key={index}>
-              <td>{students.find(student => student.id === feedback.evaluatee_id)?.name || feedback.evaluator_id}</td>
-              <td>{feedback.cooperation}</td>
-              <td>{feedback.conceptual_contribution}</td>
-              <td>{feedback.practical_contribution}</td>
-              <td>{feedback.work_ethic}</td>
-              <td>
-                <div>Cooperation: {feedback.cooperation_comment || 'No comment'}</div>
-                <div>Conceptual: {feedback.conceptual_comment || 'No comment'}</div>
-                <div>Practical: {feedback.practical_comment || 'No comment'}</div>
-                <div>Ethic: {feedback.ethic_comment || 'No comment'}</div>
-              </td>
-              <td>{new Date(feedback.timestamp).toLocaleDateString()}</td>
-            </tr>
-          ))
+           peerFeedbackData.map((feedback, index) => {
+            console.log("Scores:", feedback.cooperation, feedback.conceptual_contribution, feedback.practical_contribution, feedback.work_ethic);
+
+            const averageScore = (
+              (Number(feedback.cooperation) +
+               Number(feedback.conceptual_contribution) +
+               Number(feedback.practical_contribution) +
+               Number(feedback.work_ethic)) / 4
+            ).toFixed(2);
+    
+              return (
+              <tr key={index}>
+                <td>{students.find(student => student.id === feedback.evaluatee_id)?.name || feedback.evaluator_id}</td>
+                <td>{feedback.cooperation}</td>
+                <td>{feedback.conceptual_contribution}</td>
+                <td>{feedback.practical_contribution}</td>
+                <td>{feedback.work_ethic}</td>
+                <td>
+                  <div>Cooperation: {feedback.cooperation_comment || 'No comment'}</div>
+                  <div>Conceptual: {feedback.conceptual_comment || 'No comment'}</div>
+                  <div>Practical: {feedback.practical_comment || 'No comment'}</div>
+                  <div>Ethic: {feedback.ethic_comment || 'No comment'}</div>
+                </td>
+                <td>{averageScore}</td>
+                <td>{new Date(feedback.timestamp).toLocaleDateString()}</td>
+              </tr>
+            );
+          })
         ) : (
           <tr>
             <td colSpan="7">No peer feedback found.</td>
