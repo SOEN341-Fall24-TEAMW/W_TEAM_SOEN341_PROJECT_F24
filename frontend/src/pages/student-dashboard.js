@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { NavLink, AppShell, Table, Group, Space, Button, Title, TextInput, rem, Select, Alert } from '@mantine/core';
-import { IconUsersGroup, IconMessageCircle, IconSearch } from '@tabler/icons-react';
+import { IconUsersGroup, IconMessageCircle, IconSearch, IconFileText , IconThumbUp} from '@tabler/icons-react';
 
 import { NavbarStudentDashboard } from './NavbarStudentDashboard.js';
 import PeerFeedback from './peerFeedback.js';
@@ -12,6 +12,10 @@ import './styles.css';
 
 const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
   const navigate = useNavigate();
+
+  // Fetching current user ID 
+  const currentUserId = JSON.parse(localStorage.getItem('user'))?.email; 
+
 
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [active, setActive] = useState('Students');
@@ -34,6 +38,15 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
     setIsAlertVisible(false);
     console.log("Alert closed:", isAlertVisible);
   };
+
+   // Alert state for visibility
+   const [isAlertVisible2, setIsAlertVisible2] = useState(true);
+
+   // Function to handle the closing of the alert
+   const handleCloseAlert2 = () => {
+     setIsAlertVisible2(false);
+     console.log("Alert closed:", isAlertVisible2);
+   };
 
   const fetchData = () => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -151,7 +164,8 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
 
   const tabs = [
     { label: 'My Teams', icon: IconUsersGroup },
-    { label: 'Submissions', icon: IconMessageCircle }
+    { label: 'Submissions', icon: IconFileText },
+    { label: 'Feedback', icon: IconThumbUp }
   ];
 
   const navBarData = tabs.map((data) => (
@@ -198,8 +212,8 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
     );
   });
     
-  // Peer Feedback Table
-  const peerFeedbackTable = (
+  // Peer submissions Table
+  const submissionsTable = (
     <div>
     {/* Confidentiality message */}
     {isAlertVisible && (
@@ -283,6 +297,103 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
     </Table>
     </div>
   );
+  
+  const filteredFeedback = peerFeedbackData.filter(
+    (feedback) => feedback.team_id === selectedTeam
+  );
+  
+
+  const feedbackTable = (
+    <div>
+      {/* Confidentiality message */}
+      {isAlertVisible2 && (
+        <Alert
+          color="blue"
+          title="Constructive Feedback Reminder"
+          style={{ marginBottom: '1em', marginTop: '1em' }} 
+        >
+          <div>
+            Peer feedback is intended to help everyone improve. Please take all ratings as constructive, not personal.
+            <button
+              onClick={handleCloseAlert2}
+              style={{
+                position: 'absolute',
+                top: '10px',
+                right: '10px',
+                background: 'transparent',
+                border: 'none',
+                color: 'black',
+                fontSize: '16px',
+                cursor: 'pointer',
+              }}
+            >
+              X
+            </button>
+          </div>
+        </Alert>
+      )}
+      
+      {/* Render the peer feedback table */}
+      <Table striped highlightOnHover withBorder withColumnBorders>
+        <thead>
+          <tr>
+            <th className="team-column">Team</th>
+            <th className="comments-column">Comments</th>
+            <th className="average-score-column">Average Score</th>
+          </tr>
+        </thead>
+  
+        <tbody>
+          {filteredFeedback.length > 0 ? (
+            filteredFeedback.map((feedback, index) => {
+              if (index === 0 || filteredFeedback[index - 1].team_id !== feedback.team_id) {
+                const team = teams.find((team) => team.id === feedback.team_id);
+
+                // Concatenate all the comments into one string
+              // Concatenate all comments from all teammates in the selected team
+              const allComments = filteredFeedback
+                .map(fb => [
+                  fb.cooperation_comment,
+                  fb.conceptual_comment,
+                  fb.practical_comment,
+                  fb.ethic_comment
+                ].filter(comment => comment) // Filter out empty comments
+                .join(' ')) // Join all comments into a single string
+                .join(' '); // Join comments from all teammates into one string
+    
+                // Calculate average score across all criteria
+                const totalScore = filteredFeedback.reduce((total, fb) => {
+                  return total +
+                    Number(fb.cooperation) +
+                    Number(fb.conceptual_contribution) +
+                    Number(fb.practical_contribution) +
+                    Number(fb.work_ethic);
+                }, 0);
+
+                const averageOverallScore = (totalScore / (filteredFeedback.length * 4)).toFixed(2); // Divide by number of criteria * number of feedbacks
+
+    
+                return (
+                  <tr key={index}>
+                    <td>{team?.name || "No team name"}</td>
+                    <td>{allComments}</td>
+                    <td>{averageOverallScore}</td>
+                  </tr>
+                );
+              } else {
+                return null;
+              }
+            })
+          ) : (
+            <tr>
+              <td colSpan="3">No feedback available for this team.</td>
+            </tr>
+          )}
+        </tbody>
+      </Table>
+    </div>
+  );
+  
 
   return (
     <AppShell navbar={{ width: 250 }}>
@@ -339,9 +450,29 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
             style={{ width: '300px', marginBottom: '30px', marginTop: '20px' }}
             />
 
-          {peerFeedbackTable}
+          {submissionsTable}
         </AppShell.Main>
       )}
+
+{active === 'Feedback' && (
+  <AppShell.Main>
+    <Space h="md" />
+    <Title>Peer Feedback</Title>
+
+    {/* Dropdown to select the team. Implement actuall sorting logic here. */}
+    <Select 
+      label="Filter By Team"
+      placeholder="Select a team"
+      data={teams.map(team => ({ value: team.id, label: team.name }))}
+      onChange={setSelectedTeam}
+      style={{ width: '300px', marginBottom: '30px', marginTop: '20px' }}
+    />
+
+    {feedbackTable}
+    
+  </AppShell.Main>
+)}
+
 
 
     </AppShell>
