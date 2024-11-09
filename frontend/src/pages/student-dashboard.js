@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { NavLink, AppShell, Table, Group, Space, Button, Title, TextInput, rem, Container, Select } from '@mantine/core';
-import { IconUsers, IconUsersGroup, IconClipboardList, IconMessageCircle, IconSearch } from '@tabler/icons-react';
+import { NavLink, AppShell, Table, Group, Space, Button, Title, TextInput, rem, Select, Alert } from '@mantine/core';
+import { IconUsersGroup, IconMessageCircle, IconSearch } from '@tabler/icons-react';
 
 import { NavbarStudentDashboard } from './NavbarStudentDashboard.js';
 import PeerFeedback from './peerFeedback.js';
@@ -25,6 +25,15 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
   const [memberships, setMemberships] = useState([]);
   const [students, setStudents] = useState([]);
   const [peerFeedbackData, setPeerFeedbackData] = useState([]);
+
+  // Alert state for visibility
+  const [isAlertVisible, setIsAlertVisible] = useState(true);
+
+  // Function to handle the closing of the alert
+  const handleCloseAlert = () => {
+    setIsAlertVisible(false);
+    console.log("Alert closed:", isAlertVisible);
+  };
 
   const fetchData = () => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -188,9 +197,39 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
       </Table.Tr>
     );
   });
-
-  // Peer Feedback Table (delete static data and implememt actally fetching the data)
+    
+  // Peer Feedback Table
   const peerFeedbackTable = (
+    <div>
+    {/* Confidentiality message */}
+    {isAlertVisible && (
+        <Alert
+          color="red"
+          title="Confidentiality Reminder"
+          style={{ marginBottom: '1em' }}
+        >
+          <div>
+            Please maintain the confidentiality of all peer feedback information.
+            {/* The 'X' button */}
+            <button
+              onClick={handleCloseAlert}
+              style={{
+                position: 'absolute', // Absolute positioning within the Alert container
+                top: '10px',          // Top offset
+                right: '10px',        // Right offset
+                background: 'transparent',
+                border: 'none',
+                color: 'black',
+                fontSize: '16px',
+                cursor: 'pointer',
+              }}
+            >
+              X
+            </button>
+          </div>
+        </Alert>
+      )}
+    
     <Table striped highlightOnHover withBorder withColumnBorders>
       <thead>
         <tr>
@@ -237,11 +276,12 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
           })
         ) : (
           <tr>
-            <td colSpan="7">No peer feedback found.</td>
+            <td colSpan="8">No peer feedback found.</td>
           </tr>
         )}
       </tbody>
     </Table>
+    </div>
   );
 
   return (
