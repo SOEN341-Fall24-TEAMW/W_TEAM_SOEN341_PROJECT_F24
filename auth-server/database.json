@@ -508,26 +508,26 @@
     },
     {
       "id": "09876543",
-      "email": "sam@sam.sam",
+      "email": "sam@smith.com",
       "password": "$2b$10$lSA1Ja1EVy9TOv0xoRdQ1OX4nZzvZusRXCLwD5igvghPtwsjX1yRK",
       "role": "student",
-      "name": "Sam Sam",
+      "name": "Sam Smith",
       "organization_id": "org1"
     },
     {
       "id": "98765432",
-      "email": "adja@adja.adja",
+      "email": "adja@Jones.com",
       "password": "$2b$10$qM0duxvNXfHXCaYWeyVeuuGAV75xNOcGczIS0118NBmNB3H2COUQ.",
       "role": "student",
-      "name": "Adja Adja",
+      "name": "Adja Jones",
       "organization_id": "org1"
     },
     {
       "id": "87654321",
-      "email": "sara@sara.sara",
+      "email": "sara@Mitchel.com",
       "password": "$2b$10$4NzYxHkzpm9SWtXoB6E4jezMj92VHIqbTxBA9LX1r7LlIEw5rxXc6",
       "role": "student",
-      "name": "Sara Sara",
+      "name": "Sara Mitchel",
       "organization_id": "org1"
     }
   ],
@@ -707,7 +707,7 @@
     },
     {
       "id": "33aab05e-0020-420a-949d-627f8772b791",
-      "name": "Hiii",
+      "name": "DJ KHALED",
       "max_size": 3,
       "course_id": "c1",
       "instructor_id": "qwe@qwe.qwe"
@@ -1233,12 +1233,12 @@
     },
     {
       "id": 8,
-      "evaluator_id": "09876543",
+      "evaluator_id": "98765432",
       "evaluatee_id": "87654321",
       "cooperation": "6",
       "conceptual_contribution": "7",
       "practical_contribution": "6",
-      "work_ethic": "",
+      "work_ethic": "6",
       "cooperation_comment": "Very good!",
       "conceptual_comment": "",
       "practical_comment": "",
