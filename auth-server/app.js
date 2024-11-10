@@ -2,6 +2,7 @@ const express = require("express")
 const bcrypt = require("bcrypt") //for hashing and comparing passwords
 var cors = require('cors')
 const jwt = require("jsonwebtoken") // for generating and verifying JSON web tokens
+const instructorRoutes = require('./instructorRoutes'); // Import the instructorRoutes module
 var low = require("lowdb"); //for storing user details (email and hashed password)
 var FileSync = require("lowdb/adapters/FileSync");
 var adapter = new FileSync("./database.json");
@@ -44,6 +45,9 @@ const jwtSecretKey = "dsfdsfsdfdsvcsvdfgefg"
 // Set up CORS and JSON middlewares
 app.use(cors())
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+module.exports = { app };
+
 function isValidToken(token) {
     try {
         const decoded = jwt.verify(token, jwtSecretKey);
@@ -67,11 +71,12 @@ function fetchStudentDataToExport(organizationId) {
         .value();
 }
 
-        try {
-            const decodedToken = jwt.verify(token, jwtSecretKey);
-            if (decodedToken.role !== "instructor") {
-                return res.status(403).json({ message: "Access forbidden: not an instructor" });
-            }
+// Endpoint to export student data as CSV
+router.get('/instructor/export', isInstructor, (req, res) => {
+    const organizationId = req.query.organizationId;
+    if (!organizationId) {
+        return res.status(400).json({ message: "Organization ID is required" });
+    }
 
     // Fetch the student data filtered by organization ID
     const studentData = fetchStudentDataToExport(organizationId);
@@ -929,10 +934,6 @@ io.on('connection', (socket) => {
     });
 });
 
-// Start server
-app.listen(3080, () => {
-    console.log("Server running on port 3080");
-});
 // Create a new roster
 app.post('/rosters', (req, res) => {
     const { teamID, courseName } = req.body;
@@ -964,4 +965,8 @@ app.post('/scores', (req, res) => {
 
     db.get('scores').push(newScore).write();
     res.status(201).send(newScore);
+});
+// Start server
+app.listen(3080, () => {
+    console.log("Server running on port 3080");
 });

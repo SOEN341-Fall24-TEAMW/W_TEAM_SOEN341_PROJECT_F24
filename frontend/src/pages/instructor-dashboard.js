@@ -39,40 +39,45 @@ const InstructorDashboard = ({organizations, org, courses, teams, students, memb
     sortOrder: 'asc'    // Sort order: 'asc' or 'desc'
   });
   const exportCSV = () => {
-    // Get the selected organization's ID from the props or state
     const selectedOrg = organizations.find((organization) => organization.name === org);
     const organizationId = selectedOrg?.id;
   
     if (!organizationId) {
-      console.error('No organization selected');
+      setNotifyError(true); // Show an error notification for missing organization
+      setTimeout(() => setNotifyError(false), 5000); // Clear notification after a timeout
       return;
     }
   
+    const user = JSON.parse(localStorage.getItem("user")); // Fetch user dynamically
+  
     fetch(`/instructor/export?organizationId=${organizationId}`, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Authorization': `Bearer ${user.token}`,
+        Authorization: `Bearer ${user?.token}`,
       },
     })
-      .then(response => {
+      .then((response) => {
         if (response.ok) {
           return response.blob();
         }
-        throw new Error('Failed to fetch CSV data.');
+        throw new Error("Failed to fetch CSV data.");
       })
-      .then(blob => {
+      .then((blob) => {
         const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.style.display = 'none';
+        const a = document.createElement("a");
+        a.style.display = "none";
         a.href = url;
         a.download = `students_${organizationId}.csv`;
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
       })
-      .catch(error => console.error('Error exporting CSV:', error));
-  };  
-  
+      .catch((error) => {
+        console.error("Error exporting CSV:", error);
+        setNotifyError(true); // Show an error notification for export failure
+        setTimeout(() => setNotifyError(false), 5000); // Clear notification after a timeout
+      });
+  };
   
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user'));
@@ -432,6 +437,21 @@ const InstructorDashboard = ({organizations, org, courses, teams, students, memb
   }}
   onClick={exportCSV}
 >
+{notifyError && (
+  <Notification
+    icon={<IconX style={{ width: rem(20), height: rem(20) }} />}
+    color="red"
+    title="Export Error"
+    withCloseButton={false}
+    style={{
+      opacity: notifyError ? '1' : '0',
+      transition: 'opacity 0.5s ease-in-out',
+    }}
+  >
+    Unable to export CSV. Please ensure an organization is selected.
+  </Notification>
+)}
+
   Export Student Data
 </Button>
 
