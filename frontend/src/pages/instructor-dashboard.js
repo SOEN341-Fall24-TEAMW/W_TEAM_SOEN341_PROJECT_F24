@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
+import DashboardFilterSort from './DashboardFilterSort.js';
 import { NavLink, AppShell, Table, Group, Space, Modal, Button, Title, TextInput, rem, Select, Menu, NumberInput, MultiSelect, Alert, Text, FileInput, Notification } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconUsers, IconUsersGroup, IconMessage, IconSearch, IconDatabaseImport, IconCirclePlus, IconX, IconCheck } from '@tabler/icons-react';
@@ -8,9 +8,37 @@ import { IconUsers, IconUsersGroup, IconMessage, IconSearch, IconDatabaseImport,
 import Papa from "papaparse";
 import './styles.css';
 import InstructorDashboardFeedbacks from "./instructor-dashboard-feedbacks.js";
+// Filtering and sorting logic based on filterSortOptions
+const applyFilterAndSort = (students, filterSortOptions) => {
+  return students
+    .filter((student) => {
+      if (filterSortOptions.filterBy && filterSortOptions.filterValue) {
+        const columnValue = student[filterSortOptions.filterBy]?.toString().toLowerCase();
+        const filterValue = filterSortOptions.filterValue.toLowerCase();
+        return columnValue && columnValue.includes(filterValue);
+      }
+      return true; // No filtering if filterBy or filterValue is not set
+    })
+    .sort((a, b) => {
+      if (filterSortOptions.sortBy) {
+        const aValue = a[filterSortOptions.sortBy];
+        const bValue = b[filterSortOptions.sortBy];
+        if (aValue < bValue) return filterSortOptions.sortOrder === 'asc' ? -1 : 1;
+        if (aValue > bValue) return filterSortOptions.sortOrder === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+};
+
 
 const InstructorDashboard = ({ organizations, org, courses, teams, students, memberships, email, fetchData, loggedIn, setLoggedIn }) => {
-
+  const [filterSortOptions, setFilterSortOptions] = useState({
+    filterBy: '',       // Column to filter by, e.g., 'Name'
+    filterValue: '',    // Value to filter by, e.g., 'John'
+    sortBy: '',         // Column to sort by, e.g., 'ID'
+    sortOrder: 'asc'    // Sort order: 'asc' or 'desc'
+  });
+  
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user'));
 
@@ -278,46 +306,46 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
   ))
 
   const rows = org
-    ? (students || [])
-      .filter(
-        (student) =>
-          student.organization_id === (organizations.find((organization) => organization.name === org) || {}).id
-      )
-      .filter(
-        (student) =>
-          student.name.toLowerCase().includes(query.toLowerCase()) ||
-          student.id.toString().includes(query.toLowerCase())
-      )
-      .map((student) => {
-        const student_memberships = (memberships || []).filter((membership) => membership.student_id === student.id);
+  ? applyFilterAndSort(students || [], filterSortOptions)
+  .filter(
+    (student) =>
+      student.organization_id === (organizations.find((organization) => organization.name === org) || {}).id
+  )
+  .filter(
+    (student) =>
+      student.name.toLowerCase().includes(query.toLowerCase()) ||
+      student.id.toString().includes(query.toLowerCase())
+  )
+  .map((student) => {
+    const student_memberships = (memberships || []).filter((membership) => membership.student_id === student.id);
 
-        const team_names = student_memberships
-          .map((membership) => (teams || []).find((team) => team.id === membership.team_id)?.name)
-          .filter((team_name) => team_name)
-          .join(", ");
+    const team_names = student_memberships
+      .map((membership) => (teams || []).find((team) => team.id === membership.team_id)?.name)
+      .filter((team_name) => team_name)
+      .join(", ");
 
-        const team_courses = student_memberships
-          .map((membership) => (teams || []).find((team) => team.id === membership.team_id)?.course_id)
-          .filter((course_id) => course_id);
-        const course_names = team_courses
-          .map((course_id) => (courses || []).find((course) => course.id === course_id)?.name)
-          .filter((course_name) => course_name)
-          .join(", ");
+    const team_courses = student_memberships
+      .map((membership) => (teams || []).find((team) => team.id === membership.team_id)?.course_id)
+      .filter((course_id) => course_id);
+    const course_names = team_courses
+      .map((course_id) => (courses || []).find((course) => course.id === course_id)?.name)
+      .filter((course_name) => course_name)
+      .join(", ");
 
-        const organization_name = (organizations || []).find((organization) => organization.id === student.organization_id)?.name || "Unknown organization";
+    const organization_name = (organizations || []).find((organization) => organization.id === student.organization_id)?.name || "Unknown organization";
 
-        return (
-          <Table.Tr key={student.id}>
-            <Table.Td>{student.name || "No name"}</Table.Td>
-            <Table.Td>{student.id || "No id"}</Table.Td>
-            <Table.Td>{student.email || "No email"}</Table.Td>
-            <Table.Td>{team_names || "No team"}</Table.Td>
-            <Table.Td>{course_names || "No course"}</Table.Td>
-            <Table.Td>{organization_name || "No organization"}</Table.Td>
-          </Table.Tr>
-        );
-      })
-    : [];
+    return (
+      <Table.Tr key={student.id}>
+        <Table.Td>{student.name || "No name"}</Table.Td>
+        <Table.Td>{student.id || "No id"}</Table.Td>
+        <Table.Td>{student.email || "No email"}</Table.Td>
+        <Table.Td>{team_names || "No team"}</Table.Td>
+        <Table.Td>{course_names || "No course"}</Table.Td>
+        <Table.Td>{organization_name || "No organization"}</Table.Td>
+      </Table.Tr>
+    );
+  })
+: [];
 
   const rows2 = org
     ? (teams || [])
@@ -357,6 +385,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
       <AppShell.Navbar>{navBarData}</AppShell.Navbar>
       {(active === 'Students') && (<AppShell.Main>
         <Space h="md" />
+        <DashboardFilterSort onApply={setFilterSortOptions} />
         <Group justify="space-between">
           <Title>Students</Title>
           <Modal
@@ -583,6 +612,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
       {(active === 'Teams') && (
         <AppShell.Main>
           <Space h="md" />
+          <DashboardFilterSort onApply={setFilterSortOptions} />
           <Group justify="space-between">
             <Title>Teams</Title>
             <Modal
