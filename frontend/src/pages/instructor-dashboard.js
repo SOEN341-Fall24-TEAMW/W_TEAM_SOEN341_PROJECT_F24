@@ -31,13 +31,40 @@ const applyFilterAndSort = (students, filterSortOptions) => {
 };
 
 
-const InstructorDashboard = ({ organizations, org, courses, teams, students, memberships, email, fetchData, loggedIn, setLoggedIn }) => {
+
+const InstructorDashboard = ({organizations, org, courses, teams, students, memberships, email, fetchData, loggedIn, setLoggedIn }) => {
   const [filterSortOptions, setFilterSortOptions] = useState({
     filterBy: '',       // Column to filter by, e.g., 'Name'
     filterValue: '',    // Value to filter by, e.g., 'John'
     sortBy: '',         // Column to sort by, e.g., 'ID'
     sortOrder: 'asc'    // Sort order: 'asc' or 'desc'
   });
+  const exportCSV = () => {
+    fetch('/instructor/export', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${user.token}`,
+      },
+    })
+    .then(response => {
+      if (response.ok) {
+        return response.blob();
+      }
+      throw new Error('Failed to fetch CSV data.');
+    })
+    .then(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = 'students_export.csv';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    })
+    .catch(error => console.error('Error exporting CSV:', error));
+  };
+  
   
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user'));
@@ -385,6 +412,21 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
       <AppShell.Navbar>{navBarData}</AppShell.Navbar>
       {(active === 'Students') && (<AppShell.Main>
         <Space h="md" />
+        <Button
+  style={{
+    backgroundColor: "#4CAF50",
+    color: "white",
+    fontSize: "16px",
+    fontWeight: "bold",
+    padding: "10px 20px",
+    margin: "10px 0",
+    cursor: "pointer",
+  }}
+  onClick={exportCSV}
+>
+  Export Student Data
+</Button>
+
         <DashboardFilterSort onApply={setFilterSortOptions} />
         <Group justify="space-between">
           <Title>Students</Title>

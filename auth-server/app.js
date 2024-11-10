@@ -951,6 +951,7 @@ app.post('/rosters', (req, res) => {
     res.status(201).send(newRoster);  // Send the created roster as a response
 });
 // Store a score for a team
+// Example in a POST request
 app.post('/scores', (req, res) => {
     const { teamID, score } = req.body;
 
