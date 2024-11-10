@@ -212,20 +212,15 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
     );
   });
 
-  // Find the current user's numeric ID based on their email
-  const currentUser = students.find((student) => student.email === currentUserId);
-  const currentUserNumericId = currentUser?.id; // Get the ID if the user exists
-
-  // Now filter peerFeedbackData based on this numeric ID
-  const userSubmissions = peerFeedbackData.filter(
-    (feedback) => feedback.evaluator_id === currentUserNumericId
-  );
+  const filteredFeedback = peerFeedbackData.filter((feedback) => {
+    const evaluatee = students.find(student => student.id === feedback.evaluatee_id);  // Assuming `students` holds user data
+    const evaluateeEmail = evaluatee ? evaluatee.email : null;
+    console.log("Evaluatee email:", evaluateeEmail, "Current user email:", currentUserId);
+    return feedback.team_id === selectedTeam && evaluateeEmail === currentUserId;
+  });
   
-  console.log("Current User ID:", currentUserId);
-  console.log("User Submissions:", userSubmissions);
+  const evaluator = students.find(student => String(student.email) === String(currentUserId));
 
-  
-    
   // Peer submissions Table
   const submissionsTable = (
     <div>
@@ -271,52 +266,50 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
           <th className="other-column">Date</th>
         </tr>
       </thead>
+          
 
       <tbody>
-        {userSubmissions.length > 0 ? (
-           userSubmissions.map((feedback, index) => {
-            console.log("Scores:", feedback.cooperation, feedback.conceptual_contribution, feedback.practical_contribution, feedback.work_ethic);
-
+        {peerFeedbackData.filter(feedback => String(feedback.evaluator_id) === String(evaluator.id)).length > 0 ? (
+          peerFeedbackData
+          .filter(feedback => String(feedback.evaluator_id) === String(evaluator.id))
+          .map((feedback, index) => {
             const averageScore = (
-              (Number(feedback.cooperation) +
-               Number(feedback.conceptual_contribution) +
-               Number(feedback.practical_contribution) +
-               Number(feedback.work_ethic)) / 4
+               (Number(feedback.cooperation) +
+                Number(feedback.conceptual_contribution) +
+                Number(feedback.practical_contribution) +
+                Number(feedback.work_ethic)) / 4
             ).toFixed(2);
-    
-              return (
-              <tr key={index}>
-                <td>{students.find(student => student.id === feedback.evaluatee_id)?.name || feedback.evaluator_id}</td>
-                <td>{feedback.cooperation}</td>
-                <td>{feedback.conceptual_contribution}</td>
-                <td>{feedback.practical_contribution}</td>
-                <td>{feedback.work_ethic}</td>
-                <td>
-                  <div>Cooperation: {feedback.cooperation_comment || 'No comment'}</div>
-                  <div>Conceptual: {feedback.conceptual_comment || 'No comment'}</div>
-                  <div>Practical: {feedback.practical_comment || 'No comment'}</div>
-                  <div>Ethic: {feedback.ethic_comment || 'No comment'}</div>
-                </td>
-                <td>{averageScore}</td>
-                <td>{new Date(feedback.timestamp).toLocaleDateString()}</td>
-              </tr>
-            );
-          })
-        ) : (
-          <tr>
-            <td colSpan="8">No peer feedback found.</td>
-          </tr>
-        )}
-      </tbody>
-    </Table>
+            
+                return (
+                  <tr key={index}>
+                    <td>{students.find(student => student.id === feedback.evaluatee_id)?.name || feedback.evaluator_id}</td>
+                    <td>{feedback.cooperation}</td>
+                    <td>{feedback.conceptual_contribution}</td>
+                    <td>{feedback.practical_contribution}</td>
+                    <td>{feedback.work_ethic}</td>
+                    <td>
+                      <div>Cooperation: {feedback.cooperation_comment || 'No comment'}</div>
+                      <div>Conceptual: {feedback.conceptual_comment || 'No comment'}</div>
+                      <div>Practical: {feedback.practical_comment || 'No comment'}</div>
+                      <div>Ethic: {feedback.ethic_comment || 'No comment'}</div>
+                    </td>
+                    <td>{averageScore}</td>
+                    <td>{new Date(feedback.timestamp).toLocaleDateString()}</td>
+                  </tr>
+                );
+              })
+          ) : (
+            <tr>
+              <td colSpan="8">No peer feedback found.</td>
+            </tr>
+          )}
+        </tbody>
+      </Table>
     </div>
   );
-  
-  const filteredFeedback = peerFeedbackData.filter(
-    (feedback) => feedback.team_id === selectedTeam
-  );
-  
 
+  
+  
   const feedbackTable = (
     <div>
       {/* Confidentiality message */}
