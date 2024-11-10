@@ -211,6 +211,20 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
       </Table.Tr>
     );
   });
+
+  // Find the current user's numeric ID based on their email
+  const currentUser = students.find((student) => student.email === currentUserId);
+  const currentUserNumericId = currentUser?.id; // Get the ID if the user exists
+
+  // Now filter peerFeedbackData based on this numeric ID
+  const userSubmissions = peerFeedbackData.filter(
+    (feedback) => feedback.evaluator_id === currentUserNumericId
+  );
+  
+  console.log("Current User ID:", currentUserId);
+  console.log("User Submissions:", userSubmissions);
+
+  
     
   // Peer submissions Table
   const submissionsTable = (
@@ -259,8 +273,8 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
       </thead>
 
       <tbody>
-        {peerFeedbackData.length > 0 ? (
-           peerFeedbackData.map((feedback, index) => {
+        {userSubmissions.length > 0 ? (
+           userSubmissions.map((feedback, index) => {
             console.log("Scores:", feedback.cooperation, feedback.conceptual_contribution, feedback.practical_contribution, feedback.work_ethic);
 
             const averageScore = (
