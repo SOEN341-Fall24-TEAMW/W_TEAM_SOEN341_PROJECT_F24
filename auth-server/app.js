@@ -7,24 +7,12 @@ var FileSync = require("lowdb/adapters/FileSync");
 var adapter = new FileSync("./database.json");
 var db = low(adapter);
 const { v4: uuidv4 } = require('uuid');
-// Function to fetch student data for export
-function fetchStudentDataToExport() {
-    // Replace this logic with your actual database fetching logic
-    // Assuming db.get("users") contains student data and they are linked to other entities
-    return db.get("users")
-        .filter({ role: 'student' })
-        .map(student => ({
-            id: student.id,
-            name: student.name,
-            email: student.email,
-            team: db.get("teams").find({ id: student.team_id }).value()?.name || "No team",
-            course: db.get("courses").find({ id: student.course_id }).value()?.name || "No course",
-            organization: db.get("organizations").find({ id: student.organization_id }).value()?.name || "No organization"
-        }))
-        .value();
-}
-
-
+console.log("Users:", db.get("users").value());
+console.log("Teams:", db.get("teams").value());
+console.log("Courses:", db.get("courses").value());
+console.log("Organizations:", db.get("organizations").value());
+const { Parser } = require("json2csv"); // For converting JSON to CSV format
+const router = express.Router();
 // Helper function to anonymize data
 function anonymizeData(data) {
     if (!data) return data;
@@ -42,7 +30,10 @@ const http = require('http');
 const { Server } = require("socket.io");
 
 // Initialize Express app
-const app = express()
+const app = express();
+const instructorRoutes = require('./instructorRoutes'); // Import instructor routes
+app.use('/instructor', instructorRoutes); // Use routes from instructorRoutes module
+exports.app = app;
 const server = http.createServer(app);
 const io = new Server(server);
 
@@ -53,7 +44,6 @@ const jwtSecretKey = "dsfdsfsdfdsvcsvdfgefg"
 // Set up CORS and JSON middlewares
 app.use(cors())
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 function isValidToken(token) {
     try {
         const decoded = jwt.verify(token, jwtSecretKey);
@@ -62,36 +52,44 @@ function isValidToken(token) {
         return false;
     }
 }
-app.get('/instructor/export', isInstructor, (req, res) => {
-    // Your code to generate and send the export data
+// Fetch student data for export, including team, course, and organization details
+function fetchStudentDataToExport(organizationId) {
+    return db.get("users")
+        .filter({ role: 'student', organization_id: organizationId })
+        .map(student => ({
+            name: student.name || "No name",
+            studentId: student.id || "No ID",
+            email: student.email || "No email",
+            team: db.get("teams").find({ id: student.team_id }).get("name").value() || "No team",
+            course: db.get("courses").find({ id: student.course_id }).get("name").value() || "No course",
+            organization: db.get("organizations").find({ id: student.organization_id }).get("name").value() || "No organization"
+        }))
+        .value();
+}
 
-    const { Parser } = require('json2csv');
-    const studentData = fetchStudentDataToExport();
-    const fields = ['id', 'email', 'password', 'name'];
-    const json2csvParser = new Parser({ fields });
-    const csvData = json2csvParser.parse(studentData);
-
-    // Send the generated CSV data as a downloadable file
-    res.header('Content-Type', 'text/csv');
-    res.attachment('students_export.csv');
-    res.send(csvData);
-
-});  
-    // Middleware to verify instructor role
-    function isInstructor(req, res, next) {
-        const token = req.headers["jwt-token"];
-        if (!token) return res.status(401).json({ message: "Token not provided" });
-    
         try {
             const decodedToken = jwt.verify(token, jwtSecretKey);
             if (decodedToken.role !== "instructor") {
                 return res.status(403).json({ message: "Access forbidden: not an instructor" });
             }
-            next();
-        } catch (error) {
-            res.status(401).json({ message: "Invalid token" });
-        }
+
+    // Fetch the student data filtered by organization ID
+    const studentData = fetchStudentDataToExport(organizationId);
+
+    if (studentData.length === 0) {
+        return res.status(404).json({ message: "No students found for this organization" });
     }
+
+    // Define CSV fields
+    const fields = ['name', 'studentId', 'email', 'team', 'course', 'organization'];
+    const json2csvParser = new Parser({ fields });
+    const csvData = json2csvParser.parse(studentData);
+
+    // Send the CSV data as a downloadable file
+    res.header('Content-Type', 'text/csv');
+    res.attachment(`students_${organizationId}.csv`);
+    res.send(csvData);
+});
     
     // Helper function to fetch students by organization ID
     function fetchStudentsByOrganization(orgId) {
@@ -115,8 +113,6 @@ app.get('/instructor/export', isInstructor, (req, res) => {
             const students = fetchStudentsByOrganization(org.id);
     
             if (students.length > 0) {
-                const fields = ['id', 'email', 'password', 'name'];
-                const json2csvParser = new Parser({ fields });
                 const csvData = json2csvParser.parse(students);
     
                 const filename = `students_${org.name.replace(/ /g, "_").toLowerCase()}.csv`;

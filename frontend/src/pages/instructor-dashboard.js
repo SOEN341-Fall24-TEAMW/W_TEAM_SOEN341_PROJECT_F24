@@ -4,7 +4,6 @@ import DashboardFilterSort from './DashboardFilterSort.js';
 import { NavLink, AppShell, Table, Group, Space, Modal, Button, Title, TextInput, rem, Select, Menu, NumberInput, MultiSelect, Alert, Text, FileInput, Notification } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconUsers, IconUsersGroup, IconMessage, IconSearch, IconDatabaseImport, IconCirclePlus, IconX, IconCheck } from '@tabler/icons-react';
-
 import Papa from "papaparse";
 import './styles.css';
 import InstructorDashboardFeedbacks from "./instructor-dashboard-feedbacks.js";
@@ -40,30 +39,39 @@ const InstructorDashboard = ({organizations, org, courses, teams, students, memb
     sortOrder: 'asc'    // Sort order: 'asc' or 'desc'
   });
   const exportCSV = () => {
-    fetch('/instructor/export', {
+    // Get the selected organization's ID from the props or state
+    const selectedOrg = organizations.find((organization) => organization.name === org);
+    const organizationId = selectedOrg?.id;
+  
+    if (!organizationId) {
+      console.error('No organization selected');
+      return;
+    }
+  
+    fetch(`/instructor/export?organizationId=${organizationId}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${user.token}`,
       },
     })
-    .then(response => {
-      if (response.ok) {
-        return response.blob();
-      }
-      throw new Error('Failed to fetch CSV data.');
-    })
-    .then(blob => {
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = url;
-      a.download = 'students_export.csv';
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-    })
-    .catch(error => console.error('Error exporting CSV:', error));
-  };
+      .then(response => {
+        if (response.ok) {
+          return response.blob();
+        }
+        throw new Error('Failed to fetch CSV data.');
+      })
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `students_${organizationId}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+      })
+      .catch(error => console.error('Error exporting CSV:', error));
+  };  
   
   
   const navigate = useNavigate();
