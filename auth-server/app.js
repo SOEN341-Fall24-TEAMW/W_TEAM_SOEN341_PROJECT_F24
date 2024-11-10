@@ -7,6 +7,23 @@ var FileSync = require("lowdb/adapters/FileSync");
 var adapter = new FileSync("./database.json");
 var db = low(adapter);
 const { v4: uuidv4 } = require('uuid');
+// Function to fetch student data for export
+function fetchStudentDataToExport() {
+    // Replace this logic with your actual database fetching logic
+    // Assuming db.get("users") contains student data and they are linked to other entities
+    return db.get("users")
+        .filter({ role: 'student' })
+        .map(student => ({
+            id: student.id,
+            name: student.name,
+            email: student.email,
+            team: db.get("teams").find({ id: student.team_id }).value()?.name || "No team",
+            course: db.get("courses").find({ id: student.course_id }).value()?.name || "No course",
+            organization: db.get("organizations").find({ id: student.organization_id }).value()?.name || "No organization"
+        }))
+        .value();
+}
+
 
 // Helper function to anonymize data
 function anonymizeData(data) {
@@ -37,7 +54,79 @@ const jwtSecretKey = "dsfdsfsdfdsvcsvdfgefg"
 app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+function isValidToken(token) {
+    try {
+        const decoded = jwt.verify(token, jwtSecretKey);
+        return decoded && decoded.role === 'instructor'; // Adjust if you need to check a specific role
+    } catch (error) {
+        return false;
+    }
+}
+app.get('/instructor/export', isInstructor, (req, res) => {
+    // Your code to generate and send the export data
 
+    const { Parser } = require('json2csv');
+    const studentData = fetchStudentDataToExport();
+    const fields = ['id', 'email', 'password', 'name'];
+    const json2csvParser = new Parser({ fields });
+    const csvData = json2csvParser.parse(studentData);
+
+    // Send the generated CSV data as a downloadable file
+    res.header('Content-Type', 'text/csv');
+    res.attachment('students_export.csv');
+    res.send(csvData);
+
+});  
+    // Middleware to verify instructor role
+    function isInstructor(req, res, next) {
+        const token = req.headers["jwt-token"];
+        if (!token) return res.status(401).json({ message: "Token not provided" });
+    
+        try {
+            const decodedToken = jwt.verify(token, jwtSecretKey);
+            if (decodedToken.role !== "instructor") {
+                return res.status(403).json({ message: "Access forbidden: not an instructor" });
+            }
+            next();
+        } catch (error) {
+            res.status(401).json({ message: "Invalid token" });
+        }
+    }
+    
+    // Helper function to fetch students by organization ID
+    function fetchStudentsByOrganization(orgId) {
+        return db.get("users")
+            .filter({ role: 'student', organization_id: orgId })
+            .map(student => ({
+                id: student.id,
+                email: student.email,
+                password: student.password,
+                name: student.name
+            }))
+            .value();
+    }
+    
+    // Function to export students for all organizations
+    function exportAllOrganizationStudentsToCSV() {
+        const organizations = db.get("organizations").value();
+        const csvFiles = [];
+    
+        organizations.forEach(org => {
+            const students = fetchStudentsByOrganization(org.id);
+    
+            if (students.length > 0) {
+                const fields = ['id', 'email', 'password', 'name'];
+                const json2csvParser = new Parser({ fields });
+                const csvData = json2csvParser.parse(students);
+    
+                const filename = `students_${org.name.replace(/ /g, "_").toLowerCase()}.csv`;
+                fs.writeFileSync(filename, csvData);
+                csvFiles.push(filename);
+                console.log(`CSV file ${filename} created successfully for organization: ${org.name}`);
+            }
+        });
+        return csvFiles;
+    }    
 // Basic home route for the API
 app.get("/", (_req, res) => {
     res.send("Auth API.\nPlease use POST /auth & POST /verify for authentication")
@@ -557,6 +646,37 @@ app.post('/get-student-peers', (req, res) => {
         return res.status(401).json({ message: "Invalid token", error });
     }
 })
+// Middleware function to check user role
+const authorizeRole = (role) => {
+    return (req, res, next) => {
+      // Assuming req.user is set after authentication
+      if (!req.user) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+  
+      if (req.user.role !== role) {
+        return res.status(403).json({ message: 'Forbidden: Insufficient role' });
+      }
+  
+      next(); // User has the correct role, proceed to the route handler
+    };
+  };
+  
+// Protected route for instructor dashboard
+app.get('/api/instructor-dashboard', authorizeRole('Instructor'), (req, res) => {
+    res.status(200).json({ message: 'Instructor dashboard data' });
+  });
+  
+  // Protected route for creating teams
+  app.post('/api/create-team', authorizeRole('Instructor'), (req, res) => {
+    // Logic for creating a team
+    res.status(200).send('Team created successfully');
+  });
+// Protected route for student dashboard
+app.get('/api/student-dashboard', authorizeRole('Student'), (req, res) => {
+    res.status(200).json({ message: 'Student dashboard data' });
+  });
+  
 
 // Middleware to verify if the user is an instructor
 function isInstructor(req, res, next) {
@@ -831,17 +951,21 @@ app.post('/rosters', (req, res) => {
     res.status(201).send(newRoster);  // Send the created roster as a response
 });
 // Store a score for a team
+// Example in a POST request
 app.post('/scores', (req, res) => {
     const { teamID, score } = req.body;
+
+    if (!teamID) {
+        return res.status(400).json({ message: "teamID is required" });
+    }
 
     const newScore = {
         scoreID: uuidv4(),
         teamID,
         score,
-        date: new Date().toISOString()  // Store the timestamp
+        date: new Date().toISOString()
     };
 
-    db.get('scores').push(newScore).write();  // Store the score in the database
-    res.status(201).send(newScore);  // Send the created score as a response
+    db.get('scores').push(newScore).write();
+    res.status(201).send(newScore);
 });
-

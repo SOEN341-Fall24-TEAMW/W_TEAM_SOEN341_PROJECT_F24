@@ -804,13 +804,6 @@
       "max_size": 3,
       "course_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
       "instructor_id": "instinst22@gmail.com"
-    },
-    {
-      "id": "6d4346f5-dd01-4491-88bd-7692a47129df",
-      "name": "Coders",
-      "max_size": 3,
-      "course_id": "1a6cbb3b-b08e-472c-9f77-d319b532b46b",
-      "instructor_id": ""
     }
   ],
   "team_memberships": [
@@ -1258,36 +1251,6 @@
       "id": "6c98ce3b-016f-4dd3-ba3b-7688f8399870",
       "team_id": "a6236aed-84db-45c9-8827-9477087a1658",
       "student_id": "400004"
-    },
-    {
-      "id": "c9289fdd-b3ed-4abe-bb69-64439dfbfef5",
-      "team_id": "28835faf-8a41-4627-b787-4dcd0b212e70",
-      "student_id": "40213456"
-    },
-    {
-      "id": "1a22abbf-eee9-48b8-8c07-3827e46a9724",
-      "team_id": "28835faf-8a41-4627-b787-4dcd0b212e70",
-      "student_id": "40223456"
-    },
-    {
-      "id": "540dfb93-07c8-4cd0-8850-e616241dc67b",
-      "team_id": "9c9f89fa-fff7-463d-b4a1-272bf1c1714e",
-      "student_id": "40234567"
-    },
-    {
-      "id": "9f86974b-078c-4614-8570-cabb33caf94b",
-      "team_id": "6d4346f5-dd01-4491-88bd-7692a47129df",
-      "student_id": "40213456"
-    },
-    {
-      "id": "6508ab8a-c836-497e-bf82-cddd911406da",
-      "team_id": "6d4346f5-dd01-4491-88bd-7692a47129df",
-      "student_id": "40223456"
-    },
-    {
-      "id": "9cc82654-2c71-4e97-a974-96238afa8dcc",
-      "team_id": "6d4346f5-dd01-4491-88bd-7692a47129df",
-      "student_id": "40234567"
     }
   ],
   "peer_evaluations": [
@@ -1502,6 +1465,7 @@
       "timestamp": "2024-11-09T21:10:03.116Z"
     },
     {
+      "id": 15,
       "evaluator_id": "40234567",
       "evaluatee_id": "40213456",
       "cooperation": 7,
@@ -1516,7 +1480,7 @@
       "timestamp": "2024-11-09T18:29:30.661Z"
     },
     {
-      "id": 12,
+      "id": 16,
       "evaluator_id": "40234567",
       "evaluatee_id": "40223456",
       "cooperation": 7,
