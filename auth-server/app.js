@@ -557,6 +557,37 @@ app.post('/get-student-peers', (req, res) => {
         return res.status(401).json({ message: "Invalid token", error });
     }
 })
+// Middleware function to check user role
+const authorizeRole = (role) => {
+    return (req, res, next) => {
+      // Assuming req.user is set after authentication
+      if (!req.user) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+  
+      if (req.user.role !== role) {
+        return res.status(403).json({ message: 'Forbidden: Insufficient role' });
+      }
+  
+      next(); // User has the correct role, proceed to the route handler
+    };
+  };
+  
+// Protected route for instructor dashboard
+app.get('/api/instructor-dashboard', authorizeRole('Instructor'), (req, res) => {
+    res.status(200).json({ message: 'Instructor dashboard data' });
+  });
+  
+  // Protected route for creating teams
+  app.post('/api/create-team', authorizeRole('Instructor'), (req, res) => {
+    // Logic for creating a team
+    res.status(200).send('Team created successfully');
+  });
+// Protected route for student dashboard
+app.get('/api/student-dashboard', authorizeRole('Student'), (req, res) => {
+    res.status(200).json({ message: 'Student dashboard data' });
+  });
+  
 
 // Middleware to verify if the user is an instructor
 function isInstructor(req, res, next) {
