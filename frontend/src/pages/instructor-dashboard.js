@@ -789,7 +789,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
             <div>
               <Menu>
                 <Menu.Target>
-                  <Button >Add a New Team</Button>
+                  <Button>Add a New Team</Button>
                 </Menu.Target>
                 <Menu.Dropdown>
                   <Menu.Item
