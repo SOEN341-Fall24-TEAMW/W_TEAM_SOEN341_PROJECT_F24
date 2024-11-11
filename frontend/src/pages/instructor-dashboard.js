@@ -39,6 +39,26 @@ const InstructorDashboard = ({organizations, org, courses, teams, students, memb
     sortBy: '',         // Column to sort by, e.g., 'ID'
     sortOrder: 'asc'    // Sort order: 'asc' or 'desc'
   });
+
+  const [hasNewFeedbacks, setHasNewFeedbacks] = useState(false);
+
+  useEffect(() => {
+    if (loggedIn) {
+      // Fetch the latest feedbacks from the server
+      fetch('/api/feedbacks/latest')
+        .then(response => response.json())
+        .then(data => {
+          const lastChecked = localStorage.getItem('lastCheckedFeedbacks');
+          if (lastChecked && new Date(data.latestFeedback) > new Date(lastChecked)) {
+            setHasNewFeedbacks(true);
+          }
+          // Update the last checked timestamp in local storage
+          localStorage.setItem('lastCheckedFeedbacks', new Date().toISOString());
+        })
+        .catch(error => console.error('Error fetching feedbacks:', error));
+    }
+  }, [loggedIn]);
+
   const exportCSV = () => {
     fetch('/instructor/export', {
       method: 'GET',
@@ -64,8 +84,8 @@ const InstructorDashboard = ({organizations, org, courses, teams, students, memb
     })
     .catch(error => console.error('Error exporting CSV:', error));
   };
-  
-  
+
+
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user'));
 
@@ -316,7 +336,7 @@ const InstructorDashboard = ({organizations, org, courses, teams, students, memb
   const tabs = [
     { label: 'Students', icon: IconUsers },
     { label: 'Teams', icon: IconUsersGroup },
-    { label: 'Feedbacks', icon: IconMessage }
+    { label: 'Feedbacks', icon: IconMessage, new: hasNewFeedbacks }
   ];
 
   const navBarData = tabs.map((data) => (
@@ -324,13 +344,55 @@ const InstructorDashboard = ({organizations, org, courses, teams, students, memb
       key={data.label}
       leftSection={<data.icon size='1rem' stroke='1.5' />}
       childrenOffset={28}
-      label={data.label}
+      label={
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          {data.label}
+          {data.new && <span style={{ marginLeft: '8px', color: 'red', fontWeight: 'bold' }}>NEW</span>}
+        </div>
+      }
       active={data.label === active}
       variant="light"
       component="button"
-      onClick={() => setActive(data.label)}
+      onClick={() => {
+        if (data.label === 'Feedbacks') {
+          // Mark feedbacks as seen when clicking on the tab
+          setHasNewFeedbacks(false);
+          localStorage.setItem('lastCheckedFeedbacks', new Date().toISOString());
+        }
+        setActive(data.label);
+      }}
     />
   ))
+  const calculateStudentRating = (studentId) => {
+    const studentMemberships = memberships.filter(membership => membership.student_id === studentId);
+    if (studentMemberships.length === 0) return null;
+
+    let totalScore = 0;
+    let feedbackCount = 0;
+
+    studentMemberships.forEach(membership => {
+      if (membership.feedbacks && Array.isArray(membership.feedbacks)) {
+        membership.feedbacks.forEach(feedback => {
+          totalScore += (feedback.cooperation || 0)
+                      + (feedback.conceptualContribution || 0)
+                      + (feedback.practicalContribution || 0)
+                      + (feedback.workEthic || 0);
+          feedbackCount += 1;
+        });
+      }
+    });
+
+    if (feedbackCount === 0) return null;
+    const numberOfMetrics = 4;
+    return (totalScore / (feedbackCount * numberOfMetrics)).toFixed(2);
+  };
+
+  const getEmojiForRating = (rating) => {
+    if (rating >= 4.5) return " 😊";
+    if (rating >= 3.5) return " 🙂";
+    if (rating >= 2.5) return " 😐";
+    return " 😢";
+  };
 
   const rows = org
   ? applyFilterAndSort(students || [], filterSortOptions)
@@ -361,6 +423,10 @@ const InstructorDashboard = ({organizations, org, courses, teams, students, memb
 
     const organization_name = (organizations || []).find((organization) => organization.id === student.organization_id)?.name || "Unknown organization";
 
+    // Get rating and corresponding emoji
+    const rating = calculateStudentRating(student.id);
+    const emoji = rating ? getEmojiForRating(rating) : "";
+
     return (
       <Table.Tr key={student.id}>
         <Table.Td>{student.name || "No name"}</Table.Td>
@@ -369,6 +435,7 @@ const InstructorDashboard = ({organizations, org, courses, teams, students, memb
         <Table.Td>{team_names || "No team"}</Table.Td>
         <Table.Td>{course_names || "No course"}</Table.Td>
         <Table.Td>{organization_name || "No organization"}</Table.Td>
+        <Table.Td>{emoji}</Table.Td>
       </Table.Tr>
     );
   })
@@ -393,6 +460,8 @@ const InstructorDashboard = ({organizations, org, courses, teams, students, memb
         const team_course = (courses || []).find((course) => course.id === team.course_id);
         const course_names = team_course ? team_course.name : "No course";
         const organization_name = (organizations.find((organization) => organization.id === team_course?.organization_id) || {}).name || "Unknown organization";
+        const emoji = rating ? getEmojiForRating(rating) : "";
+        const rating = calculateStudentRating(student_names);
 
         return (
           <Table.Tr key={team.id}>
@@ -401,6 +470,7 @@ const InstructorDashboard = ({organizations, org, courses, teams, students, memb
             <Table.Td>{team.max_size || "No members"}</Table.Td>
             <Table.Td>{course_names || "No course"}</Table.Td>
             <Table.Td>{organization_name || "No organization"}</Table.Td>
+            <Table.Td>{emoji  || "No emoji"}</Table.Td>
           </Table.Tr>
         );
       })
@@ -645,6 +715,7 @@ const InstructorDashboard = ({organizations, org, courses, teams, students, memb
                 <Table.Th>Team</Table.Th>
                 <Table.Th>Course</Table.Th>
                 <Table.Th>Organization</Table.Th>
+                <Table.Th>Emoji</Table.Th>
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>{rows}</Table.Tbody>
