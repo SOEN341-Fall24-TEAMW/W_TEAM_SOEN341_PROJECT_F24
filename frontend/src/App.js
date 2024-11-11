@@ -29,7 +29,7 @@ function App() {
   const [teams, setTeams] = useState([]);
   const [students, setStudents] = useState([]);
   const [memberships, setMemberships] = useState([]);
-  const [userRole, setUserRole] = useState([]);
+  const [userRole] = useState([]);
 
   const fetchData = () => {
     const user = JSON.parse(localStorage.getItem("user"));

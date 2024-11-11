@@ -1,6 +1,7 @@
 const express = require("express")
 const bcrypt = require("bcrypt") //for hashing and comparing passwords
 var cors = require('cors')
+const app = express();
 const jwt = require("jsonwebtoken") // for generating and verifying JSON web tokens
 const instructorRoutes = require('./instructorRoutes'); // Import the instructorRoutes module
 var low = require("lowdb"); //for storing user details (email and hashed password)
@@ -14,6 +15,15 @@ console.log("Courses:", db.get("courses").value());
 console.log("Organizations:", db.get("organizations").value());
 const { Parser } = require("json2csv"); // For converting JSON to CSV format
 const router = express.Router();
+app.use('/instructor', instructorRoutes);
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.get('/organization_id', (req, res) => {
+    const organization_id = db.get("organization_id ").value();
+    res.status(200).json(organization_id);
+});
+
 // Helper function to anonymize data
 function anonymizeData(data) {
     if (!data) return data;
@@ -30,23 +40,13 @@ const csvParser = require("csv-parser"); // CSV parser library for reading the C
 const http = require('http');
 const { Server } = require("socket.io");
 
-// Initialize Express app
-const app = express();
-const instructorRoutes = require('./instructorRoutes'); // Import instructor routes
-app.use('/instructor', instructorRoutes); // Use routes from instructorRoutes module
-exports.app = app;
 const server = http.createServer(app);
 const io = new Server(server);
 
 
 // Define a JWT secret key. This should be isolated by using env variables for security
 const jwtSecretKey = "dsfdsfsdfdsvcsvdfgefg"
-
-// Set up CORS and JSON middlewares
-app.use(cors())
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-module.exports = { app };
+module.exports = app ;
 
 function isValidToken(token) {
     try {
@@ -71,7 +71,7 @@ function fetchStudentDataToExport(organizationId) {
         .value();
 }
 
-/app.get('/export', isInstructor, (req, res) => {
+app.get('/export', isInstructor, (req, res) => {
     const organizationId = req.query.organizationId;
     if (!organizationId) {
         return res.status(400).json({ message: "Organization ID is required" });
