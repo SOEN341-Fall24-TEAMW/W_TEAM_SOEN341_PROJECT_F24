@@ -1,12 +1,28 @@
 const express = require("express")
 const bcrypt = require("bcrypt") //for hashing and comparing passwords
 var cors = require('cors')
+const app = express();
 const jwt = require("jsonwebtoken") // for generating and verifying JSON web tokens
+const instructorRoutes = require('./instructorRoutes'); // Import the instructorRoutes module
 var low = require("lowdb"); //for storing user details (email and hashed password)
 var FileSync = require("lowdb/adapters/FileSync");
 var adapter = new FileSync("./database.json");
 var db = low(adapter);
 const { v4: uuidv4 } = require('uuid');
+console.log("Users:", db.get("users").value());
+console.log("Teams:", db.get("teams").value());
+console.log("Courses:", db.get("courses").value());
+console.log("Organizations:", db.get("organizations").value());
+const { Parser } = require("json2csv"); // For converting JSON to CSV format
+const router = express.Router();
+app.use('/instructor', instructorRoutes);
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.get('/organization_id', (req, res) => {
+    const organization_id = db.get("organization_id ").value();
+    res.status(200).json(organization_id);
+});
 
 // Helper function to anonymize data
 function anonymizeData(data) {
@@ -24,20 +40,91 @@ const csvParser = require("csv-parser"); // CSV parser library for reading the C
 const http = require('http');
 const { Server } = require("socket.io");
 
-// Initialize Express app
-const app = express()
 const server = http.createServer(app);
 const io = new Server(server);
 
 
 // Define a JWT secret key. This should be isolated by using env variables for security
 const jwtSecretKey = "dsfdsfsdfdsvcsvdfgefg"
+module.exports = app ;
 
-// Set up CORS and JSON middlewares
-app.use(cors())
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+function isValidToken(token) {
+    try {
+        const decoded = jwt.verify(token, jwtSecretKey);
+        return decoded && decoded.role === 'instructor'; // Adjust if you need to check a specific role
+    } catch (error) {
+        return false;
+    }
+}
+// Fetch student data for export, including team, course, and organization details
+function fetchStudentDataToExport(organizationId) {
+    return db.get("users")
+        .filter({ role: 'student', organization_id: organizationId })
+        .map(student => ({
+            name: student.name || "No name",
+            studentId: student.id || "No ID",
+            email: student.email || "No email",
+            team: db.get("teams").find({ id: student.team_id }).get("name").value() || "No team",
+            course: db.get("courses").find({ id: student.course_id }).get("name").value() || "No course",
+            organization: db.get("organizations").find({ id: student.organization_id }).get("name").value() || "No organization"
+        }))
+        .value();
+}
 
+app.get('/export', isInstructor, (req, res) => {
+    const organizationId = req.query.organizationId;
+    if (!organizationId) {
+        return res.status(400).json({ message: "Organization ID is required" });
+    }
+
+    // Fetch the student data filtered by organization ID
+    const studentData = fetchStudentDataToExport(organizationId);
+
+    if (studentData.length === 0) {
+        return res.status(404).json({ message: "No students found for this organization" });
+    }
+
+    const fields = ['name', 'studentId', 'email', 'team', 'course', 'organization'];
+    const json2csvParser = new Parser({ fields });
+    const csvData = json2csvParser.parse(studentData);
+
+    // Send the CSV data as a downloadable file
+    res.header('Content-Type', 'text/csv');
+    res.attachment(`students_${organizationId}.csv`);
+    res.send(csvData);
+});
+    // Helper function to fetch students by organization ID
+    function fetchStudentsByOrganization(orgId) {
+        return db.get("users")
+            .filter({ role: 'student', organization_id: orgId })
+            .map(student => ({
+                id: student.id,
+                email: student.email,
+                password: student.password,
+                name: student.name
+            }))
+            .value();
+    }
+    
+    // Function to export students for all organizations
+    function exportAllOrganizationStudentsToCSV() {
+        const organizations = db.get("organizations").value();
+        const csvFiles = [];
+    
+        organizations.forEach(org => {
+            const students = fetchStudentsByOrganization(org.id);
+    
+            if (students.length > 0) {
+                const csvData = json2csvParser.parse(students);
+    
+                const filename = `students_${org.name.replace(/ /g, "_").toLowerCase()}.csv`;
+                fs.writeFileSync(filename, csvData);
+                csvFiles.push(filename);
+                console.log(`CSV file ${filename} created successfully for organization: ${org.name}`);
+            }
+        });
+        return csvFiles;
+    }    
 // Basic home route for the API
 app.get("/", (_req, res) => {
     res.send("Auth API.\nPlease use POST /auth & POST /verify for authentication")
@@ -529,6 +616,66 @@ app.get("/users", (req, res) => {
     }
 });
 
+app.post('/get-student-feedback', (req, res) => {
+    const selected_student_id = req.body.student.id;
+    console.log("DJ KHALED ID: ", selected_student_id);
+    try {
+        const feedbacks = db.get("peer_evaluations").value();
+        const student_feedbacks = feedbacks.filter(eval => eval.evaluatee_id === selected_student_id);
+        console.log('DJ KHALED FEEDBACK SENT: ', feedbacks);
+        return res.status(200).json({ message: 'success', feedbacks: student_feedbacks });
+
+    } catch (error) {
+        return res.status(401).json({ message: "Invalid token", error });
+    }
+})
+
+app.post('/get-student-peers', (req, res) => {
+    const feedbacks = req.body;
+    console.log("DJ KHALED LOGGING: ", feedbacks);
+    const peer_ids = feedbacks.map(feedback => feedback.evaluator_id);
+    console.log("DJ KHALED IDDD: ", peer_ids);
+    try {
+        const students = db.get("users").filter((user) => (user.role === 'student' && peer_ids.includes(user.id))).value();
+        console.log('DJ KHALED FEEDBACK SENT??????: ', students);
+        return res.status(200).json({ message: 'success', peers: students });
+
+    } catch (error) {
+        return res.status(401).json({ message: "Invalid token", error });
+    }
+})
+// Middleware function to check user role
+const authorizeRole = (role) => {
+    return (req, res, next) => {
+      // Assuming req.user is set after authentication
+      if (!req.user) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+  
+      if (req.user.role !== role) {
+        return res.status(403).json({ message: 'Forbidden: Insufficient role' });
+      }
+  
+      next(); // User has the correct role, proceed to the route handler
+    };
+  };
+  
+// Protected route for instructor dashboard
+app.get('/api/instructor-dashboard', authorizeRole('Instructor'), (req, res) => {
+    res.status(200).json({ message: 'Instructor dashboard data' });
+  });
+  
+  // Protected route for creating teams
+  app.post('/api/create-team', authorizeRole('Instructor'), (req, res) => {
+    // Logic for creating a team
+    res.status(200).send('Team created successfully');
+  });
+// Protected route for student dashboard
+app.get('/api/student-dashboard', authorizeRole('Student'), (req, res) => {
+    res.status(200).json({ message: 'Student dashboard data' });
+  });
+  
+
 // Middleware to verify if the user is an instructor
 function isInstructor(req, res, next) {
     const token = req.headers["jwt-token"];
@@ -632,30 +779,45 @@ app.post('/submit-evaluation', (req, res) => {
         team_id
     } = req.body;
 
-    if (!evaluator_id || !evaluatee_id) {
+    if (!evaluator_id || !evaluatee_id ) {
         return res.status(400).send({ message: "Evaluator and evaluatee IDs are required." });
     }
 
-    const id = db.get('peer_evaluations').size().value() + 1;
-    db.get('peer_evaluations')
-        .push({
-            id,
-            evaluator_id,
-            evaluatee_id,
-            cooperation,
-            conceptual_contribution: conceptualContribution,
-            practical_contribution: practicalContribution,
-            work_ethic: workEthic,
-            cooperation_comment: cooperationComment,
-            conceptual_comment: conceptualComment,
-            practical_comment: practicalComment,
-            ethic_comment: ethicComment,
-            team_id,
-            timestamp: new Date().toISOString()
-        })
-        .write();
+    // Check for existing evaluation
+    const existingEvaluation = db.get('peer_evaluations')
+        .find({ evaluator_id, evaluatee_id, team_id })
+        .value();
 
-    res.send({ message: 'success' });
+    if (existingEvaluation) {
+        return res.status(400).json({ message: "Evaluation already exists for this teammate in the same team." });
+    }
+    
+    try {
+        const id = db.get('peer_evaluations').size().value() + 1;
+
+        db.get('peer_evaluations')
+            .push({
+                id,
+                evaluator_id,
+                evaluatee_id,
+                cooperation: parseInt(cooperation),
+                conceptual_contribution: parseInt(conceptualContribution),
+                practical_contribution: parseInt(practicalContribution),
+                work_ethic: parseInt(workEthic),
+                cooperation_comment: cooperationComment || "No comment",
+                conceptual_comment: conceptualComment || "No comment",
+                practical_comment: practicalComment || "No comment",
+                ethic_comment: ethicComment || "No comment",
+                team_id,
+                timestamp: new Date().toISOString()
+            })
+            .write();
+
+        res.status(200).json({ message: 'success' });
+    } catch (error) {
+        console.error("Error submitting evaluation:", error);
+        res.status(500).json({ message: "Internal Server Error", error });
+    }
 });
 
 
@@ -681,6 +843,25 @@ app.get("/peer-evaluations/check", (req, res) => {
         return res.status(200).json({ hasFeedback: true });
     } else {
         return res.status(200).json({ hasFeedback: false });
+    }
+});
+
+app.get("/peer-evaluations/feedback", (req, res) => {
+    const { teamId } = req.query;
+
+    if (!teamId) {
+        return res.status(400).json({ message: "Team ID is required" });
+    }
+
+    // Filter peer evaluations for the specified teamId
+    const feedbackData = db.get("peer_evaluations")
+        .filter({ team_id: teamId })
+        .value();
+
+    if (feedbackData && feedbackData.length > 0) {
+        return res.status(200).json({ message: "success", data: feedbackData });
+    } else {
+        return res.status(404).json({ message: "No peer feedback found" });
     }
 });
 
@@ -750,10 +931,6 @@ io.on('connection', (socket) => {
     });
 });
 
-// Start server
-app.listen(3080, () => {
-    console.log("Server running on port 3080");
-});
 // Create a new roster
 app.post('/rosters', (req, res) => {
     const { teamID, courseName } = req.body;
@@ -768,17 +945,25 @@ app.post('/rosters', (req, res) => {
     res.status(201).send(newRoster);  // Send the created roster as a response
 });
 // Store a score for a team
+// Example in a POST request
 app.post('/scores', (req, res) => {
     const { teamID, score } = req.body;
+
+    if (!teamID) {
+        return res.status(400).json({ message: "teamID is required" });
+    }
 
     const newScore = {
         scoreID: uuidv4(),
         teamID,
         score,
-        date: new Date().toISOString()  // Store the timestamp
+        date: new Date().toISOString()
     };
 
-    db.get('scores').push(newScore).write();  // Store the score in the database
-    res.status(201).send(newScore);  // Send the created score as a response
+    db.get('scores').push(newScore).write();
+    res.status(201).send(newScore);
 });
-
+// Start server
+app.listen(3080, () => {
+    console.log("Server running on port 3080");
+});
