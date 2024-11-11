@@ -252,7 +252,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
   const navBarData = tabs.map((data) => (
     <NavLink
       key={data.label}
-      leftSection={<data.icon size='1rem' stroke='1.5' />}
+      leftSection={<data.icon size='1rem' stroke='1.5' data-testid={`${data.label}`} />}
       childrenOffset={28}
       label={data.label}
       active={data.label === active}

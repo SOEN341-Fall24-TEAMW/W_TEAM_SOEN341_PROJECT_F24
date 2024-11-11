@@ -38,11 +38,9 @@ jest.resetAllMocks();
 });
 
 
-
 describe("InstructorDashboard", ()=>{
 
-
-    it("has add a new team button ",()=>{
+    it("has student, teams, and admin in the navigation bar ",()=>{
 
         render(
             <MantineProvider withGlobalStyles withNormalizeCSS>
@@ -52,10 +50,13 @@ describe("InstructorDashboard", ()=>{
             </MantineProvider>
             );
 
-            const nav = screen.getAllByRole("tab");
-            expect(nav).toHaveLength(3);
+            
 
-    })
+            expect(screen.getByTestId(/Student/i)).toBeInTheDocument();
+            expect(screen.getByTestId(/Teams/i)).toBeInTheDocument();
+            expect(screen.getByTestId(/Admin/i)).toBeInTheDocument();
+
+    });
 
 
 
