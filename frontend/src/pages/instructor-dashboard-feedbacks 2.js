@@ -19,7 +19,7 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
     const [averagePracticalContribution, setAveragePracticalContribution] = useState(null);
     const [averageWorkEthic, setAverageWorkEthic] = useState(null);
     const [averageOverall, setAverageOverall] = useState(null);
-    const [summary, setSummary] = useState([]);
+    const [setSummary] = useState([]);
 
     useEffect(() => {
         if (!user || !user.token) {
