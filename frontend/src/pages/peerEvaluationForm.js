@@ -384,7 +384,11 @@ function PeerEvaluationForm() {
           />
         </div>
 
-        <button type="submit" className="submit-button" data-testid = "submit">Submit Evaluation</button>
+        <button type="submit" 
+        className="submit-button"
+        data-testid ="submit"
+        disabled={!isFormComplete() || isSubmitting} // Disable if form is incomplete or submitting
+        >{isSubmitting ? 'Submitting...' : 'Submit Evaluation (Rate all the criterias before submiting)'}</button>
 
          {/* Back to TeammatesList button */}
          <button 
