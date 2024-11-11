@@ -71,8 +71,7 @@ function fetchStudentDataToExport(organizationId) {
         .value();
 }
 
-// Endpoint to export student data as CSV
-router.get('/instructor/export', isInstructor, (req, res) => {
+/app.get('/export', isInstructor, (req, res) => {
     const organizationId = req.query.organizationId;
     if (!organizationId) {
         return res.status(400).json({ message: "Organization ID is required" });
@@ -85,7 +84,6 @@ router.get('/instructor/export', isInstructor, (req, res) => {
         return res.status(404).json({ message: "No students found for this organization" });
     }
 
-    // Define CSV fields
     const fields = ['name', 'studentId', 'email', 'team', 'course', 'organization'];
     const json2csvParser = new Parser({ fields });
     const csvData = json2csvParser.parse(studentData);
@@ -95,7 +93,6 @@ router.get('/instructor/export', isInstructor, (req, res) => {
     res.attachment(`students_${organizationId}.csv`);
     res.send(csvData);
 });
-    
     // Helper function to fetch students by organization ID
     function fetchStudentsByOrganization(orgId) {
         return db.get("users")
