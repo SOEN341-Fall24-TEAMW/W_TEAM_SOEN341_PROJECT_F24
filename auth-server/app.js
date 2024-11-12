@@ -186,6 +186,12 @@ app.post("/assign-random", (req, res) => {
 
 function assignStudentsToTeams(students, teams) {
     const assignments = {};
+
+    // Initialize all teams with empty arrays
+    teams.forEach((team) => {
+        assignments[team] = [];
+    });
+
     let teamIndex = 0;
 
     students.forEach((student) => {
@@ -195,8 +201,13 @@ function assignStudentsToTeams(students, teams) {
         teamIndex = (teamIndex + 1) % teams.length;
     });
 
+    
     return assignments;
 }
+
+module.exports = { assignStudentsToTeams };
+
+
 app.post("/create-account", (req, res) => {
 
     const { role, firstName, lastName, id, email, password, organizationId } = req.body;
@@ -621,7 +632,7 @@ app.post('/get-student-feedback', (req, res) => {
     console.log("DJ KHALED ID: ", selected_student_id);
     try {
         const feedbacks = db.get("peer_evaluations").value();
-        const student_feedbacks = feedbacks.filter(eval => eval.evaluatee_id === selected_student_id);
+        const student_feedbacks = feedbacks.filter(feedback => feedback.evaluatee_id === selected_student_id);
         console.log('DJ KHALED FEEDBACK SENT: ', feedbacks);
         return res.status(200).json({ message: 'success', feedbacks: student_feedbacks });
 
@@ -779,6 +790,7 @@ app.post('/submit-evaluation', (req, res) => {
         team_id
     } = req.body;
 
+
     if (!evaluator_id || !evaluatee_id ) {
         return res.status(400).send({ message: "Evaluator and evaluatee IDs are required." });
     }
@@ -930,6 +942,7 @@ io.on('connection', (socket) => {
         console.log('User disconnected');
     });
 });
+
 
 // Create a new roster
 app.post('/rosters', (req, res) => {
