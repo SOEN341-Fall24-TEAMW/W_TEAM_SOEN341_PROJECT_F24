@@ -343,7 +343,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
       {(active === 'Students') && (<AppShell.Main>
         <Space h="md" />
         <Group justify="space-between">
-          <Title>Students</Title>
+          <Title data-testid="stuTitle">Students</Title>
           <Modal
             opened={opened}
             onClose={modalClose}
@@ -467,6 +467,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
                   <Space h='lg' />
                   <Select id="org-select"
                     label="Choose an existing organization"
+                    data-testid="orgdropdown"
                     placeholder="Select organization"
                     data={organizations.map((org) => ({ value: org.id, label: org.name }))}
                     value={studentData.organization_id}
@@ -569,13 +570,13 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
         <AppShell.Main>
           <Space h="md" />
           <Group justify="space-between">
-            <Title>Teams</Title>
+            <Title data-testid="teamss">Teams</Title>
             <Modal
               opened={opened}
               onClose={modalClose}
               title={
                 <div style={{ padding: "16px 0 0 0" }}>
-                  <Title order={3}>Create a New Team</Title>
+                  <Title order={3} data-testid="create">Create a New Team</Title>
                 </div>
               }
               centered
@@ -634,7 +635,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
                     alignItems: "center"
                   }}>
                     <Button variant="outline" onClick={modalClose}>Cancel</Button>
-                    <Button onClick={handleNextStep} disabled={!teamData.organization_id && !teamData.new_org_name}>
+                    <Button onClick={handleNextStep} disabled={!teamData.organization_id && !teamData.new_org_name} data-testid="nextbttn">
                       Next
                     </Button>
                   </div>
@@ -682,7 +683,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
                     alignItems: "center"
                   }}>
                     <Button variant="outline" onClick={modalClose}>Cancel</Button>
-                    <Button onClick={handleNextStep}>Next</Button>
+                    <Button onClick={handleNextStep} data-testid="courseNext">Next</Button>
                   </div>
                 </div>
               )}
@@ -729,7 +730,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
                     alignItems: "center"
                   }}>
                     <Button variant="outline" onClick={modalClose}>Cancel</Button>
-                    <Button onClick={handleNextStep} disabled={!teamData.team_name || teamData.max_size < 1}>Next</Button>
+                    <Button onClick={handleNextStep} disabled={!teamData.team_name || teamData.max_size < 1} data-testid="teamNext">Next</Button>
                   </div>
                 </div>
               )}
@@ -779,7 +780,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
                     alignItems: "center"
                   }}>
                     <Button variant="outline" onClick={modalClose}>Cancel</Button>
-                    <Button onClick={handleSubmit2} disabled={!teamData.selected_students.length || teamData.selected_students.length > teamData.max_size}>
+                    <Button onClick={handleSubmit2} disabled={!teamData.selected_students.length || teamData.selected_students.length > teamData.max_size} data-testid="finally" >
                       Add Students and Finish
                     </Button>
                   </div>
@@ -789,7 +790,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
             <div>
               <Menu>
                 <Menu.Target>
-                  <Button>Add a New Team</Button>
+                  <Button data-testid="newteam">Add a New Team</Button>
                 </Menu.Target>
                 <Menu.Dropdown>
                   <Menu.Item
@@ -829,7 +830,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
             <Table stickyHeader verticalSpacing="md" striped highlightOnHover withTableBorder>
               <Table.Thead>
                 <Table.Tr>
-                  <Table.Th>Team</Table.Th>
+                  <Table.Th data-testid="tableteam">Team</Table.Th>
                   <Table.Th>Members</Table.Th>
                   <Table.Th>Maximum Size</Table.Th>
                   <Table.Th>Course</Table.Th>
