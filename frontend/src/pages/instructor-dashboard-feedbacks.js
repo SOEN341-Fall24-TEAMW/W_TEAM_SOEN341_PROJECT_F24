@@ -14,12 +14,11 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
     const [detailedView, setDetailedView] = useState(false);
     const [studentFeedbacks, setStudentFeedbacks] = useState([]);
     const [studentPeers, setStudentPeers] = useState(null);
-    const [averageCooperation, setAverageCooperation] = useState(null);
-    const [averageConceptualContribution, setAverageConceptualContribution] = useState(null);
-    const [averagePracticalContribution, setAveragePracticalContribution] = useState(null);
-    const [averageWorkEthic, setAverageWorkEthic] = useState(null);
-    const [averageOverall, setAverageOverall] = useState(null);
-    const [summary, setSummary] = useState([]);
+    const [averageCooperation, setAverageCooperation] = useState();
+    const [averageConceptualContribution, setAverageConceptualContribution] = useState();
+    const [averagePracticalContribution, setAveragePracticalContribution] = useState();
+    const [averageWorkEthic, setAverageWorkEthic] = useState();
+    const [averageOverall, setAverageOverall] = useState();
 
     useEffect(() => {
         if (!user || !user.token) {
@@ -120,7 +119,7 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
                 console.error('Error fetching peers: ', error);
             }
         }
-    }, [detailedView]);
+    }, [studentFeedbacks, detailedView]);
 
     useEffect(() => {
         try {
@@ -128,60 +127,32 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
 
                 const totalFeedbacks = studentFeedbacks.length;
 
-                if (totalFeedbacks === 0) {
-                    // Handle the case where there is no feedback
-                    setAverageCooperation("0.00");
-                    setAverageConceptualContribution("0.00");
-                    setAveragePracticalContribution("0.00");
-                    setAverageWorkEthic("0.00");
-                    setAverageOverall("0.00");
-                    setSummary({
-                        name: selectedStudent.name,
-                        id: selectedStudent.id,
-                        cooperation: "0.00",
-                        conceptualContribution: "0.00",
-                        practicalContribution: "0.00",
-                        workEthic: "0.00",
-                        overallAverage: "0.00",
-                        peers: studentPeers
-                    });
-                }
-
                 // Calculate total scores for each category
                 const totalCooperation = studentFeedbacks.map(fb => fb.cooperation).reduce((sum, feedback) => sum + +feedback, 0);
                 const totalConceptContr = studentFeedbacks.map(fb => fb.conceptual_contribution).reduce((sum, feedback) => sum + +feedback, 0);
                 const totalPractContr = studentFeedbacks.map(fb => fb.practical_contribution).reduce((sum, feedback) => sum + +feedback, 0);
                 const totalWorkEthic = studentFeedbacks.map(fb => fb.work_ethic).reduce((sum, feedback) => sum + +feedback, 0);
-                console.log('test', totalCooperation, totalFeedbacks, studentFeedbacks, totalConceptContr, totalPractContr, totalWorkEthic)
-                const average_cooperation = (totalCooperation / totalFeedbacks).toFixed(2);
-                const average_conceptual_contribution = (totalConceptContr / totalFeedbacks).toFixed(2);
-                const average_practical_contribution = (totalPractContr / totalFeedbacks).toFixed(2);
-                const average_work_ethic = (totalWorkEthic / totalFeedbacks).toFixed(2);
+                console.log('test', totalCooperation, totalFeedbacks, studentFeedbacks, totalConceptContr, totalPractContr, totalWorkEthic);
+                const average_cooperation = parseFloat((totalCooperation / totalFeedbacks));
+                const average_conceptual_contribution = parseFloat((totalConceptContr / totalFeedbacks));
+                const average_practical_contribution = parseFloat((totalPractContr / totalFeedbacks));
+                const average_work_ethic = parseFloat((totalWorkEthic / totalFeedbacks));
+                console.log('test2', average_cooperation, average_conceptual_contribution, average_practical_contribution, average_work_ethic);
 
                 // Calculate overall average from computed values
-                const average_overall = (
-                    (parseFloat(average_cooperation) +
-                        parseFloat(average_conceptual_contribution) +
-                        parseFloat(average_practical_contribution) +
-                        parseFloat(average_work_ethic)) / 4
-                ).toFixed(2);
+                const average_overall = parseFloat((
+                    ((average_cooperation) +
+                        (average_conceptual_contribution) +
+                        (average_practical_contribution) +
+                        (average_work_ethic)) / 4
+                ));
 
-                // Update state
+                // Update states
                 setAverageCooperation(average_cooperation);
                 setAverageConceptualContribution(average_conceptual_contribution);
                 setAveragePracticalContribution(average_practical_contribution);
                 setAverageWorkEthic(average_work_ethic);
                 setAverageOverall(average_overall);
-                setSummary([{
-                    name: selectedStudent.name,
-                    id: selectedStudent.id,
-                    cooperation: averageCooperation,
-                    conceptualContribution: averageConceptualContribution,
-                    practicalContribution: averagePracticalContribution,
-                    workEthic: averageWorkEthic,
-                    overallAverage: averageOverall,
-                    peers: studentPeers
-                }]);
 
             }
         } catch (error) {
@@ -215,7 +186,7 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
                 <Group justify="space-between">
                     <Title>
                         {selectedStudent
-                            ? `Student ${selectedStudent.name} records`
+                            ? `Student records: ${selectedStudent.name}`
                             : selectedTeam
                                 ? `Students in ${selectedTeam.name}`
                                 : selectedCourse
@@ -313,12 +284,12 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
                                                 <Table.Td>{selectedStudent.name || 'no name'}</Table.Td>
                                                 <Table.Td>{selectedStudent.id || 'no id'}</Table.Td>
                                                 <Table.Td>{selectedTeam.name || 'no team'}</Table.Td>
-                                                <Table.Td>{averageCooperation || '0.00'}</Table.Td>
-                                                <Table.Td>{averageConceptualContribution || '0.00'}</Table.Td>
-                                                <Table.Td>{averagePracticalContribution || '0.00'}</Table.Td>
-                                                <Table.Td>{averageWorkEthic || '0.00'}</Table.Td>
-                                                <Table.Td>{averageOverall || '0.00'}</Table.Td>
-                                                <Table.Td>{studentFeedbacks.length || 'no name'}</Table.Td>
+                                                <Table.Td>{averageCooperation ? averageCooperation.toFixed(2) : '0.00'}</Table.Td>
+                                                <Table.Td>{averageConceptualContribution ? averageConceptualContribution.toFixed(2) : '0.00'}</Table.Td>
+                                                <Table.Td>{averagePracticalContribution ? averagePracticalContribution.toFixed(2) : '0.00'}</Table.Td>
+                                                <Table.Td>{averageWorkEthic ? averageWorkEthic.toFixed(2) : '0.00'}</Table.Td>
+                                                <Table.Td>{averageOverall ? averageOverall.toFixed(2) : '0.00'}</Table.Td>
+                                                <Table.Td>{studentFeedbacks.length || '0'}</Table.Td>
                                             </Table.Tr>
                                         </Table.Tbody>
 
@@ -331,12 +302,12 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
                         {/* Show selected student's feedback table if a student is selected */}
                         {detailedView && (
                             <>
+                                <Button onClick={() => setDetailedView(false)}>Hide Details</Button>
+                                <Space h='md' />
                                 <Title order={2} style={{fontWeight : 'lighter'}}>
                                     {`Details: `}
                                 </Title>
-                                <Space h='md' />
-                                <Button onClick={() => setDetailedView(false)}>Hide Details</Button>
-                                <Space h="md" />
+                                <Space h="sm" />
                                 <Table.ScrollContainer minWidth={500}>
                                     <Table stickyHeader verticalSpacing="md" striped highlightOnHover withTableBorder>
                                         <Table.Thead>
@@ -350,7 +321,7 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
                                             </Table.Tr>
                                         </Table.Thead>
                                         <Table.Tbody>
-                                            {(feedback_rows !== null && feedback_rows.length > 0) ? feedback_rows : <tr><td colSpan={3}>No records found</td></tr>}
+                                            {(feedback_rows !== null && feedback_rows.length > 0) ? feedback_rows : <tr><td colSpan={6}>No records found</td></tr>}
                                         </Table.Tbody>
                                     </Table>
                                 </Table.ScrollContainer>
