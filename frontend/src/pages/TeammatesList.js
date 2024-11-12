@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Title, Table, Center, Text, Modal } from '@mantine/core';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const TeammatesList = ({ teams, memberships, students, email, selectedTeam }) => {
     const navigate = useNavigate();

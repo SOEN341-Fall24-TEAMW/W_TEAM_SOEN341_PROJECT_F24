@@ -33,6 +33,9 @@ const PeerEvaluationIntro = () => {
         Each student will rate their teammates anonymously on these areas, using a scale (e.g., 1 to 7), and can also leave comments. The form helps ensure accountability and provides feedback to improve future team performance.
       </p>
 
+      <br></br>
+      
+      <p>Make sure you rate the student on all the criterias (comments excluded), otherwise the submission will not be sent.</p>
       {/* Button to redirect to the Peer Evaluation Form */}
       <button
         onClick={handleGoToEvaluation} // Handle redirection on click
