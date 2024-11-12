@@ -148,6 +148,7 @@ const CreateNewAccount = (props) => {
             <Select
                 label={"Role"}
                 placeholder="Select a Role"
+                role="roles"
                 data={['student', 'instructor']}
                 value={role ? role : ""}
                 onChange={(value) => setRole(value)}
@@ -206,6 +207,7 @@ const CreateNewAccount = (props) => {
             <Space h="sm" />
             <Select
                 label="Choose an existing organization"
+                role="orgDropdown"
                 placeholder="Select Organization"
                 data={organization_list.map((org) => ({ value: org.id, label: org.name }))}
                 value={organizationId}

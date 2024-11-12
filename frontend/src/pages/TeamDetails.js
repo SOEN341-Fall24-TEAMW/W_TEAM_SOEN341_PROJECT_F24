@@ -62,7 +62,6 @@ function TeamDetails() {
       });
 
       if (response.ok) {
-        const result = await response.json();
         setIsAddingStudent(false); // Close modal on success
         setMembers(prev => [...prev, { id: studentId, name: studentName, email: studentEmail }]); // Add new student to members list
       } else {

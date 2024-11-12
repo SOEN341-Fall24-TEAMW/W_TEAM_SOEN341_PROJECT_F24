@@ -93,7 +93,7 @@ function PeerEvaluationForm() {
       <div className='titleContainer'>Peer Evaluation Form</div>
       <div className="form-group">
       <label>1. Cooperation</label>
-        <div class="table-container">
+        <div className="table-container">
           <table>
             <thead>
               <tr>
@@ -149,6 +149,7 @@ function PeerEvaluationForm() {
                 <input
                   type="radio"
                   name="cooperation"
+                  role='rateCooperation'
                   value={i + 1}
                   onChange={(e) => handleChange('cooperation', e.target.value)}
                   className="rating-input"
@@ -168,7 +169,7 @@ function PeerEvaluationForm() {
         {/* Conceptual Contribution */}
         <div className="form-group">
           <label>2. Conceptual Contribution</label>
-          <div class="table-container">
+          <div className="table-container">
             <table>
               <thead>
                 <tr>
@@ -225,6 +226,7 @@ function PeerEvaluationForm() {
                 <input
                   type="radio"
                   name="conceptualContribution"
+                  role='rateConceptual'
                   value={i + 1}
                   onChange={(e) => handleChange('conceptualContribution', e.target.value)}
                   className="rating-input"
@@ -245,7 +247,7 @@ function PeerEvaluationForm() {
         {/* Practical Contribution */}
         <div className="form-group">
           <label>3. Practical Contribution</label>
-          <div class="table-container">
+          <div className="table-container">
             <table>
               <thead>
                 <tr>
@@ -305,6 +307,7 @@ function PeerEvaluationForm() {
                   <input
                     type="radio"
                     name="practicalContribution"
+                    role='ratePractical'
                     value={i + 1}
                     onChange={(e) => handleChange('practicalContribution', e.target.value)}
                     className="rating-input"
@@ -325,7 +328,7 @@ function PeerEvaluationForm() {
         {/* Work Ethic */}
         <div className="form-group">
           <label>4. Work Ethic</label>
-          <div class="table-container">
+          <div className="table-container">
             <table>
               <thead>
                 <tr>
@@ -385,6 +388,7 @@ function PeerEvaluationForm() {
                 <input
                   type="radio"
                   name="workEthic"
+                  role='rateWorkEthic'
                   value={i + 1}
                   onChange={(e) => handleChange('workEthic', e.target.value)}
                   className="rating-input"
@@ -403,6 +407,7 @@ function PeerEvaluationForm() {
 
         <button type="submit" 
         className="submit-button"
+        data-testid ="submit"
         disabled={!isFormComplete() || isSubmitting} // Disable if form is incomplete or submitting
         >{isSubmitting ? 'Submitting...' : 'Submit Evaluation (Rate all the criterias before submiting)'}</button>
 

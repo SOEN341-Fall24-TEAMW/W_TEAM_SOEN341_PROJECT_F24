@@ -4,7 +4,6 @@ import DashboardFilterSort from './DashboardFilterSort.js';
 import { NavLink, AppShell, Table, Group, Space, Modal, Button, Title, TextInput, rem, Select, Menu, NumberInput, MultiSelect, Alert, Text, FileInput, Notification } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconUsers, IconUsersGroup, IconMessage, IconSearch, IconDatabaseImport, IconCirclePlus, IconX, IconCheck } from '@tabler/icons-react';
-
 import Papa from "papaparse";
 import './styles.css';
 import InstructorDashboardFeedbacks from "./instructor-dashboard-feedbacks.js";
@@ -60,31 +59,45 @@ const InstructorDashboard = ({organizations, org, courses, teams, students, memb
   }, [loggedIn]);
 
   const exportCSV = () => {
-    fetch('/instructor/export', {
-      method: 'GET',
+    const selectedOrg = organizations.find((organization) => organization.name === org);
+    const organizationId = selectedOrg?.id;
+  
+    if (!organizationId) {
+      setNotifyError(true); // Show an error notification for missing organization
+      setTimeout(() => setNotifyError(false), 5000); // Clear notification after a timeout
+      return;
+    }
+  
+    const user = JSON.parse(localStorage.getItem("user")); // Fetch user dynamically
+  
+    fetch(`/instructor/export?organizationId=${organizationId}`, {
+      method: "GET",
       headers: {
-        'Authorization': `Bearer ${user.token}`,
+        Authorization: `Bearer ${user?.token}`,
       },
     })
-    .then(response => {
-      if (response.ok) {
-        return response.blob();
-      }
-      throw new Error('Failed to fetch CSV data.');
-    })
-    .then(blob => {
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = url;
-      a.download = 'students_export.csv';
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-    })
-    .catch(error => console.error('Error exporting CSV:', error));
+      .then((response) => {
+        if (response.ok) {
+          return response.blob();
+        }
+        throw new Error("Failed to fetch CSV data.");
+      })
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.style.display = "none";
+        a.href = url;
+        a.download = `students_${organizationId}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+      })
+      .catch((error) => {
+        console.error("Error exporting CSV:", error);
+        setNotifyError(true); // Show an error notification for export failure
+        setTimeout(() => setNotifyError(false), 5000); // Clear notification after a timeout
+      });
   };
-
 
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user'));
@@ -342,7 +355,7 @@ const InstructorDashboard = ({organizations, org, courses, teams, students, memb
   const navBarData = tabs.map((data) => (
     <NavLink
       key={data.label}
-      leftSection={<data.icon size='1rem' stroke='1.5' />}
+      leftSection={<data.icon size='1rem' stroke='1.5' data-testid={`${data.label}`} />}
       childrenOffset={28}
       label={
         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -494,6 +507,21 @@ const InstructorDashboard = ({organizations, org, courses, teams, students, memb
   }}
   onClick={exportCSV}
 >
+{notifyError && (
+  <Notification
+    icon={<IconX style={{ width: rem(20), height: rem(20) }} />}
+    color="red"
+    title="Export Error"
+    withCloseButton={false}
+    style={{
+      opacity: notifyError ? '1' : '0',
+      transition: 'opacity 0.5s ease-in-out',
+    }}
+  >
+    Unable to export CSV. Please ensure an organization is selected.
+  </Notification>
+)}
+
   Export Student Data
 </Button>
 
