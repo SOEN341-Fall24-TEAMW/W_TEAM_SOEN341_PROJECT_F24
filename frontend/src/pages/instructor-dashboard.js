@@ -7,7 +7,16 @@ import { IconUsers, IconUsersGroup, IconMessage, IconSearch, IconDatabaseImport,
 import Papa from "papaparse";
 import './styles.css';
 import InstructorDashboardFeedbacks from "./instructor-dashboard-feedbacks.js";
-// Filtering and sorting logic based on filterSortOptions
+
+
+const InstructorDashboard = ({ organizations, org, courses, teams, students, memberships, email, fetchData, loggedIn, setLoggedIn }) => {
+
+  const [filterSortOptions, setFilterSortOptions] = useState({
+    sortBy: '',         // Column to sort by, e.g., 'ID'
+    sortOrder: 'asc'    // Sort order: 'asc' or 'desc'
+  });
+
+  {/*// Filtering and sorting logic based on filterSortOptions
 const applyFilterAndSort = (students, filterSortOptions) => {
   return students
     .filter((student) => {
@@ -27,17 +36,7 @@ const applyFilterAndSort = (students, filterSortOptions) => {
       }
       return 0;
     });
-};
-
-
-
-const InstructorDashboard = ({organizations, org, courses, teams, students, memberships, email, fetchData, loggedIn, setLoggedIn }) => {
-  const [filterSortOptions, setFilterSortOptions] = useState({
-    filterBy: '',       // Column to filter by, e.g., 'Name'
-    filterValue: '',    // Value to filter by, e.g., 'John'
-    sortBy: '',         // Column to sort by, e.g., 'ID'
-    sortOrder: 'asc'    // Sort order: 'asc' or 'desc'
-  });
+};*/}
 
   const [hasNewFeedbacks, setHasNewFeedbacks] = useState(false);
 
@@ -58,18 +57,18 @@ const InstructorDashboard = ({organizations, org, courses, teams, students, memb
     }
   }, [loggedIn]);
 
-  const exportCSV = () => {
+  {/*const exportCSV = () => {
     const selectedOrg = organizations.find((organization) => organization.name === org);
     const organizationId = selectedOrg?.id;
-  
+
     if (!organizationId) {
       setNotifyError(true); // Show an error notification for missing organization
       setTimeout(() => setNotifyError(false), 5000); // Clear notification after a timeout
       return;
     }
-  
+
     const user = JSON.parse(localStorage.getItem("user")); // Fetch user dynamically
-  
+
     fetch(`/instructor/export?organizationId=${organizationId}`, {
       method: "GET",
       headers: {
@@ -97,7 +96,7 @@ const InstructorDashboard = ({organizations, org, courses, teams, students, memb
         setNotifyError(true); // Show an error notification for export failure
         setTimeout(() => setNotifyError(false), 5000); // Clear notification after a timeout
       });
-  };
+  };*/}
 
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user'));
@@ -387,9 +386,9 @@ const InstructorDashboard = ({organizations, org, courses, teams, students, memb
       if (membership.feedbacks && Array.isArray(membership.feedbacks)) {
         membership.feedbacks.forEach(feedback => {
           totalScore += (feedback.cooperation || 0)
-                      + (feedback.conceptualContribution || 0)
-                      + (feedback.practicalContribution || 0)
-                      + (feedback.workEthic || 0);
+            + (feedback.conceptualContribution || 0)
+            + (feedback.practicalContribution || 0)
+            + (feedback.workEthic || 0);
           feedbackCount += 1;
         });
       }
@@ -408,51 +407,46 @@ const InstructorDashboard = ({organizations, org, courses, teams, students, memb
   };
 
   const rows = org
-  ? applyFilterAndSort(students || [], filterSortOptions)
-  .filter(
-    (student) =>
-      student.organization_id === (organizations.find((organization) => organization.name === org) || {}).id
-  )
-  .filter(
-    (student) =>
-      student.name.toLowerCase().includes(query.toLowerCase()) ||
-      student.id.toString().includes(query.toLowerCase())
-  )
-  .map((student) => {
-    const student_memberships = (memberships || []).filter((membership) => membership.student_id === student.id);
+    ? (students || [])
+      .filter(
+        (student) =>
+          student.organization_id === (organizations.find((organization) => organization.name === org) || {}).id
+      )
+      .filter(
+        (student) =>
+          student.name.toLowerCase().includes(query.toLowerCase()) ||
+          student.id.toString().includes(query.toLowerCase())
+      )
+      .map((student) => {
+        const student_memberships = (memberships || []).filter((membership) => membership.student_id === student.id);
 
-    const team_names = student_memberships
-      .map((membership) => (teams || []).find((team) => team.id === membership.team_id)?.name)
-      .filter((team_name) => team_name)
-      .join(", ");
+        const team_names = student_memberships
+          .map((membership) => (teams || []).find((team) => team.id === membership.team_id)?.name)
+          .filter((team_name) => team_name)
+          .join(", ");
 
-    const team_courses = student_memberships
-      .map((membership) => (teams || []).find((team) => team.id === membership.team_id)?.course_id)
-      .filter((course_id) => course_id);
-    const course_names = team_courses
-      .map((course_id) => (courses || []).find((course) => course.id === course_id)?.name)
-      .filter((course_name) => course_name)
-      .join(", ");
+        const team_courses = student_memberships
+          .map((membership) => (teams || []).find((team) => team.id === membership.team_id)?.course_id)
+          .filter((course_id) => course_id);
+        const course_names = team_courses
+          .map((course_id) => (courses || []).find((course) => course.id === course_id)?.name)
+          .filter((course_name) => course_name)
+          .join(", ");
 
-    const organization_name = (organizations || []).find((organization) => organization.id === student.organization_id)?.name || "Unknown organization";
+        const organization_name = (organizations || []).find((organization) => organization.id === student.organization_id)?.name || "Unknown organization";
 
-    // Get rating and corresponding emoji
-    const rating = calculateStudentRating(student.id);
-    const emoji = rating ? getEmojiForRating(rating) : "";
-
-    return (
-      <Table.Tr key={student.id}>
-        <Table.Td>{student.name || "No name"}</Table.Td>
-        <Table.Td>{student.id || "No id"}</Table.Td>
-        <Table.Td>{student.email || "No email"}</Table.Td>
-        <Table.Td>{team_names || "No team"}</Table.Td>
-        <Table.Td>{course_names || "No course"}</Table.Td>
-        <Table.Td>{organization_name || "No organization"}</Table.Td>
-        <Table.Td>{emoji}</Table.Td>
-      </Table.Tr>
-    );
-  })
-: [];
+        return (
+          <Table.Tr key={student.id}>
+            <Table.Td>{student.name || "No name"}</Table.Td>
+            <Table.Td>{student.id || "No id"}</Table.Td>
+            <Table.Td>{student.email || "No email"}</Table.Td>
+            <Table.Td>{team_names || "No team"}</Table.Td>
+            <Table.Td>{course_names || "No course"}</Table.Td>
+            <Table.Td>{organization_name || "No organization"}</Table.Td>
+          </Table.Tr>
+        );
+      })
+    : [];
 
   const rows2 = org
     ? (teams || [])
@@ -473,8 +467,9 @@ const InstructorDashboard = ({organizations, org, courses, teams, students, memb
         const team_course = (courses || []).find((course) => course.id === team.course_id);
         const course_names = team_course ? team_course.name : "No course";
         const organization_name = (organizations.find((organization) => organization.id === team_course?.organization_id) || {}).name || "Unknown organization";
-        const emoji = rating ? getEmojiForRating(rating) : "";
         const rating = calculateStudentRating(student_names);
+        const emoji = rating ? getEmojiForRating(rating) : "";
+
 
         return (
           <Table.Tr key={team.id}>
@@ -483,7 +478,6 @@ const InstructorDashboard = ({organizations, org, courses, teams, students, memb
             <Table.Td>{team.max_size || "No members"}</Table.Td>
             <Table.Td>{course_names || "No course"}</Table.Td>
             <Table.Td>{organization_name || "No organization"}</Table.Td>
-            <Table.Td>{emoji  || "No emoji"}</Table.Td>
           </Table.Tr>
         );
       })
@@ -495,37 +489,37 @@ const InstructorDashboard = ({organizations, org, courses, teams, students, memb
       <AppShell.Navbar>{navBarData}</AppShell.Navbar>
       {(active === 'Students') && (<AppShell.Main>
         <Space h="md" />
-        <Button
-  style={{
-    backgroundColor: "#4CAF50",
-    color: "white",
-    fontSize: "16px",
-    fontWeight: "bold",
-    padding: "10px 20px",
-    margin: "10px 0",
-    cursor: "pointer",
-  }}
-  onClick={exportCSV}
->
-{notifyError && (
-  <Notification
-    icon={<IconX style={{ width: rem(20), height: rem(20) }} />}
-    color="red"
-    title="Export Error"
-    withCloseButton={false}
-    style={{
-      opacity: notifyError ? '1' : '0',
-      transition: 'opacity 0.5s ease-in-out',
-    }}
-  >
-    Unable to export CSV. Please ensure an organization is selected.
-  </Notification>
-)}
+        {/*<Button
+          style={{
+            backgroundColor: "#4CAF50",
+            color: "white",
+            fontSize: "16px",
+            fontWeight: "bold",
+            padding: "10px 20px",
+            margin: "10px 0",
+            cursor: "pointer",
+          }}
+          onClick={exportCSV}
+        >
+          {notifyError && (
+            <Notification
+              icon={<IconX style={{ width: rem(20), height: rem(20) }} />}
+              color="red"
+              title="Export Error"
+              withCloseButton={false}
+              style={{
+                opacity: notifyError ? '1' : '0',
+                transition: 'opacity 0.5s ease-in-out',
+              }}
+            >
+              Unable to export CSV. Please ensure an organization is selected.
+            </Notification>
+          )}
 
-  Export Student Data
-</Button>
+          Export Student Data
+        </Button>
 
-        <DashboardFilterSort onApply={setFilterSortOptions} />
+        <DashboardFilterSort onApply={setFilterSortOptions} />*/}
         <Group justify="space-between">
           <Title>Students</Title>
           <Modal
@@ -743,7 +737,6 @@ const InstructorDashboard = ({organizations, org, courses, teams, students, memb
                 <Table.Th>Team</Table.Th>
                 <Table.Th>Course</Table.Th>
                 <Table.Th>Organization</Table.Th>
-                <Table.Th>Emoji</Table.Th>
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>{rows}</Table.Tbody>
@@ -753,7 +746,6 @@ const InstructorDashboard = ({organizations, org, courses, teams, students, memb
       {(active === 'Teams') && (
         <AppShell.Main>
           <Space h="md" />
-          <DashboardFilterSort onApply={setFilterSortOptions} />
           <Group justify="space-between">
             <Title>Teams</Title>
             <Modal
@@ -1030,7 +1022,7 @@ const InstructorDashboard = ({organizations, org, courses, teams, students, memb
 
       {(active === 'Feedbacks') && (
         <>
-          <InstructorDashboardFeedbacks organizations={organizations} org={org} courses={courses} teams={teams} students={students} memberships={memberships} email={email} setLoggedIn={setLoggedIn}/>
+          <InstructorDashboardFeedbacks organizations={organizations} org={org} courses={courses} teams={teams} students={students} memberships={memberships} email={email} setLoggedIn={setLoggedIn} />
         </>
       )}
 
