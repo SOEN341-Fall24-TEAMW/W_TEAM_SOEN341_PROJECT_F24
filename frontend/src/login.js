@@ -129,6 +129,8 @@ const Login = (props) => {
             <Select
                 label={"Role"}
                 placeholder="Select a Role"
+                role="roleDropdown"
+                data-testid="role"
                 data={['student', 'instructor']}
                 value={role ? role : null}
                 onChange={(value) => setRole(value)}
@@ -139,6 +141,7 @@ const Login = (props) => {
             <TextInput
                 value={email}
                 label="Enter your email address:"
+                role="email"
                 placeholder="Email Adress"
                 onChange={ev => setEmail(ev.target.value)}
                 style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
@@ -148,6 +151,7 @@ const Login = (props) => {
             <TextInput
                 value={password}
                 label="Password"
+                role="password"
                 placeholder="Password"
                 type="password"
                 onChange={ev => setPassword(ev.target.value)}
@@ -158,6 +162,7 @@ const Login = (props) => {
             <Space h="lg" />
             <Button
                 variant="gradient"
+                role="login"
                 gradient={{ from: 'blue', to: 'cyan', deg: 90 }}
                 onClick={onButtonClick}
                 style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
