@@ -187,6 +187,10 @@ app.post("/assign-random", (req, res) => {
 function assignStudentsToTeams(students, teams) {
     const assignments = {};
 
+    if (teams.length === 0) {
+        return assignments; // Return an empty object if there are no teams
+    }
+
     // Initialize all teams with empty arrays
     teams.forEach((team) => {
         assignments[team] = [];
@@ -670,6 +674,8 @@ const authorizeRole = (role) => {
       next(); // User has the correct role, proceed to the route handler
     };
   };
+
+  module.exports = { authorizeRole };
   
 // Protected route for instructor dashboard
 app.get('/api/instructor-dashboard', authorizeRole('Instructor'), (req, res) => {
