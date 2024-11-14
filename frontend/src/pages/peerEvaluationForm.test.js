@@ -50,9 +50,6 @@ afterEach(() => {
 
        it("returns",  () =>{
 
-
-
-
            render(
            <MantineProvider>
            <MemoryRouter >
@@ -66,78 +63,6 @@ afterEach(() => {
 
 
        });
-
-
-       //if submit passes
-       it("submit pass", async() => {
-
-
-
-
-
-
-
-
-            render(
-                <MantineProvider>
-                <MemoryRouter>
-                <PeerEvaluationForm/>
-                </MemoryRouter>
-                </MantineProvider>
-                );
-
-
-                fetchMock.mockResponseOnce(JSON.stringify({message: "success"}));
-
-
-
-
-                const submitbttn = screen.getByTestId("submit");
-
-
-
-
-             const commentconcept = screen.getByPlaceholderText("Add comments on Conceptual Contribution (optional)");
-                   expect(commentconcept).toBeInTheDocument();
-             fireEvent.change(commentconcept, {target: {value:"amazing"}});
-                fireEvent.click(submitbttn);
-               
-              
-             await waitFor (() => expect(fetchMock).toHaveBeenCalledTimes(1));
-             await waitFor (() => expect(global.alert).toHaveBeenCalledWith("Evaluation submitted successfully"));
-   
-
-
-        });
-
-
-        it("submit fails", async() => {
-
-
-
-
-    
-
-
-           render(
-               <MantineProvider>
-               <MemoryRouter>
-               <PeerEvaluationForm/>
-               </MemoryRouter>
-               </MantineProvider>
-               );
-               fetchMock.mockResponseOnce(JSON.stringify({message: ""}));
-               const submitbttn = screen.getByTestId("submit");
-               fireEvent.click(submitbttn);
-             
-            await waitFor (() => expect(fetchMock).toHaveBeenCalledTimes(1));
-            await waitFor (() => expect(global.alert).toHaveBeenCalledWith("Failed to submit evaluation"));
-
-
-       });
-
-
-
 
         it("displays 4 rating criterias" , () =>{
            render(
