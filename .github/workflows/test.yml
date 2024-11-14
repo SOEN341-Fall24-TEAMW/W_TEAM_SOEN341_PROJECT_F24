@@ -20,9 +20,6 @@ jobs:
         with:
           node-version: '14'  # Specify the version of Node.js you need
 
-      - name: Install dependencies
-        run: npm install  # Install project dependencies
-
       - name: Run tests
         run: cd frontend/src
            npm test  # Run your tests
