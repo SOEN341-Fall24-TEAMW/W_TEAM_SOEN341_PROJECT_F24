@@ -46,7 +46,7 @@ const io = new Server(server);
 
 // Define a JWT secret key. This should be isolated by using env variables for security
 const jwtSecretKey = "dsfdsfsdfdsvcsvdfgefg"
-module.exports = app ;
+module.exports = app;
 
 function isValidToken(token) {
     try {
@@ -93,38 +93,38 @@ app.get('/export', isInstructor, (req, res) => {
     res.attachment(`students_${organizationId}.csv`);
     res.send(csvData);
 });
-    // Helper function to fetch students by organization ID
-    function fetchStudentsByOrganization(orgId) {
-        return db.get("users")
-            .filter({ role: 'student', organization_id: orgId })
-            .map(student => ({
-                id: student.id,
-                email: student.email,
-                password: student.password,
-                name: student.name
-            }))
-            .value();
-    }
-    
-    // Function to export students for all organizations
-    function exportAllOrganizationStudentsToCSV() {
-        const organizations = db.get("organizations").value();
-        const csvFiles = [];
-    
-        organizations.forEach(org => {
-            const students = fetchStudentsByOrganization(org.id);
-    
-            if (students.length > 0) {
-                const csvData = json2csvParser.parse(students);
-    
-                const filename = `students_${org.name.replace(/ /g, "_").toLowerCase()}.csv`;
-                fs.writeFileSync(filename, csvData);
-                csvFiles.push(filename);
-                console.log(`CSV file ${filename} created successfully for organization: ${org.name}`);
-            }
-        });
-        return csvFiles;
-    }    
+// Helper function to fetch students by organization ID
+function fetchStudentsByOrganization(orgId) {
+    return db.get("users")
+        .filter({ role: 'student', organization_id: orgId })
+        .map(student => ({
+            id: student.id,
+            email: student.email,
+            password: student.password,
+            name: student.name
+        }))
+        .value();
+}
+
+// Function to export students for all organizations
+function exportAllOrganizationStudentsToCSV() {
+    const organizations = db.get("organizations").value();
+    const csvFiles = [];
+
+    organizations.forEach(org => {
+        const students = fetchStudentsByOrganization(org.id);
+
+        if (students.length > 0) {
+            const csvData = json2csvParser.parse(students);
+
+            const filename = `students_${org.name.replace(/ /g, "_").toLowerCase()}.csv`;
+            fs.writeFileSync(filename, csvData);
+            csvFiles.push(filename);
+            console.log(`CSV file ${filename} created successfully for organization: ${org.name}`);
+        }
+    });
+    return csvFiles;
+}
 // Basic home route for the API
 app.get("/", (_req, res) => {
     res.send("Auth API.\nPlease use POST /auth & POST /verify for authentication")
@@ -205,7 +205,7 @@ function assignStudentsToTeams(students, teams) {
         teamIndex = (teamIndex + 1) % teams.length;
     });
 
-    
+
     return assignments;
 }
 
@@ -365,26 +365,17 @@ app.post("/courses", (req, res) => {
         if (verified.role === "instructor") {
             const courses = db.get("courses").filter({ instructor_id: verified.id }).value();
             const course_id = courses.map(course => course.id);
-            console.log(courses);
-            console.log(course_id);
-            const course_names = courses.map(course => course.name);
-            console.log(course_names);
+
             const teams = db.get("teams").filter(team => course_id.includes(team.course_id)).value();
-            console.log("teams: ", teams);
             const team_id = teams.map(team => team.id);
-            console.log("team ids: ", team_id);
             const team_membership = db.get("team_memberships").filter(membership => team_id.includes(membership.team_id)).value();
-            console.log("team membership: ", team_membership);
+
             const student_id = db.get("users").filter(user => (user.role === 'student')).map(student => student.id).value();
-            console.log("student_id", student_id);
             const students = db.get("users").filter(student => student_id.includes(student.id)).value();
-            console.log("students", students);
+
             const organization_id = students.map(student => student.organization_id);
-            console.log("organization_id", organization_id);
             const organizations = db.get("organizations").filter(organization => organization_id.includes(organization.id)).value();
-            console.log("organization", organizations);
-            const organization_name = organizations.map(organization => organization.name);
-            console.log("organization_name", organization_name);
+
             return res.status(200).json({
                 message: "success",
                 organization_info: organizations,
@@ -645,6 +636,53 @@ app.post('/get-student-feedback', (req, res) => {
     }
 })
 
+app.post('/get-feedback-records', (req, res) => {
+    const course = req.body.course;
+    console.log("Course received:", course);
+    const results = [];
+
+    try {
+        // Get all teams for the specified course
+        const teams = db.get('teams')
+            .filter((team) => course.id.includes(team.course_id))
+            .value();
+        console.log("Teams for the specified course:", teams);
+
+        // Loop through each team and calculate the unique evaluators
+        teams.forEach((team) => {
+            console.log("Processing team:", team);
+
+            const unique_evaluators = new Set(
+                db.get('peer_evaluations')
+                    .filter(evaluation => evaluation.team_id === team.id)
+                    .map(evaluation => evaluation.evaluator_id)
+                    .value()
+            );
+            console.log("Unique evaluators for team", team.name, ":", unique_evaluators);
+
+            const team_size = new Set(
+                db.get('team_memberships')
+                    .filter(membership => membership.team_id === team.id)
+                    .map(membership => membership.student_id)
+                    .value()
+            ).size;
+            console.log("Team size for team", team.name, ":", team_size);
+
+            // Add team name, team size, and number of unique feedbacks to the results array
+            results.push({ name: team.name, size: team_size, numberOfFeedbacks: unique_evaluators.size });
+        });
+
+        console.log("Final results:", results);
+
+        // Send the results as JSON response
+        res.status(200).json({ message: 'success', results });
+
+    } catch (error) {
+        console.error("Error occurred:", error);
+        return res.status(500).json({ message: "Invalid input", error });
+    }
+});
+
 app.post('/get-student-peers', (req, res) => {
     const feedbacks = req.body;
     console.log("DJ KHALED LOGGING: ", feedbacks);
@@ -659,39 +697,41 @@ app.post('/get-student-peers', (req, res) => {
         return res.status(401).json({ message: "Invalid token", error });
     }
 })
+
 // Middleware function to check user role
 const authorizeRole = (role) => {
     return (req, res, next) => {
-      // Assuming req.user is set after authentication
-      if (!req.user) {
-        return res.status(401).json({ message: 'Unauthorized' });
-      }
-  
-      if (req.user.role !== role) {
-        return res.status(403).json({ message: 'Forbidden: Insufficient role' });
-      }
-  
-      next(); // User has the correct role, proceed to the route handler
+        // Assuming req.user is set after authentication
+        if (!req.user) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        if (req.user.role !== role) {
+            return res.status(403).json({ message: 'Forbidden: Insufficient role' });
+        }
+
+        next(); // User has the correct role, proceed to the route handler
     };
   };
 
   module.exports = { authorizeRole };
   
+
 // Protected route for instructor dashboard
 app.get('/api/instructor-dashboard', authorizeRole('Instructor'), (req, res) => {
     res.status(200).json({ message: 'Instructor dashboard data' });
-  });
-  
-  // Protected route for creating teams
-  app.post('/api/create-team', authorizeRole('Instructor'), (req, res) => {
+});
+
+// Protected route for creating teams
+app.post('/api/create-team', authorizeRole('Instructor'), (req, res) => {
     // Logic for creating a team
     res.status(200).send('Team created successfully');
-  });
+});
 // Protected route for student dashboard
 app.get('/api/student-dashboard', authorizeRole('Student'), (req, res) => {
     res.status(200).json({ message: 'Student dashboard data' });
-  });
-  
+});
+
 
 // Middleware to verify if the user is an instructor
 function isInstructor(req, res, next) {
@@ -797,7 +837,7 @@ app.post('/submit-evaluation', (req, res) => {
     } = req.body;
 
 
-    if (!evaluator_id || !evaluatee_id ) {
+    if (!evaluator_id || !evaluatee_id) {
         return res.status(400).send({ message: "Evaluator and evaluatee IDs are required." });
     }
 
@@ -809,7 +849,7 @@ app.post('/submit-evaluation', (req, res) => {
     if (existingEvaluation) {
         return res.status(400).json({ message: "Evaluation already exists for this teammate in the same team." });
     }
-    
+
     try {
         const id = db.get('peer_evaluations').size().value() + 1;
 

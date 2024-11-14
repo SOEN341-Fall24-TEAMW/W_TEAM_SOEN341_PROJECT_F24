@@ -20,8 +20,20 @@ jobs:
         with:
           node-version: '14'  # Specify the version of Node.js you need
 
-      - name: Install dependencies
-        run: npm install  # Install project dependencies
+      # Install and test frontend
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm install
 
-      - name: Run tests
-        run: npm test  # Run your tests
+      - name: Run frontend tests
+        working-directory: frontend
+        run: npm test
+
+      # Install and test auth-server
+      - name: Install auth-server dependencies
+        working-directory: auth-server
+        run: npm install
+
+      - name: Run auth-server tests
+        working-directory: auth-server/tests
+        run: npm test
