@@ -1,7 +1,7 @@
 import { React, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Select, TextInput, Button, Space, Alert } from '@mantine/core';
-import { IconAlertTriangle } from '@tabler/icons-react';
+import { Select, TextInput, Button, Space, PasswordInput, Divider } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 
 const Login = (props) => {
     const [email, setEmail] = useState("")
@@ -12,8 +12,9 @@ const Login = (props) => {
     const [roleError, setRoleError] = useState("");
 
     const navigate = useNavigate();
+    const [visible, { toggle }] = useDisclosure(false);
+    let hasError = false;
 
-    const icon = <IconAlertTriangle />;
 
     const onButtonClick = () => {
 
@@ -23,29 +24,33 @@ const Login = (props) => {
         setRoleError("");
 
         // Check if the user has entered both fields correctly
-        if (role === "") {
+        if (!role) {
             setRoleError("Please select a role");
-            return;
+            hasError = true;
         }
 
-        if ("" === email) {
+        if (!email) {
             setEmailError("Please enter your email");
-            return
+            hasError = true;
         }
 
         if (!/^[\w-.]+@([\w-]+.)+[\w-]{2,4}$/.test(email)) {
-            setEmailError("Please enter a valid email")
-            return
+            setEmailError("Please enter a valid email");
+            hasError = true;
         }
 
-        if ("" === password) {
-            setPasswordError("Please enter a password")
-            return
+        if (!password) {
+            setPasswordError("Please enter a password");
+            hasError = true;
         }
 
         if (password.length < 7) {
-            setPasswordError("The password must be 8 characters or longer")
-            return
+            setPasswordError("The password must be 8 characters or longer");
+            hasError = true;
+        }
+
+        if (hasError) {
+            return;
         }
 
         // Check if email has an account associated with it
@@ -59,7 +64,6 @@ const Login = (props) => {
                     navigate('/create-new-account');
                 }
         })
-
 
     }
 
@@ -98,11 +102,11 @@ const Login = (props) => {
                     props.setEmail(email);
                     setTimeout(() => {
                         if (role === "student") {
-                          navigate("/student-dashboard");
+                            navigate("/student-dashboard");
                         } else if (role === "instructor") {
-                          navigate("/instructor-dashboard");
+                            navigate("/instructor-dashboard");
                         }
-                      }, 0);
+                    }, 0);
                 } else {
                     window.alert(r.message);
                 }
@@ -110,63 +114,71 @@ const Login = (props) => {
     }
 
     return <div className={"mainContainer"} style={{ display: "flex", flexDirection: "row" }}>
-        <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "left", padding: 40 }}>
-            <img src="/team-logo.svg" alt="Team Logo" style={{ maxWidth: "335.18px" }} />
+        <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "justify", padding: 40 }}>
+            <img src="/team-logo.svg" alt="Team Logo" style={{ maxWidth: "335.18px", padding: "20px" }} />
             <Space h="lg" />
             <Space h="lg" />
             <div style={{ fontSize: 28 }}>
-                Work Assessment <br />
+                Web-based Peer Assessment <br />
                 and Team Coordination Hub
             </div>
         </div>
         <div style={{ height: 300, width: 1, backgroundColor: "#d3d3d3" }}></div>
         <div style={{
             display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center",
-            margin : 40 , padding: 40, backgroundColor: "#fff", border: "none", borderRadius: 8,
+            margin: 40, padding: 40, backgroundColor: "#fff", border: "none", borderRadius: 8,
             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1)", boxSizing: "border-box"
         }}
         >
-            <Select
-                label={"Role"}
-                placeholder="Select a Role"
-                role="roleDropdown"
-                data-testid="role"
-                data={['student', 'instructor']}
-                value={role ? role : null}
-                onChange={(value) => setRole(value)}
-                style={{ width: 335.14, fontSize: 24, borderRadius: 11, margin: 0, padding: 0 }}
-                clearable />
-            <Space h="sm" />
-            {(roleError !== "") && <Alert variant="light" color="red" title="Email Alert" icon={icon}>{roleError}</Alert> && <Space h="sm" />}
-            <TextInput
-                value={email}
-                label="Enter your email address:"
-                role="email"
-                placeholder="Email Adress"
-                onChange={ev => setEmail(ev.target.value)}
-                style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
-            />
-            <Space h="sm" />
-            {(emailError !== "") && <Alert variant="light" color="red" title="Email Error" icon={icon}>{emailError}</Alert> && <Space h="sm" />}
-            <TextInput
-                value={password}
-                label="Password"
-                role="password"
-                placeholder="Password"
-                type="password"
-                onChange={ev => setPassword(ev.target.value)}
-                style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
-            />
-            <Space h="sm" />
-            {(passwordError !== "") && <Alert variant="light" color="red" title="Password Error" icon={icon}>{passwordError}</Alert > && <Space h="sm" />}
-            <Space h="lg" />
+            <form onSubmit={onButtonClick}>
+                <Select
+                    label={"Role"}
+                    placeholder="Select a Role"
+                    data={['student', 'instructor']}
+                    value={role ? role : null}
+                    onChange={(value) => { setRole(value); setRoleError(""); }}
+                    style={{ width: 335.14, fontSize: 24, borderRadius: 11, margin: 0, padding: 0 }}
+                    withAsterisk
+                    error={roleError ? roleError : ""}
+                    clearable />
+                <TextInput
+                    value={email}
+                    label="Enter your email address:"
+                    placeholder={"Email Address"}
+                    withAsterisk
+                    onChange={ev => { setEmail(ev.target.value); setEmailError(""); }}
+                    style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
+                    error={emailError ? emailError : ""}
+                />
+                <Space h={emailError ? "xl" : "sm"} />
+                <PasswordInput
+                    value={password}
+                    label="Password"
+                    placeholder="Password"
+                    visible={visible}
+                    onVisibilityChange={toggle}
+                    withAsterisk
+                    onChange={ev => { setPassword(ev.target.value); setPasswordError(""); }}
+                    style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
+                    error={passwordError ? passwordError : ""}
+                />
+                <Space h={passwordError ? "xl" : "lg"} />
+                <Button
+                    variant="gradient"
+                    gradient={{ from: 'blue', to: 'cyan', deg: 90 }}
+                    onClick={onButtonClick}
+                    style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11, marginTop: "20px" }}
+                >{"Login"}</Button>
+            </form>
+            <Divider my="sm" />
+            <div style={{ height: 1, width: 300, backgroundColor: "#d3d3d3" }}></div>
+            <Divider my="sm" />
             <Button
                 variant="gradient"
-                role="login"
-                gradient={{ from: 'blue', to: 'cyan', deg: 90 }}
-                onClick={onButtonClick}
-                style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
-            >{"Login"}</Button>
+                gradient={{ from: 'green', to: 'cyan', deg: 90 }}
+                onClick={() => navigate('/create-new-account')}
+                style={{ width: "fit-content", height: 50, fontSize: 20, borderRadius: 11 }}
+            >{"Create new account"}</Button>
         </div>
     </div>
 }

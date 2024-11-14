@@ -38,21 +38,26 @@ const CreateNewAccount = (props) => {
         let hasError = false;
 
         // Check if the user has entered both fields correctly
-        if (firstName === "") {
-            setFirstNameError("Please enter your  first name");
-            hasError = true;
-        }
-        if (lastName === "") {
-            setLastNameError("Please enter your last name");
+        if (!role) {
+            setRoleError("Please select a role");
             hasError = true;
         }
 
-        if ((role === "student") && id === "") {
+        if ((role === "student") && !id) {
             setIdError("Please enter your student Id");
             hasError = true;
         }
 
-        if ("" === email) {
+        if (!firstName) {
+            setFirstNameError("Please enter your  first name");
+            hasError = true;
+        }
+        if (!lastName) {
+            setLastNameError("Please enter your last name");
+            hasError = true;
+        }
+
+        if (!email) {
             setEmailError("Please enter your email")
             hasError = true;
         }
@@ -62,7 +67,7 @@ const CreateNewAccount = (props) => {
             hasError = true;
         }
 
-        if ("" === password) {
+        if (!password) {
             setPasswordError("Please enter a password")
             hasError = true;
         }
@@ -72,12 +77,7 @@ const CreateNewAccount = (props) => {
             hasError = true;
         }
 
-        if (role === "") {
-            setRoleError("Please select a role");
-            hasError = true;
-        }
-
-        if (organizationId === "") {
+        if (!organizationId) {
             setOrganizationIdError("Please select an organization");
             hasError = true;
         }
@@ -103,7 +103,7 @@ const CreateNewAccount = (props) => {
 
     }
 
-    const organization_list = [{ name: 'Concordia University', id: 'org1'}, { name: 'McGill University', id: 'org2'}, {name: 'Université de Montréal', id: 'org3'}, {name: 'Université du Québec à Montréal', id: 'org4'}, {name: 'École de technologie supérieure', id: 'org5'}, {name: 'Polytechnique Montréal', id: 'org6'}];
+    const organization_list = [{ name: 'Concordia University', id: 'org1' }, { name: 'McGill University', id: 'org2' }, { name: 'Université de Montréal', id: 'org3' }, { name: 'Université du Québec à Montréal', id: 'org4' }, { name: 'École de technologie supérieure', id: 'org5' }, { name: 'Polytechnique Montréal', id: 'org6' }];
 
     // Call the server API to check if the given email ID already exists
     const checkAccountExists = (callback) => {
@@ -151,11 +151,11 @@ const CreateNewAccount = (props) => {
                 role="roles"
                 data={['student', 'instructor']}
                 value={role ? role : ""}
-                onChange={(value) => setRole(value)}
+                onChange={(value) => { setRole(value); setRoleError(""); } }
                 style={{ width: 335.14, fontSize: 24, borderRadius: 11, margin: 0, padding: 0 }}
-                clearable />
-            <Space h="sm" />
-            {(roleError !== "") && (<> <Space h="sm" /><Alert variant="light" color="red" title="Role Error" icon={icon} style={{ width: 335.14 }}>{roleError}</Alert> </>)}
+                clearable
+                error={roleError ? roleError : ""}
+            />
             {(role === 'student') && <>
                 <TextInput
                     value={id}
@@ -163,9 +163,9 @@ const CreateNewAccount = (props) => {
                     placeholder="Student ID"
                     onChange={ev => { setId(ev.target.value); setIdError(""); }}
                     style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
+                    error={idError ? idError : ""}
                 />
-                <Space h="sm" />
-                {(idError !== "") && (<> <Space h="sm" /><Alert variant="light" color="red" title="Student ID Error" icon={icon} style={{ width: 335.14 }}>{idError}</Alert> </>)}
+                <Space h={idError ? "lg" : "sm"} />
             </>}
             <TextInput
                 value={firstName}
@@ -173,27 +173,27 @@ const CreateNewAccount = (props) => {
                 placeholder="First Name"
                 onChange={ev => { setFirstName(ev.target.value); setFirstNameError(""); }}
                 style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
+                error={firstNameError ? firstNameError : ""}
             />
-            <Space h="sm" />
-            {(firstNameError !== "") && (<> <Space h="sm" /><Alert variant="light" color="red" title="First Name Error" icon={icon} style={{ width: 335.14 }}>{firstNameError}</Alert> </>)}
+            <Space h={firstNameError ? "lg" : "sm"} />
             <TextInput
                 value={lastName}
                 label="Enter your last name:"
                 placeholder="Last Name"
                 onChange={ev => { setLastName(ev.target.value); setLastNameError(""); }}
                 style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
+                error={lastNameError ? lastNameError : ""}
             />
-            <Space h="sm" />
-            {(lastNameError !== "") && (<> <Space h="sm" /><Alert variant="light" color="red" title="Last Name Error" icon={icon} style={{ width: 335.14 }}>{lastNameError}</Alert> </>)}
+            <Space h={lastNameError ? "lg" : "sm"} />
             <TextInput
                 value={email}
                 label="Enter your email address:"
                 placeholder="Email Adress"
                 onChange={ev => { setEmail(ev.target.value); setEmailError(""); }}
                 style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
+                error={emailError ? emailError : ""}
             />
-            <Space h="sm" />
-            {(emailError !== "") && (<> <Space h="sm" /><Alert variant="light" color="red" title="Email Error" icon={icon} style={{ width: 335.14 }}>{emailError}</Alert> </>)}
+            <Space h={emailError ? "lg" : "sm"} />
             <TextInput
                 value={password}
                 label="Password"
@@ -201,10 +201,9 @@ const CreateNewAccount = (props) => {
                 type="password"
                 onChange={ev => { setPassword(ev.target.value); setPasswordError(""); }}
                 style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
+                error={passwordError ? passwordError : ""}
             />
-            <Space h="sm" />
-            {(passwordError !== "") && (<> <Space h="sm" /><Alert variant="light" color="red" title="Password Error" icon={icon} style={{ width: 335.14 }}>{passwordError}</Alert> </>)}
-            <Space h="sm" />
+            <Space h={passwordError ? "lg" : "sm"} />
             <Select
                 label="Choose an existing organization"
                 role="orgDropdown"
@@ -212,10 +211,9 @@ const CreateNewAccount = (props) => {
                 data={organization_list.map((org) => ({ value: org.id, label: org.name }))}
                 value={organizationId}
                 style={{ width: 335.14, fontSize: 24, borderRadius: 11, margin: 0, padding: 0 }}
-                onChange={(value) => {setOrganizationId(value); setOrganizationIdError('');}}
+                onChange={(value) => { setOrganizationId(value); setOrganizationIdError(''); }}
+                error={organizationIdError ? organizationIdError : ""}
             />
-            <Space h="sm" />
-            {(organizationIdError !== "") && (<> <Space h="sm" /><Alert variant="light" color="red" title="Organization ID Error" icon={icon} style={{ width: 335.14 }}>{organizationIdError}</Alert> </>)}
             <Space h="lg" />
             <Button
                 variant="gradient"

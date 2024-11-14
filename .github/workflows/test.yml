@@ -37,5 +37,3 @@ jobs:
       - name: Run auth-server tests
         working-directory: auth-server/tests
         run: npm test
-          
-           

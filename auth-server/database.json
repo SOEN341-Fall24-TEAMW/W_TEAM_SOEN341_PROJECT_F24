@@ -1547,6 +1547,21 @@
       "ethic_comment": "No comment",
       "team_id": "a6236aed-84db-45c9-8827-9477087a1658",
       "timestamp": "2024-11-10T00:48:09.188Z"
+    },
+    {
+      "id": 18,
+      "evaluator_id": "87654321",
+      "evaluatee_id": "09876543",
+      "cooperation": "6",
+      "conceptual_contribution": "7",
+      "practical_contribution": "6",
+      "work_ethic": "5",
+      "cooperation_comment": "Very good!",
+      "conceptual_comment": "no",
+      "practical_comment": "yes",
+      "ethic_comment": "yes",
+      "team_id": "33aab05e-0020-420a-949d-627f8772b791",
+      "timestamp": "2024-11-07T17:43:07.110Z"
     }
   ],
   "organization": []
