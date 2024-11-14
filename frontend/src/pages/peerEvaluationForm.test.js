@@ -209,6 +209,33 @@ afterEach(() => {
  
          });
 
+         it("submit disabled", async() => {
+
+
+            const mockisFormComplete=jest.fn();
+            mockisFormComplete.mockReturnValue(true);
+    
+            let mockisSubmitting = true;
+           render(
+               <MantineProvider>
+               <MemoryRouter>
+               <PeerEvaluationForm isSubmitting = {mockisSubmitting}  isFormComplete = {mockisFormComplete} />
+               </MemoryRouter>
+               </MantineProvider>
+               );
+               fetchMock.mockResponseOnce(JSON.stringify({message: ""}));
+               const submitbttn = screen.getByTestId("submit");
+               fireEvent.click(submitbttn);
+            
+ 
+ 
+            expect(mockisFormComplete()).toBe(true);
+            expect(mockisSubmitting).toBe(true);
+   
+            await waitFor(()=>expect(submitbttn).toBeDisabled()) ;
+       });
+ 
+
 
    })
      
