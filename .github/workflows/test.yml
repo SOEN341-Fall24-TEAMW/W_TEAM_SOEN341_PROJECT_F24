@@ -24,4 +24,10 @@ jobs:
         run: npm install  # Install project dependencies
 
       - name: Run tests
-        run: npm test  # Run your tests
+        run: cd frontend/src
+           npm test  # Run your tests
+ 
+      - name: Run tests
+        run: cd auth-server/tests
+           npm test  # Run your tests
+           
