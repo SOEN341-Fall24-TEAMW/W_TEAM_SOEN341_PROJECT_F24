@@ -35,8 +35,8 @@ Debugging for Demo | Addressed debugging needs due to issues from merging branch
 ## Action Items
 | Done? | Item | Responsible | Due Date |
 | ---- | ---- | ---- | ---- |
-| | Demo to TA | Team | TBD |
-| | Begin Sprint 3 Planning | Team | TBD |
+| ✅ | Demo to TA | Team | TBD |
+| ✅ | Begin Sprint 3 Planning | Team | TBD |
 
 ## Other Notes & Information
 N/A
