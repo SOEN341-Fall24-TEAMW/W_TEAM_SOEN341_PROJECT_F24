@@ -750,6 +750,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
         <Space h="xl" />
         <Group justify="space-between" style={{ alignItems: "center", height: "62.59px" }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <DashboardFilterSort onChange={setFilterSortOptions} />
             <TextInput
               label={' '}
               value={query}
@@ -758,7 +759,6 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
               leftSection={<IconSearch style={{ width: rem(20), height: rem(20) }} stroke={1.5} />}
               onChange={(event) => setQuery(event.currentTarget.value)}
             />
-            <DashboardFilterSort onChange={setFilterSortOptions} />
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
