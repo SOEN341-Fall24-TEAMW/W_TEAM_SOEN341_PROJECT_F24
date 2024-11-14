@@ -751,7 +751,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
         <Group justify="space-between" style={{ alignItems: "center", height: "62.59px" }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <TextInput
-              label={'Search'}
+              label={' '}
               value={query}
               placeholder="Search"
               leftSectionPointerEvents="none"
