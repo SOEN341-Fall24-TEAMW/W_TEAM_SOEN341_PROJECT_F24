@@ -372,8 +372,187 @@ describe("Create new account" , ()=>{
         );      
           expect(screen.getByText(/Create Account/i)).toBeInTheDocument();
 
+    }  );
+
+it("invalid email", async()=>{
 
 
-    }  )
+    const mockonButtonClick = jest.fn();
+    const mockemail = "";
+    const mockAlert = jest.spyOn(window,'alert').mockImplementation(()=>{});
 
-})
+
+    render(
+        <MantineProvider>
+        <MemoryRouter>
+        <CreateNewAccount onButtonClick={mockonButtonClick} email={mockemail}  />
+        </MemoryRouter>
+        </MantineProvider>
+       
+
+
+    );     
+        fireEvent.click(screen.getByText(/Create Account/i));
+
+      expect(screen.getByText(/Create Account/i)).toBeInTheDocument();
+     
+      await waitFor(()=>expect(screen.getByText(/Please enter a valid email/i)).toBeInTheDocument())
+
+
+}  );
+
+
+it("invalid role", async()=>{
+
+
+    const mockonButtonClick = jest.fn();
+   const mockrole = "student";
+   const  mockid = "";
+    const mockAlert = jest.spyOn(window,'alert').mockImplementation(()=>{});
+
+
+    render(
+        <MantineProvider>
+        <MemoryRouter>
+        <CreateNewAccount onButtonClick={mockonButtonClick} role={mockrole} id={mockid}  />
+        </MemoryRouter>
+        </MantineProvider>
+    
+    );     
+
+      expect(screen.getByText(/Create Account/i)).toBeInTheDocument();
+      expect(screen.getByRole(/roles/i)).toBeInTheDocument();
+     
+      fireEvent.click(screen.getByRole(/roles/i));
+      expect(screen.getByText(/student/i)).toBeInTheDocument();
+                fireEvent.click(screen.getByText(/student/i));
+               
+                fireEvent.click(screen.getByText(/Create Account/i));
+
+
+      await waitFor(()=>expect(screen.getByText(/Please enter your student Id/i)).toBeInTheDocument())
+
+
+}  );
+
+
+
+
+it("invalid first name", async()=>{
+
+
+    const mockonButtonClick = jest.fn();
+   const mockfirstName = "";
+    const mockAlert = jest.spyOn(window,'alert').mockImplementation(()=>{});
+
+
+    render(
+        <MantineProvider>
+        <MemoryRouter>
+        <CreateNewAccount onButtonClick={mockonButtonClick} firstName={mockfirstName} />
+        </MemoryRouter>
+        </MantineProvider>
+    
+    );     
+
+
+      expect(screen.getByText(/Create Account/i)).toBeInTheDocument();
+  
+               
+      fireEvent.click(screen.getByText(/Create Account/i));
+
+
+      await waitFor(()=>expect(screen.getByText(/Please enter your first name/i)).toBeInTheDocument())
+
+
+}  );
+
+
+it("invalid last name", async()=>{
+
+
+    const mockonButtonClick = jest.fn();
+   const mocklastName = "";
+    const mockAlert = jest.spyOn(window,'alert').mockImplementation(()=>{});
+
+
+    render(
+        <MantineProvider>
+        <MemoryRouter>
+        <CreateNewAccount onButtonClick={mockonButtonClick} lastName={mocklastName} />
+        </MemoryRouter>
+        </MantineProvider>
+       
+    );     
+      expect(screen.getByText(/Create Account/i)).toBeInTheDocument();
+  
+               
+                fireEvent.click(screen.getByText(/Create Account/i));
+
+
+      await waitFor(()=>expect(screen.getByText(/Please enter your last name/i)).toBeInTheDocument())
+
+
+}  );
+
+
+it("invalid password", async()=>{
+
+
+    const mockonButtonClick = jest.fn();
+   const mockpassword = "";
+    const mockAlert = jest.spyOn(window,'alert').mockImplementation(()=>{});
+
+
+    render(
+        <MantineProvider>
+        <MemoryRouter>
+        <CreateNewAccount onButtonClick={mockonButtonClick} password={mockpassword} />
+        </MemoryRouter>
+           </MantineProvider>
+          
+
+
+       );     
+
+
+         expect(screen.getByText(/Create Account/i)).toBeInTheDocument();
+     
+                  
+                   fireEvent.click(screen.getByText(/Create Account/i));
+
+
+         await waitFor(()=>expect(screen.getByText(/The password must be 8 characters or longer/i)).toBeInTheDocument())
+
+
+   }  );
+
+
+   it("invalid organization", async()=>{
+
+
+       const mockonButtonClick = jest.fn();
+      const mockorganizationId = "";
+       const mockAlert = jest.spyOn(window,'alert').mockImplementation(()=>{});
+
+
+       render(
+           <MantineProvider>
+           <MemoryRouter>
+           <CreateNewAccount onButtonClick={mockonButtonClick} organizationId={mockorganizationId} />
+           </MemoryRouter>
+           </MantineProvider>
+          
+       );     
+         expect(screen.getByText(/Create Account/i)).toBeInTheDocument();
+     
+         fireEvent.click(screen.getByText(/Create Account/i));
+
+         await waitFor(()=>expect(screen.getByText(/Please select an organization/i)).toBeInTheDocument())
+
+
+   }  );
+
+
+
+});
