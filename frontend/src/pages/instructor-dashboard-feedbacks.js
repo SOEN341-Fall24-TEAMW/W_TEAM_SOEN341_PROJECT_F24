@@ -60,7 +60,7 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
                         <Table.Td>{team.name || "No name"}</Table.Td>
                         <Table.Td>{feedbackBadgeTeam ? feedbackBadgeTeam.size : "No size available"}</Table.Td>
                         <Table.Td>{team.max_size || "No max size"}</Table.Td>
-                        <Table.Td>{feedbackBadgeTeam.numberOfFeedbacks || "0"}</Table.Td>
+                        <Table.Td>{feedbackBadgeTeam?.numberOfFeedbacks || "0"}</Table.Td>
                         <Table.Td>{<TeamFeedBackBadges feedbackBadgeTeam={feedbackBadgeTeam} />}</Table.Td>
                     </Table.Tr>
                 );
