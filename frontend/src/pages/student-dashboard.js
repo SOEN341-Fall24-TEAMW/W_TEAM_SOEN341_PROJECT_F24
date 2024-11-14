@@ -11,7 +11,17 @@ import './styles.css';
 
 
 const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
+
+  // Session management
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem('user'));
+  useEffect(() => {
+    if (!user || !user.token) {
+        console.error("JWT token not found. Please log in again.");
+        setLoggedIn(false);
+        navigate('/');
+    }
+}, [user, navigate, setLoggedIn]);
 
   // Fetching current user ID 
   const currentUserId = JSON.parse(localStorage.getItem('user'))?.email; 

@@ -16,27 +16,19 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
     sortOrder: 'asc'    // Sort order: 'asc' or 'desc'
   });
 
-  {/*// Filtering and sorting logic based on filterSortOptions
-const applyFilterAndSort = (students, filterSortOptions) => {
-  return students
-    .filter((student) => {
-      if (filterSortOptions.filterBy && filterSortOptions.filterValue) {
-        const columnValue = student[filterSortOptions.filterBy]?.toString().toLowerCase();
-        const filterValue = filterSortOptions.filterValue.toLowerCase();
-        return columnValue && columnValue.includes(filterValue);
-      }
-      return true; // No filtering if filterBy or filterValue is not set
-    })
-    .sort((a, b) => {
-      if (filterSortOptions.sortBy) {
-        const aValue = a[filterSortOptions.sortBy];
-        const bValue = b[filterSortOptions.sortBy];
-        if (aValue < bValue) return filterSortOptions.sortOrder === 'asc' ? -1 : 1;
-        if (aValue > bValue) return filterSortOptions.sortOrder === 'asc' ? 1 : -1;
-      }
-      return 0;
-    });
-};*/}
+  // Filtering and sorting logic based on filterSortOptions
+  const applyFilterAndSort = (students, filterSortOptions) => {
+    return students
+      .sort((a, b) => {
+        if (filterSortOptions.sortBy) {
+          const aValue = a[filterSortOptions.sortBy];
+          const bValue = b[filterSortOptions.sortBy];
+          if (aValue < bValue) return filterSortOptions.sortOrder === 'asc' ? -1 : 1;
+          if (aValue > bValue) return filterSortOptions.sortOrder === 'asc' ? 1 : -1;
+        }
+        return 0;
+      });
+  };
 
   const [hasNewFeedbacks, setHasNewFeedbacks] = useState(false);
 
@@ -235,6 +227,35 @@ const applyFilterAndSort = (students, filterSortOptions) => {
     setStep(step + 1);
   };
 
+  // Handler for moving back a step
+  const handleBackStep = () => {
+    if (step === 2) {
+      // Reset organization-related fields when going back from step 2
+      setTeamData((prevState) => ({
+        ...prevState,
+        organization_id: "",
+        new_org_name: ""
+      }));
+    } else if (step === 3) {
+      // Reset course-related fields when going back from step 3
+      setTeamData((prevState) => ({
+        ...prevState,
+        course_id: "",
+        new_course_name: ""
+      }));
+    } else if (step === 4) {
+      // Reset team-related fields when going back from step 4
+      setTeamData((prevState) => ({
+        ...prevState,
+        team_name: "",
+        max_size: 5,
+        selected_students: []
+      }));
+    }
+    setStep(step - 1); // Move to the previous step
+  };
+
+
   // Handler for moving to the next step
   const validateBeforeNextStep = () => {
 
@@ -407,45 +428,53 @@ const applyFilterAndSort = (students, filterSortOptions) => {
   };
 
   const rows = org
-    ? (students || [])
-      .filter(
-        (student) =>
-          student.organization_id === (organizations.find((organization) => organization.name === org) || {}).id
-      )
-      .filter(
-        (student) =>
-          student.name.toLowerCase().includes(query.toLowerCase()) ||
-          student.id.toString().includes(query.toLowerCase())
-      )
-      .map((student) => {
-        const student_memberships = (memberships || []).filter((membership) => membership.student_id === student.id);
+    ? applyFilterAndSort(
+      (students || [])
+        .filter((student) => {
+          // Filter by organization
+          const organizationId = (organizations.find((organization) => organization.name === org) || {}).id;
+          return student.organization_id === organizationId;
+        })
+        .filter((student) => {
+          // Apply search query filtering
+          const searchValue = query.toLowerCase();
+          return (
+            (student.name?.toLowerCase() || '').includes(searchValue) ||
+            (student.id?.toString() || '').includes(searchValue) ||
+            (student.email?.toLowerCase() || '').includes(searchValue)
+          );
+        }),
+      filterSortOptions,
+      query
+    ).map((student) => {
+      const student_memberships = (memberships || []).filter((membership) => membership.student_id === student.id);
 
-        const team_names = student_memberships
-          .map((membership) => (teams || []).find((team) => team.id === membership.team_id)?.name)
-          .filter((team_name) => team_name)
-          .join(", ");
+      const team_names = student_memberships
+        .map((membership) => (teams || []).find((team) => team.id === membership.team_id)?.name)
+        .filter((team_name) => team_name)
+        .join(", ");
 
-        const team_courses = student_memberships
-          .map((membership) => (teams || []).find((team) => team.id === membership.team_id)?.course_id)
-          .filter((course_id) => course_id);
-        const course_names = team_courses
-          .map((course_id) => (courses || []).find((course) => course.id === course_id)?.name)
-          .filter((course_name) => course_name)
-          .join(", ");
+      const team_courses = student_memberships
+        .map((membership) => (teams || []).find((team) => team.id === membership.team_id)?.course_id)
+        .filter((course_id) => course_id);
+      const course_names = team_courses
+        .map((course_id) => (courses || []).find((course) => course.id === course_id)?.name)
+        .filter((course_name) => course_name)
+        .join(", ");
 
-        const organization_name = (organizations || []).find((organization) => organization.id === student.organization_id)?.name || "Unknown organization";
+      const organization_name = (organizations || []).find((organization) => organization.id === student.organization_id)?.name || "Unknown organization";
 
-        return (
-          <Table.Tr key={student.id}>
-            <Table.Td>{student.name || "No name"}</Table.Td>
-            <Table.Td>{student.id || "No id"}</Table.Td>
-            <Table.Td>{student.email || "No email"}</Table.Td>
-            <Table.Td>{team_names || "No team"}</Table.Td>
-            <Table.Td>{course_names || "No course"}</Table.Td>
-            <Table.Td>{organization_name || "No organization"}</Table.Td>
-          </Table.Tr>
-        );
-      })
+      return (
+        <Table.Tr key={student.id}>
+          <Table.Td>{student.name || "No name"}</Table.Td>
+          <Table.Td>{student.id || "No id"}</Table.Td>
+          <Table.Td>{student.email || "No email"}</Table.Td>
+          <Table.Td>{team_names || "No team"}</Table.Td>
+          <Table.Td>{course_names || "No course"}</Table.Td>
+          <Table.Td>{organization_name || "No organization"}</Table.Td>
+        </Table.Tr>
+      );
+    })
     : [];
 
   const rows2 = org
@@ -649,6 +678,8 @@ const applyFilterAndSort = (students, filterSortOptions) => {
                     data={organizations.map((org) => ({ value: org.id, label: org.name }))}
                     value={studentData.organization_id}
                     onChange={(value) => updateStudentData("organization_id", value)}
+                    searchable
+                    allowDeselect={false}
                   />
                   <Space h="sm" />
                   <TextInput
@@ -676,9 +707,9 @@ const applyFilterAndSort = (students, filterSortOptions) => {
                       color: "#6c757d",
                       border: "1px solid #ced4da"
                     }}
-                    onClick={modalClose}
+                    onClick={handleBackStep}
                   >
-                    Cancel
+                    Back
                   </Button>
                   <Button onClick={handleSubmit} disabled={!studentData.organization_id && !studentData.new_org_name} >
                     Add Organization and Finish
@@ -718,14 +749,45 @@ const applyFilterAndSort = (students, filterSortOptions) => {
         </Group>
         <Space h="xl" />
         <Group justify="space-between" style={{ alignItems: "center", height: "62.59px" }}>
-          <TextInput value={query} placeholder="Search" leftSectionPointerEvents="none" leftSection={<IconSearch style={{ width: rem(20), height: rem(20) }} stroke={1.5} />} onChange={(event) => setQuery(event.currentTarget.value)} />
-          {(notifySuccess) && (<Notification icon={checkIcon} color="teal" title="Import Success!" mt="md" withCloseButton="false" style={{ opacity: `${importSuccess ? '1' : '0'}`, transition: `opacity 0.5s ease-in-out` }}>
-            New Students were successfully imported from file!
-          </Notification>)}
-          {(notifyError) && (<Notification icon={xIcon} color="red" title="Oops..." withCloseButton={false} style={{ opacity: `${importFail ? '1' : '0'}`, transition: `opacity 0.5s ease-in-out` }}>
-            Something went wrong
-          </Notification>)}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <TextInput
+              label={'Search'}
+              value={query}
+              placeholder="Search"
+              leftSectionPointerEvents="none"
+              leftSection={<IconSearch style={{ width: rem(20), height: rem(20) }} stroke={1.5} />}
+              onChange={(event) => setQuery(event.currentTarget.value)}
+            />
+            <DashboardFilterSort onChange={setFilterSortOptions} />
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            {notifySuccess && (
+              <Notification
+                icon={checkIcon}
+                color="teal"
+                title="Import Success!"
+                mt="md"
+                withCloseButton={false}
+                style={{ opacity: importSuccess ? '1' : '0', transition: 'opacity 0.5s ease-in-out' }}
+              >
+                New Students were successfully imported from file!
+              </Notification>
+            )}
+            {notifyError && (
+              <Notification
+                icon={xIcon}
+                color="red"
+                title="Oops..."
+                withCloseButton={false}
+                style={{ opacity: importFail ? '1' : '0', transition: 'opacity 0.5s ease-in-out' }}
+              >
+                Something went wrong
+              </Notification>
+            )}
+          </div>
         </Group>
+
         <Space h="sm" />
         <Table.ScrollContainer minWidth={500}>
           <Table stickyHeader verticalSpacing="md" striped highlightOnHover withTableBorder >
@@ -787,6 +849,8 @@ const applyFilterAndSort = (students, filterSortOptions) => {
                       data={organizations.map((org) => ({ value: org.id, label: org.name }))}
                       value={teamData.organization_id}
                       onChange={(value) => { updateTeamData("organization_id", value); updateTeamData("new_org_name", "") }}
+                      searchable
+                      allowDeselect={false}
                     />
                     <Space h="sm" />
                     <TextInput
@@ -841,8 +905,10 @@ const applyFilterAndSort = (students, filterSortOptions) => {
                       data={courses.filter((course) => course.organization_id === teamData.organization_id).map((course) => ({ value: course.id, label: course.name }))}
                       value={teamData.course_id}
                       onChange={(value) => { updateTeamData("course_id", value); updateTeamData("new_course_name", ""); }}
+                      searchable
+                      allowDeselect={false}
                     />
-
+                    <Space h={'sm'} />
                     <TextInput
                       label="Or add a new course"
                       placeholder="New Course Name"
@@ -859,8 +925,8 @@ const applyFilterAndSort = (students, filterSortOptions) => {
                     justifyContent: "space-between",
                     alignItems: "center"
                   }}>
-                    <Button variant="outline" onClick={modalClose}>Cancel</Button>
-                    <Button onClick={handleNextStep} data-testid="courseNext">Next</Button>
+                    <Button variant="outline" onClick={handleBackStep}>Back</Button>
+                    <Button onClick={handleNextStep} disabled={!teamData.course_id && !teamData.new_course_name} data-testid="courseNext">Next</Button>
                   </div>
                 </div>
               )}
@@ -906,7 +972,7 @@ const applyFilterAndSort = (students, filterSortOptions) => {
                     justifyContent: "space-between",
                     alignItems: "center"
                   }}>
-                    <Button variant="outline" onClick={modalClose}>Cancel</Button>
+                    <Button variant="outline" onClick={handleBackStep}>Back</Button>
                     <Button onClick={handleNextStep} disabled={!teamData.team_name || teamData.max_size < 1} data-testid="teamNext">Next</Button>
                   </div>
                 </div>
@@ -956,7 +1022,7 @@ const applyFilterAndSort = (students, filterSortOptions) => {
                     justifyContent: "space-between",
                     alignItems: "center"
                   }}>
-                    <Button variant="outline" onClick={modalClose}>Cancel</Button>
+                    <Button variant="outline" onClick={handleBackStep}>Back</Button>
                     <Button onClick={handleSubmit2} disabled={!teamData.selected_students.length || teamData.selected_students.length > teamData.max_size} data-testid="finally" >
                       Add Students and Finish
                     </Button>
@@ -975,12 +1041,6 @@ const applyFilterAndSort = (students, filterSortOptions) => {
                     leftSection={icon[0]}
                   >
                     Create New Team
-                  </Menu.Item>
-                  <Menu.Item
-                    onClick={handleFileInputClick}
-                    leftSection={icon[1]}
-                  >
-                    Import From File
                   </Menu.Item>
                 </Menu.Dropdown>
               </Menu>

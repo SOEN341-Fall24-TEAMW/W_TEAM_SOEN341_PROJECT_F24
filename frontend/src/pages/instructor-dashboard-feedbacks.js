@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { AppShell, Table, Group, Space, Button, Title } from '@mantine/core';
 import { useNavigate } from "react-router-dom";
+import { AppShell, Table, Group, Space, Button, Title, Alert } from '@mantine/core';
+import { IconInfoCircle } from '@tabler/icons-react';
 
+import StudentFeedbackBadges from "./instructor-dashboard-feedbacks-student-badges.js";
+import TeamFeedBackBadges from "./instructor-dashboard-feedbacks-team-badges.js";
 import './styles.css';
 
 const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, memberships, setLoggedIn }) => {
     const navigate = useNavigate();
     const user = JSON.parse(localStorage.getItem('user'));
+    const icon = <IconInfoCircle />;
 
     const [selectedCourse, setSelectedCourse] = useState(null);
     const [selectedTeam, setSelectedTeam] = useState(null);
@@ -19,6 +23,7 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
     const [averagePracticalContribution, setAveragePracticalContribution] = useState();
     const [averageWorkEthic, setAverageWorkEthic] = useState();
     const [averageOverall, setAverageOverall] = useState();
+    const [teamsForFeedbackBadge, setTeamsForFeedbackBadge] = useState([]);
 
     useEffect(() => {
         if (!user || !user.token) {
@@ -36,7 +41,7 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
     const course_rows = courses
         .filter(course => course.organization_id === org_id)
         .map((course) => (
-            <Table.Tr key={course.id} onClick={() => { setSelectedCourse(course); setSelectedTeam(null); }} style={{ cursor : 'pointer' }}>
+            <Table.Tr key={course.id} onClick={() => { setSelectedCourse(course); setSelectedTeam(null); }} style={{ cursor: 'pointer' }}>
                 <Table.Td>{course.name || "No name"}</Table.Td>
                 <Table.Td>{course.instructor_id || "No instructor"}</Table.Td>
                 <Table.Td>{course.organization_id || "No organization"}</Table.Td>
@@ -46,13 +51,20 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
     // Filter teams to only those belonging to the selected course
     const team_rows = selectedCourse
         ? teams.filter(team => team.course_id === selectedCourse.id)
-            .map((team) => (
-                <Table.Tr key={team.id} onClick={() => setSelectedTeam(team)} style={{ cursor : 'pointer' }}>
-                    <Table.Td>{team.name || "No name"}</Table.Td>
-                    <Table.Td>{team.max_size || "No max size"}</Table.Td>
-                    <Table.Td>{team.instructor_id || "No instructor"}</Table.Td>
-                </Table.Tr>
-            ))
+            .map((team) => {
+                // Find the matching team in teamsForFeedbackBadge
+                const feedbackBadgeTeam = teamsForFeedbackBadge.find((badgeTeam) => badgeTeam.name === team.name);
+
+                return (
+                    <Table.Tr key={team.id} onClick={() => setSelectedTeam(team)} style={{ cursor: 'pointer' }}>
+                        <Table.Td>{team.name || "No name"}</Table.Td>
+                        <Table.Td>{feedbackBadgeTeam ? feedbackBadgeTeam.size : "No size available"}</Table.Td>
+                        <Table.Td>{team.max_size || "No max size"}</Table.Td>
+                        <Table.Td>{feedbackBadgeTeam.numberOfFeedbacks || "0"}</Table.Td>
+                        <Table.Td>{<TeamFeedBackBadges feedbackBadgeTeam={feedbackBadgeTeam} />}</Table.Td>
+                    </Table.Tr>
+                );
+            })
         : null;
 
     // Filter students based on memberships for the selected team
@@ -62,7 +74,7 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
             .map(membership => {
                 const student = students.find(s => s.id === membership.student_id);
                 return student ? (
-                    <Table.Tr key={student.id} onClick={() => setSelectedStudent(student)} style={{ cursor : 'pointer' }}>
+                    <Table.Tr key={student.id} onClick={() => setSelectedStudent(student)} style={{ cursor: 'pointer' }}>
                         <Table.Td>{student.name || "No name"}</Table.Td>
                         <Table.Td>{student.email || "No email"}</Table.Td>
                         <Table.Td>{student.role || "No role"}</Table.Td>
@@ -72,7 +84,6 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
         : null;
 
     useEffect(() => {
-
         if (selectedStudent) {
             try {
                 fetch('http://localhost:3080/get-student-feedback', {
@@ -178,6 +189,29 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
         </Table.Tr>)
     }) : null;
 
+    useEffect(() => {
+        if (selectedCourse) {
+            try {
+                fetch('http://localhost:3080/get-feedback-records', {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ course: selectedCourse }),
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.message === 'success') {
+                            setTeamsForFeedbackBadge(data.results); // assuming data.results is an array of teams
+                        } else {
+                            console.error('Failed to fetch teams:', data.message);
+                        }
+                    });
+            } catch (error) {
+                console.error('Error fetching teams:', error);
+            }
+        }
+    }, [selectedCourse]);
 
     return (
         <AppShell navbar={{ width: 250 }}>
@@ -191,7 +225,11 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
                                 ? `Students in ${selectedTeam.name}`
                                 : selectedCourse
                                     ? `Teams in ${selectedCourse.name}`
-                                    : `Courses in ${org}`}
+                                    : org
+                                        ? `Courses in ${org}` : <Alert variant="light" color="blue" title="Important!" icon={icon}>
+                                            Please select an organization!
+                                        </Alert>}
+
                     </Title>
                 </Group>
                 <Space h="md" />
@@ -225,8 +263,10 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
                                         <Table.Thead>
                                             <Table.Tr>
                                                 <Table.Th>Team Name</Table.Th>
+                                                <Table.Th>Team Size</Table.Th>
                                                 <Table.Th>Max Size</Table.Th>
-                                                <Table.Th>Instructor</Table.Th>
+                                                <Table.Th>Feedbacks from Unique Authors</Table.Th>
+                                                <Table.Th>Badges</Table.Th>
                                             </Table.Tr>
                                         </Table.Thead>
                                         <Table.Tbody>
@@ -261,10 +301,10 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
 
                         {selectedStudent && (
                             <>
-                                <Button onClick={() => {setSelectedStudent(null); setDetailedView(false);}} className="button3">Back to Student List</Button>
+                                <Button onClick={() => { setSelectedStudent(null); setDetailedView(false); }} className="button3">Back to Student List</Button>
                                 <Space h="md" />
                                 <Table.ScrollContainer minWidth={500}>
-                                    <Table stickyHeader verticalSpacing="md" striped highlightOnHover withTableBorder style={{ width : '100%' }}>
+                                    <Table stickyHeader verticalSpacing="md" striped highlightOnHover withTableBorder style={{ width: '100%' }}>
                                         <Table.Thead>
                                             <Table.Tr >
                                                 <Table.Th>Student ID</Table.Th>
@@ -276,11 +316,12 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
                                                 <Table.Th>Work Ethic</Table.Th>
                                                 <Table.Th>Average</Table.Th>
                                                 <Table.Th>Peers Who Reviewed</Table.Th>
+                                                <Table.Th>Badges</Table.Th>
                                             </Table.Tr>
                                         </Table.Thead>
 
                                         <Table.Tbody>
-                                            <Table.Tr onClick={() => setDetailedView(true)} style={{ cursor : 'pointer' }}>
+                                            <Table.Tr onClick={() => setDetailedView(true)} style={{ cursor: 'pointer' }}>
                                                 <Table.Td>{selectedStudent.name || 'no name'}</Table.Td>
                                                 <Table.Td>{selectedStudent.id || 'no id'}</Table.Td>
                                                 <Table.Td>{selectedTeam.name || 'no team'}</Table.Td>
@@ -290,6 +331,7 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
                                                 <Table.Td>{averageWorkEthic ? averageWorkEthic.toFixed(2) : '0.00'}</Table.Td>
                                                 <Table.Td>{averageOverall ? averageOverall.toFixed(2) : '0.00'}</Table.Td>
                                                 <Table.Td>{studentFeedbacks.length || '0'}</Table.Td>
+                                                <Table.Td>{<StudentFeedbackBadges averageCooperation={averageCooperation} averageConceptualContribution={averageConceptualContribution} averagePracticalContribution={averagePracticalContribution} averageWorkEthic={averageWorkEthic} averageOverall={averageOverall} studentFeedbacks={studentFeedbacks} />}</Table.Td>
                                             </Table.Tr>
                                         </Table.Tbody>
 
@@ -302,29 +344,39 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
                         {/* Show selected student's feedback table if a student is selected */}
                         {detailedView && (
                             <>
-                                <Button onClick={() => setDetailedView(false)}>Hide Details</Button>
-                                <Space h='md' />
-                                <Title order={2} style={{fontWeight : 'lighter'}}>
-                                    {`Details: `}
-                                </Title>
-                                <Space h="sm" />
-                                <Table.ScrollContainer minWidth={500}>
-                                    <Table stickyHeader verticalSpacing="md" striped highlightOnHover withTableBorder>
-                                        <Table.Thead>
-                                            <Table.Tr>
-                                                <Table.Th>Peer</Table.Th>
-                                                <Table.Th>Cooperation</Table.Th>
-                                                <Table.Th>Conceptual Contribution</Table.Th>
-                                                <Table.Th>Practical Contribution</Table.Th>
-                                                <Table.Th>Work Ethic</Table.Th>
-                                                <Table.Th>Average</Table.Th>
-                                            </Table.Tr>
-                                        </Table.Thead>
-                                        <Table.Tbody>
-                                            {(feedback_rows !== null && feedback_rows.length > 0) ? feedback_rows : <tr><td colSpan={6}>No records found</td></tr>}
-                                        </Table.Tbody>
-                                    </Table>
-                                </Table.ScrollContainer>
+                                <>
+                                    <Button onClick={() => setDetailedView(false)}>Hide Details</Button>
+                                    <Space h="md" />
+                                    <Title order={2} style={{ fontWeight: 'lighter' }}>
+                                        {`Details: `}
+                                    </Title>
+                                    <Space h="sm" />
+
+                                    {feedback_rows && feedback_rows.length > 0 ? (
+                                        <>
+                                            <Table.ScrollContainer minWidth={500}>
+                                                <Table stickyHeader verticalSpacing="md" striped highlightOnHover withTableBorder>
+                                                    <Table.Thead>
+                                                        <Table.Tr>
+                                                            <Table.Th>Peer</Table.Th>
+                                                            <Table.Th>Cooperation</Table.Th>
+                                                            <Table.Th>Conceptual Contribution</Table.Th>
+                                                            <Table.Th>Practical Contribution</Table.Th>
+                                                            <Table.Th>Work Ethic</Table.Th>
+                                                            <Table.Th>Average</Table.Th>
+                                                        </Table.Tr>
+                                                    </Table.Thead>
+                                                    <Table.Tbody>
+                                                        {feedback_rows}
+                                                    </Table.Tbody>
+                                                </Table>
+                                            </Table.ScrollContainer>
+                                        </>
+                                    ) : (
+                                        <Alert variant="light" color="blue" title="No Records Found!" icon={icon} style={{ width: 'fit-content' }} />
+                                    )}
+                                </>
+
                             </>
                         )}
                     </>
