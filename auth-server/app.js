@@ -93,6 +93,8 @@ app.get('/export', isInstructor, (req, res) => {
     res.attachment(`students_${organizationId}.csv`);
     res.send(csvData);
 });
+
+
 // Helper function to fetch students by organization ID
 function fetchStudentsByOrganization(orgId) {
     return db.get("users")
@@ -125,6 +127,8 @@ function exportAllOrganizationStudentsToCSV() {
     });
     return csvFiles;
 }
+
+
 // Basic home route for the API
 app.get("/", (_req, res) => {
     res.send("Auth API.\nPlease use POST /auth & POST /verify for authentication")
