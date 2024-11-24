@@ -1,0 +1,11 @@
+title: "Peer Assessment Documentation"
+description: "Documentation for the Peer Assessment Application"
+baseurl: "/docs"
+
+nav_links:
+  - title: "Home"
+    url: "/docs/"
+  - title: "Team Creation"
+    url: "/docs/team-creation.md"
+  - title: "Evaluation Process"
+    url: "/docs/evaluation-process.md"
