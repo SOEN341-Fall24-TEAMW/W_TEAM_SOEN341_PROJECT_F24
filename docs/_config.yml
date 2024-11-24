@@ -1,5 +1,6 @@
 title: "Peer Assessment Documentation"
 description: "Documentation for the Peer Assessment Application"
+url: "https://SOEN341-Fall24-TEAMW.github.io"  # GitHub Pages URL without the repo name
 baseurl: "/docs"
 
 nav_links:
@@ -9,3 +10,10 @@ nav_links:
     url: "/docs/team-creation.md"
   - title: "Evaluation Process"
     url: "/docs/evaluation-process.md"
+
+# GitHub Pages-specific settings
+theme: jekyll-theme-cayman  # Optional, you can pick a different theme
+plugins:
+  - jekyll-seo-tag          # Optional, for SEO optimization
+  - jekyll-feed             # Optional, for RSS feeds if desired
+  - jekyll-paginate         # Optional, for pagination if the documentation grows large
