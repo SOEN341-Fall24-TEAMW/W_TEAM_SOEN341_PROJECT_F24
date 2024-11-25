@@ -9,7 +9,14 @@ var FileSync = require("lowdb/adapters/FileSync");
 var adapter = new FileSync("./database.json");
 var db = low(adapter);
 const { v4: uuidv4 } = require('uuid');
+<<<<<<< HEAD
 
+=======
+//console.log("Users:", db.get("users").value());
+//console.log("Teams:", db.get("teams").value());
+//console.log("Courses:", db.get("courses").value());
+//console.log("Organizations:", db.get("organizations").value());
+>>>>>>> 10db13f (BIG CHUNGUS)
 const { Parser } = require("json2csv"); // For converting JSON to CSV format
 const router = express.Router();
 app.use('/instructor', instructorRoutes);
