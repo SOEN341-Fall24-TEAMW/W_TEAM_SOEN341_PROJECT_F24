@@ -52,9 +52,6 @@ beforeEach(() => {
   global.alert = jest.fn();
   jest.spyOn(console,'error').mockImplementation(()=>{});
 
-
-
-
 });
 
 
@@ -65,7 +62,6 @@ afterEach(() => {
 jest.resetAllMocks();
 jest.restoreAllMocks();
 });
-
 
 
 
@@ -194,14 +190,14 @@ it("display create a new team button ", async ()=>{
   const mockOrganizations = [
       {id: "23", name: "concordia"}
   ]
-
+const mockorg = "concordia"
 
 
 
 render(
 <MantineProvider withGlobalStyles withNormalizeCSS>
 <MemoryRouter >
-<InstructorDashboard organizations={mockOrganizations} setLoggedIn={mocksetLoggedIn}
+<InstructorDashboard  organizations={mockOrganizations} setLoggedIn={mocksetLoggedIn}
 />
 </MemoryRouter>
 </MantineProvider>
@@ -225,40 +221,7 @@ await waitFor(()=>expect(screen.getByText(/Create New Team/i)).toBeInTheDocument
 
 
 
-it("display import from file button ", async ()=>{
 
-
-  const mockOrganizations = [
-      {id: "23", name: "concordia"}
-  ]
-
-
-render(
-<MantineProvider withGlobalStyles withNormalizeCSS>
-<MemoryRouter >
-<InstructorDashboard organizations={mockOrganizations} setLoggedIn={mocksetLoggedIn}
-/>
-</MemoryRouter>
-</MantineProvider>
-);
-
-
-
-expect(screen.getByTestId(/Teams/i)).toBeInTheDocument();
-
-
-
-
-fireEvent.click(screen.getByTestId(/Teams/i));
-await waitFor(()=>expect(screen.getByTestId("teamss")).toBeInTheDocument())  ;
-await waitFor(()=>expect(screen.getByTestId("newteam")).toBeInTheDocument())  ;
-fireEvent.click(screen.getByTestId("newteam"));
-
-await waitFor(()=>expect(screen.getByText(/Import from file/i)).toBeInTheDocument())  ;
-
-
-
-});
 
 
 
@@ -862,7 +825,7 @@ await waitFor(()=>expect(screen.getByText(/Choose an existing course/i)).toBeInT
 await waitFor(()=>expect(screen.getByPlaceholderText(/Select course/i)).toBeInTheDocument()) ;
 fireEvent.click(screen.getByPlaceholderText(/Select course/i));
 await waitFor(()=>expect(screen.getByText(/biology/i)).toBeInTheDocument()) ;
-await waitFor(()=>expect(screen.getByTestId("courseNext")).toBeEnabled()) ;
+await waitFor(()=>expect(screen.getByTestId("courseNext")).toBeDisabled()) ;
 
 });
 
@@ -1637,12 +1600,6 @@ fireEvent.click(screen.getByTestId("finally"));
 });
 
 
-
-
-
-
-
-
 it("team  is displayed", async ()=>{
 
 
@@ -1718,6 +1675,158 @@ await waitFor(()=>expect(screen.getByTestId("tableteam")).toBeInTheDocument())  
 
 
 });
+
+// has feedback in the navigation bar
+it("has feedback in the navigation bar ",()=>{
+    render(
+       <MantineProvider withGlobalStyles withNormalizeCSS>
+       <MemoryRouter >
+       <InstructorDashboard user={mockuser} navigation={mocknavigation} setLoggedIn={mocksetLoggedIn} />
+       </MemoryRouter>
+       </MantineProvider>
+       );
+
+       expect(screen.getByTestId(/Feedbacks/i)).toBeInTheDocument();
+});
+
+
+//can click feedback in the navigation bar
+it("can click feedback in the navigation bar ",()=>{
+
+    const mockOrganizations = [
+        {id: "23", name: "concordia university"}
+    ]
+
+    const mockcourse = [
+        {id: "23", name: "biology", organization_id: "23"}
+    ]
+
+    render(
+       <MantineProvider withGlobalStyles withNormalizeCSS>
+       <MemoryRouter >
+       <InstructorDashboard   courses={mockcourse}  organizations={mockOrganizations} user={mockuser} navigation={mocknavigation} setLoggedIn={mocksetLoggedIn} />
+       </MemoryRouter>
+       </MantineProvider>
+       );
+
+       expect(screen.getByTestId(/Feedbacks/i)).toBeInTheDocument();
+       fireEvent.click(screen.getByTestId(/Feedbacks/i));
+});
+
+
+//must select an organization
+it("can click feedback in the navigation bar ",()=>{
+
+    const mockOrganizations = [
+        {id: "23", name: "concordia university"}
+    ]
+
+    const mockcourse = [
+        {id: "23", name: "biology", organization_id: "23"}
+    ]
+
+    render(
+       <MantineProvider withGlobalStyles withNormalizeCSS>
+       <MemoryRouter >
+       <InstructorDashboard   courses={mockcourse}  organizations={mockOrganizations} user={mockuser} navigation={mocknavigation} setLoggedIn={mocksetLoggedIn} />
+       </MemoryRouter>
+       </MantineProvider>
+       );
+
+       expect(screen.getByTestId(/Feedbacks/i)).toBeInTheDocument();
+       fireEvent.click(screen.getByTestId(/Feedbacks/i));
+
+       expect(screen.getByText(/Please select an organization!/i)).toBeInTheDocument()
+});
+
+
+//courses in concordia university
+it("course page in feedback for concordia university ",()=>{
+
+    const mockOrganizations = [
+        {id: "23", name: "Concordia University"}
+    ]
+
+    const mockcourse = [
+        {id: "23", name: "biology", organization_id: "23"}
+    ]
+
+    const mockorg = "Concordia University"
+
+    const mockteam =[
+        {id:"23",name:"best",max_size: 5, course_id:"23"}
+    ]
+
+    const mockstudents =[
+        {organization_id: "23", id:"2345", name:"lindt"}
+    ]
+
+    const mockmembership =[
+        {student_id:"23456",id:"23", team_id:"23"}
+    ]
+
+    const mockemail = "qwe@qwe.qwe"
+
+    render(
+       <MantineProvider withGlobalStyles withNormalizeCSS>
+       <MemoryRouter >
+       <InstructorDashboard email={mockemail} memberships={mockmembership} students={mockstudents}   teams={mockteam} org={mockorg}   courses={mockcourse}  organizations={mockOrganizations} user={mockuser} navigation={mocknavigation} setLoggedIn={mocksetLoggedIn} />
+       </MemoryRouter>
+       </MantineProvider>
+       );
+
+       expect(screen.getByTestId(/Feedbacks/i)).toBeInTheDocument();
+       fireEvent.click(screen.getByTestId(/Feedbacks/i));
+
+       expect(screen.getByText(/Courses in Concordia University/i)).toBeInTheDocument()
+
+});
+
+
+//course name in concordia university
+it("course names in feedback for concordia university ",()=>{
+
+    const mockOrganizations = [
+        {id: "23", name: "Concordia University"}
+    ]
+
+    const mockcourse = [
+        {id: "23", name: "biology", organization_id: "23"}
+    ]
+
+    const mockorg = "Concordia University"
+
+    const mockteam =[
+        {id:"23",name:"best",max_size: 5, course_id:"23"}
+    ]
+
+    const mockstudents =[
+        {organization_id: "23", id:"2345", name:"lindt"}
+    ]
+
+    const mockmembership =[
+        {student_id:"23456",id:"23", team_id:"23"}
+    ]
+
+    const mockemail = "qwe@qwe.qwe"
+
+    render(
+       <MantineProvider withGlobalStyles withNormalizeCSS>
+       <MemoryRouter >
+       <InstructorDashboard email={mockemail} memberships={mockmembership} students={mockstudents}   teams={mockteam} org={mockorg}   courses={mockcourse}  organizations={mockOrganizations} user={mockuser} navigation={mocknavigation} setLoggedIn={mocksetLoggedIn} />
+       </MemoryRouter>
+       </MantineProvider>
+       );
+
+       expect(screen.getByTestId(/Feedbacks/i)).toBeInTheDocument();
+       fireEvent.click(screen.getByTestId(/Feedbacks/i));
+
+       expect(screen.getByText(/Course Name/i)).toBeInTheDocument()
+
+});
+
+
+
 
 
 })

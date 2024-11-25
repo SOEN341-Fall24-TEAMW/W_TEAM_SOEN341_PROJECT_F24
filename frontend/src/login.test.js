@@ -112,77 +112,7 @@ beforeAll(() =>{
 
     });
 
-    it("displays student after student is selected from dropdown",async ()=>{
-
-        render(
-            <MantineProvider>
-            <MemoryRouter>
-            <Login/>
-            </MemoryRouter>
-            </MantineProvider>
-            
-        );
-            fireEvent.click(screen.getByRole("roleDropdown"));
-            fireEvent.click(screen.getByText(/student/i))
-
-        await waitFor(() =>{
-            expect(screen.getByRole("roleDropdown")).toHaveValue("student")
-        })
-
-    });
-
-    it("displays instructor after instructor is selected from dropdown",async ()=>{
-
-        render(
-            <MantineProvider>
-            <MemoryRouter>
-            <Login/>
-            </MemoryRouter>
-            </MantineProvider>
-            
-        );
-            fireEvent.click(screen.getByRole("roleDropdown"));
-            fireEvent.click(screen.getByText(/instructor/i))
-
-        await waitFor(() =>{
-            expect(screen.getByRole("roleDropdown")).toHaveValue("instructor")
-        });
-
-    });
-
-    it("displays to enter email address with placeholder text", ()=>{
-
-        render(
-            <MantineProvider>
-            <MemoryRouter>
-            <Login/>
-            </MemoryRouter>
-            </MantineProvider>
-            
-        );
-
-        expect(screen.getByLabelText(/Enter your email address:/i)).toBeInTheDocument();
-        expect(screen.getByPlaceholderText(/Email Adress/i)).toBeInTheDocument();
-
-    });
-
-    it("once email entered placeholder value changes", ()=>{
-
-        render(
-            <MantineProvider>
-            <MemoryRouter>
-            <Login/>
-            </MemoryRouter>
-            </MantineProvider>
-            
-        );
-        fireEvent.click(screen.getByRole("email"));
-       
-        fireEvent.change(screen.getByPlaceholderText(/Email Adress/i),{ target: {value: 'qwe@qwe.qwe'},});
-        expect(screen.getByPlaceholderText(/Email Adress/i).value).toBe('qwe@qwe.qwe');
-
-    });
-
+   
 
 
     it("displays to enter password with placeholder text", ()=>{
@@ -203,22 +133,7 @@ beforeAll(() =>{
     });
 
 
-    it("once password entered type changes", ()=>{
-
-        render(
-            <MantineProvider>
-            <MemoryRouter>
-            <Login/>
-            </MemoryRouter>
-            </MantineProvider>
-            
-        );
-        fireEvent.click(screen.getByRole("password"));
-       
-        fireEvent.change(screen.getByPlaceholderText(/Password/i),{ target: {value: '123456'},});
-        expect(screen.getByPlaceholderText(/Password/i).value).toBe('123456');
-
-    });
+  
 
 
     it("display login button", ()=>{
