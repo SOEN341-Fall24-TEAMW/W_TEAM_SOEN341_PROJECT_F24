@@ -244,7 +244,7 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
                                     <Table.Thead>
                                         <Table.Tr>
                                             <Table.Th style={{ textAlign: 'center' }}>Course Name</Table.Th>
-                                            <Table.Th style={{ textAlign: 'center' }}>Instructor</Table.Th>
+                                            <Table.Th style={{ textAlign: 'center' }} data-testid="instructor">Instructor</Table.Th>
                                             <Table.Th style={{ textAlign: 'center' }}>Organization ID</Table.Th>
                                         </Table.Tr>
                                     </Table.Thead>
@@ -291,8 +291,8 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
                                         <Table.Thead>
                                             <Table.Tr>
                                                 <Table.Th style={{ textAlign: 'center' }}>Student Name</Table.Th>
-                                                <Table.Th style={{ textAlign: 'center' }}>Email</Table.Th>
-                                                <Table.Th style={{ textAlign: 'center' }}>Role</Table.Th>
+                                                <Table.Th style={{ textAlign: 'center' }} data-testid="email" >Email</Table.Th>
+                                                <Table.Th style={{ textAlign: 'center' }} data-testid="role" >Role</Table.Th>
                                             </Table.Tr>
                                         </Table.Thead>
                                         <Table.Tbody style={{ textAlign: 'center' }}>
