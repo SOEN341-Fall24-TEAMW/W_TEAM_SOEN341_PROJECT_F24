@@ -1,19 +1,26 @@
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Select, TextInput, Button, Space, PasswordInput, Divider } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 
-const Login = (props) => {
-    const [email, setEmail] = useState("")
+const Login = ({ role, setRole, email, setEmail, loggedIn, setLoggedIn }) => {
+
     const [password, setPassword] = useState("")
     const [emailError, setEmailError] = useState("")
     const [passwordError, setPasswordError] = useState("")
-    const [role, setRole] = useState("");
     const [roleError, setRoleError] = useState("");
 
     const navigate = useNavigate();
     const [visible, { toggle }] = useDisclosure(false);
     let hasError = false;
+
+
+    useEffect(() => {
+        if (!loggedIn) {
+            setRole("");
+            setEmail("");
+        }
+    }, [loggedIn, setEmail, setRole]);
 
 
     const onButtonClick = () => {
@@ -96,10 +103,11 @@ const Login = (props) => {
                 if ('success' === r.message) {
                     console.log("r: ", r);
                     localStorage.setItem("id", r.id);
-                    localStorage.setItem("user", JSON.stringify({ email, token: r.token }))
+                    localStorage.setItem("user", JSON.stringify({ email, token: r.token }));
+                    localStorage.setItem("role", JSON.stringify(r.role));
                     localStorage.setItem("jwt-token", r.token);
-                    props.setLoggedIn(true);
-                    props.setEmail(email);
+                    setLoggedIn(true);
+                    setEmail(email);
                     setTimeout(() => {
                         if (role === "student") {
                             navigate("/student-dashboard");

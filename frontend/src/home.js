@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { Flex, Space, Button } from '@mantine/core';
 
 const Home = (props) => {
-    const { loggedIn, email } = props
+    const { loggedIn, email, setLoggedIn } = props;
     const navigate = useNavigate();
+
+
 
     const onButtonClick = () => {
         if (loggedIn) {
@@ -14,6 +16,8 @@ const Home = (props) => {
             navigate("/login")
         }
     }
+
+    setLoggedIn(false);
 
     const value = loggedIn ? "Log out" : "Get Started →";
 

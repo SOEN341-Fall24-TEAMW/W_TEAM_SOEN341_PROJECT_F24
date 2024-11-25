@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppShell, Table, Group, Space, Button, Title, Alert } from '@mantine/core';
-import { IconInfoCircle } from '@tabler/icons-react';
+import { IconArrowUp } from '@tabler/icons-react';
 
 import StudentFeedbackBadges from "./instructor-dashboard-feedbacks-student-badges.js";
 import TeamFeedBackBadges from "./instructor-dashboard-feedbacks-team-badges.js";
@@ -10,7 +10,7 @@ import './styles.css';
 const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, memberships, setLoggedIn }) => {
     const navigate = useNavigate();
     const user = JSON.parse(localStorage.getItem('user'));
-    const icon = <IconInfoCircle />;
+    const icon = <IconArrowUp className="bouncing-arrow"/>;
 
     const [selectedCourse, setSelectedCourse] = useState(null);
     const [selectedTeam, setSelectedTeam] = useState(null);
@@ -27,7 +27,7 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
 
     useEffect(() => {
         if (!user || !user.token) {
-            console.error("JWT token not found. Please log in again.");
+            console.error("Instructor Dashboard: JWT token not found. Please log in again.");
             setLoggedIn(false);
             navigate('/');
         }
@@ -60,7 +60,9 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
                         <Table.Td>{team.name || "No name"}</Table.Td>
                         <Table.Td>{feedbackBadgeTeam ? feedbackBadgeTeam.size : "No size available"}</Table.Td>
                         <Table.Td>{team.max_size || "No max size"}</Table.Td>
-                        <Table.Td>{feedbackBadgeTeam?.numberOfFeedbacks || "0"}</Table.Td>
+                        <Table.Td>{feedbackBadgeTeam ? feedbackBadgeTeam.numberOfFeedbacks : "0"}</Table.Td>
+                        <Table.Td>{feedbackBadgeTeam ? (feedbackBadgeTeam.size * (feedbackBadgeTeam.size - 1)) : "0"}</Table.Td>
+                        <Table.Td>{feedbackBadgeTeam ? ((feedbackBadgeTeam.size * (feedbackBadgeTeam.size - 1) - feedbackBadgeTeam.numberOfFeedbacks)) : "0"}</Table.Td>
                         <Table.Td>{<TeamFeedBackBadges feedbackBadgeTeam={feedbackBadgeTeam} />}</Table.Td>
                     </Table.Tr>
                 );
@@ -226,7 +228,7 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
                                 : selectedCourse
                                     ? `Teams in ${selectedCourse.name}`
                                     : org
-                                        ? `Courses in ${org}` : <Alert variant="light" color="blue" title="Important!" icon={icon}>
+                                        ? `Courses in ${org}` : <Alert variant="light" color="blue" title={<div><span className="wobble-important">Important!</span></div>} icon={icon}>
                                             Please select an organization!
                                         </Alert>}
 
@@ -237,16 +239,16 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
                     <>
                         {/* Show courses table if no course is selected */}
                         {!selectedCourse && (
-                            <Table.ScrollContainer minWidth={500}>
+                            <Table.ScrollContainer minWidth={500} type="native">
                                 <Table stickyHeader verticalSpacing="md" striped highlightOnHover withTableBorder>
                                     <Table.Thead>
                                         <Table.Tr>
-                                            <Table.Th>Course Name</Table.Th>
-                                            <Table.Th>Instructor</Table.Th>
-                                            <Table.Th>Organization ID</Table.Th>
+                                            <Table.Th style={{ textAlign: 'center' }}>Course Name</Table.Th>
+                                            <Table.Th style={{ textAlign: 'center' }}>Instructor</Table.Th>
+                                            <Table.Th style={{ textAlign: 'center' }}>Organization ID</Table.Th>
                                         </Table.Tr>
                                     </Table.Thead>
-                                    <Table.Tbody>
+                                    <Table.Tbody style={{ textAlign: 'center' }}>
                                         {course_rows.length > 0 ? course_rows : <tr><td colSpan={3}>No courses found</td></tr>}
                                     </Table.Tbody>
                                 </Table>
@@ -258,18 +260,20 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
                             <>
                                 <Button onClick={() => setSelectedCourse(null)} className="button3">Back to Course List</Button>
                                 <Space h="md" />
-                                <Table.ScrollContainer minWidth={500}>
+                                <Table.ScrollContainer minWidth={500} type="native">
                                     <Table stickyHeader verticalSpacing="md" striped highlightOnHover withTableBorder>
                                         <Table.Thead>
                                             <Table.Tr>
-                                                <Table.Th>Team Name</Table.Th>
-                                                <Table.Th>Team Size</Table.Th>
-                                                <Table.Th>Max Size</Table.Th>
-                                                <Table.Th>Feedbacks from Unique Authors</Table.Th>
-                                                <Table.Th>Badges</Table.Th>
+                                                <Table.Th style={{ textAlign: 'center' }}>Team Name</Table.Th>
+                                                <Table.Th style={{ textAlign: 'center' }}>Team Size</Table.Th>
+                                                <Table.Th style={{ textAlign: 'center' }}>Max Size</Table.Th>
+                                                <Table.Th style={{ textAlign: 'center' }}>Total Feedbacks Submitted</Table.Th>
+                                                <Table.Th style={{ textAlign: 'center' }}>Expected Number of Feedbacks</Table.Th>
+                                                <Table.Th style={{ textAlign: 'center' }}>Feedbacks Remaining</Table.Th>
+                                                <Table.Th style={{ textAlign: 'center' }}>Badges</Table.Th>
                                             </Table.Tr>
                                         </Table.Thead>
-                                        <Table.Tbody>
+                                        <Table.Tbody style={{ textAlign: 'center' }}>
                                             {team_rows.length > 0 ? team_rows : <tr><td colSpan={3}>No teams found</td></tr>}
                                         </Table.Tbody>
                                     </Table>
@@ -282,16 +286,16 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
                             <>
                                 <Button onClick={() => setSelectedTeam(null)} className="button3">Back to Team List</Button>
                                 <Space h="md" />
-                                <Table.ScrollContainer minWidth={500}>
-                                    <Table stickyHeader verticalSpacing="md" striped highlightOnHover withTableBorder>
+                                <Table.ScrollContainer minWidth={500} type="native">
+                                    <Table stickyHeader verticalSpacing="md" striped highlightOnHover withTableBorder style={{ textAlign: 'center' }}>
                                         <Table.Thead>
                                             <Table.Tr>
-                                                <Table.Th>Student Name</Table.Th>
-                                                <Table.Th>Email</Table.Th>
-                                                <Table.Th>Role</Table.Th>
+                                                <Table.Th style={{ textAlign: 'center' }}>Student Name</Table.Th>
+                                                <Table.Th style={{ textAlign: 'center' }}>Email</Table.Th>
+                                                <Table.Th style={{ textAlign: 'center' }}>Role</Table.Th>
                                             </Table.Tr>
                                         </Table.Thead>
-                                        <Table.Tbody>
+                                        <Table.Tbody style={{ textAlign: 'center' }}>
                                             {student_rows.length > 0 ? student_rows : <tr><td colSpan={3}>No students found</td></tr>}
                                         </Table.Tbody>
                                     </Table>
@@ -303,24 +307,24 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
                             <>
                                 <Button onClick={() => { setSelectedStudent(null); setDetailedView(false); }} className="button3">Back to Student List</Button>
                                 <Space h="md" />
-                                <Table.ScrollContainer minWidth={500}>
-                                    <Table stickyHeader verticalSpacing="md" striped highlightOnHover withTableBorder style={{ width: '100%' }}>
+                                <Table.ScrollContainer minWidth={500} type="native">
+                                    <Table stickyHeader verticalSpacing="md" striped highlightOnHover withTableBorder style={{ width: '100%', textAlign: 'center' }}>
                                         <Table.Thead>
-                                            <Table.Tr >
-                                                <Table.Th>Student ID</Table.Th>
-                                                <Table.Th>Student Name</Table.Th>
-                                                <Table.Th>Team Name</Table.Th>
-                                                <Table.Th>Cooperation</Table.Th>
-                                                <Table.Th>Conceptual Contribution</Table.Th>
-                                                <Table.Th>Practical Contribution</Table.Th>
-                                                <Table.Th>Work Ethic</Table.Th>
-                                                <Table.Th>Average</Table.Th>
-                                                <Table.Th>Peers Who Reviewed</Table.Th>
-                                                <Table.Th>Badges</Table.Th>
+                                            <Table.Tr>
+                                                <Table.Th style={{ textAlign: 'center' }}>Student ID</Table.Th>
+                                                <Table.Th style={{ textAlign: 'center' }}>Student Name</Table.Th>
+                                                <Table.Th style={{ textAlign: 'center' }}>Team Name</Table.Th>
+                                                <Table.Th style={{ textAlign: 'center' }}>Cooperation</Table.Th>
+                                                <Table.Th style={{ textAlign: 'center' }}>Conceptual Contribution</Table.Th>
+                                                <Table.Th style={{ textAlign: 'center' }}>Practical Contribution</Table.Th>
+                                                <Table.Th style={{ textAlign: 'center' }}>Work Ethic</Table.Th>
+                                                <Table.Th style={{ textAlign: 'center' }}>Average</Table.Th>
+                                                <Table.Th style={{ textAlign: 'center' }}>Peers Who Reviewed</Table.Th>
+                                                <Table.Th style={{ textAlign: 'center' }}>Badges</Table.Th>
                                             </Table.Tr>
                                         </Table.Thead>
 
-                                        <Table.Tbody>
+                                        <Table.Tbody style={{ textAlign: 'center' }}>
                                             <Table.Tr onClick={() => setDetailedView(true)} style={{ cursor: 'pointer' }}>
                                                 <Table.Td>{selectedStudent.name || 'no name'}</Table.Td>
                                                 <Table.Td>{selectedStudent.id || 'no id'}</Table.Td>
@@ -354,19 +358,19 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
 
                                     {feedback_rows && feedback_rows.length > 0 ? (
                                         <>
-                                            <Table.ScrollContainer minWidth={500}>
+                                            <Table.ScrollContainer minWidth={500} type="native">
                                                 <Table stickyHeader verticalSpacing="md" striped highlightOnHover withTableBorder>
                                                     <Table.Thead>
                                                         <Table.Tr>
-                                                            <Table.Th>Peer</Table.Th>
-                                                            <Table.Th>Cooperation</Table.Th>
-                                                            <Table.Th>Conceptual Contribution</Table.Th>
-                                                            <Table.Th>Practical Contribution</Table.Th>
-                                                            <Table.Th>Work Ethic</Table.Th>
-                                                            <Table.Th>Average</Table.Th>
+                                                            <Table.Th style={{ textAlign: 'center' }}>Peer</Table.Th>
+                                                            <Table.Th style={{ textAlign: 'center' }}>Cooperation</Table.Th>
+                                                            <Table.Th style={{ textAlign: 'center' }}>Conceptual Contribution</Table.Th>
+                                                            <Table.Th style={{ textAlign: 'center' }}>Practical Contribution</Table.Th>
+                                                            <Table.Th style={{ textAlign: 'center' }}>Work Ethic</Table.Th>
+                                                            <Table.Th style={{ textAlign: 'center' }}>Average</Table.Th>
                                                         </Table.Tr>
                                                     </Table.Thead>
-                                                    <Table.Tbody>
+                                                    <Table.Tbody style={{ textAlign: 'center' }}>
                                                         {feedback_rows}
                                                     </Table.Tbody>
                                                 </Table>

@@ -9,16 +9,17 @@ var FileSync = require("lowdb/adapters/FileSync");
 var adapter = new FileSync("./database.json");
 var db = low(adapter);
 const { v4: uuidv4 } = require('uuid');
-console.log("Users:", db.get("users").value());
-console.log("Teams:", db.get("teams").value());
-console.log("Courses:", db.get("courses").value());
-console.log("Organizations:", db.get("organizations").value());
+//console.log("Users:", db.get("users").value());
+//console.log("Teams:", db.get("teams").value());
+//console.log("Courses:", db.get("courses").value());
+//console.log("Organizations:", db.get("organizations").value());
 const { Parser } = require("json2csv"); // For converting JSON to CSV format
 const router = express.Router();
 app.use('/instructor', instructorRoutes);
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 app.get('/organization_id', (req, res) => {
     const organization_id = db.get("organization_id ").value();
     res.status(200).json(organization_id);
@@ -31,7 +32,7 @@ function anonymizeData(data) {
 }
 
 // Set default structure for the database
-db.defaults({ users: [], teams: [], courses: [], organization: [] }).write();
+db.defaults({ organizations: [], users: [], courses: [], teams: [], team_memberships: [], peer_evaluations: [], instructor_org_memberships: [] }).write();
 
 const fs = require("fs"); // File system module to read CSV files
 const csvParser = require("csv-parser"); // CSV parser library for reading the CSV file
@@ -159,7 +160,7 @@ app.post("/auth", (req, res) => {
                 console.log("login data: ", loginData);
                 const token = jwt.sign(loginData, jwtSecretKey);
                 console.log("auth token: ", token);
-                res.status(200).json({ message: "success", id: user[0].id, token });
+                res.status(200).json({ message: "success", id: user[0].id, token, role });
             }
         });
     }
@@ -214,11 +215,18 @@ module.exports = { assignStudentsToTeams };
 
 app.post("/create-account", (req, res) => {
 
-    const { role, firstName, lastName, id, email, password, organizationId } = req.body;
+    const { role, firstName, lastName, id, email, password, organizationId, organizationIdInstructor } = req.body;
 
     bcrypt.hash(password, 10, function (_err, hash) {
 
-        db.get("users").push({ id, email, password: hash, role, name: firstName + " " + lastName, organization_id: organizationId }).write();
+        if (role === 'student') {
+            db.get("users").push({ id, email, password: hash, role, name: firstName + " " + lastName, organization_id: organizationId }).write();
+        }
+
+        if (role === 'instructor') {
+            db.get("users").push({ id: email, email, password: hash, role, name: firstName + " " + lastName }).write();
+            db.get("instructor_org_memberships").push({ id: uuidv4(), instructor_id: email, organization_id: organizationIdInstructor }).write();
+        }
 
         let creationData = {
             id,
@@ -368,21 +376,31 @@ app.post("/courses", (req, res) => {
 
             const teams = db.get("teams").filter(team => course_id.includes(team.course_id)).value();
             const team_id = teams.map(team => team.id);
-            const team_membership = db.get("team_memberships").filter(membership => team_id.includes(membership.team_id)).value();
 
-            const student_id = db.get("users").filter(user => (user.role === 'student')).map(student => student.id).value();
-            const students = db.get("users").filter(student => student_id.includes(student.id)).value();
+            const team_memberships = db.get("team_memberships").filter(membership => team_id.includes(membership.team_id)).value();
 
-            const organization_id = students.map(student => student.organization_id);
-            const organizations = db.get("organizations").filter(organization => organization_id.includes(organization.id)).value();
+            const student_ids = team_memberships.map(membership => membership.student_id);
+            const students = db.get("users").filter(student => student_ids.includes(student.id)).value();
+
+            const organization_ids = [...new Set(students.map(student => student.organization_id))];
+            const course_organizations = db.get("organizations").filter(organization => organization_ids.includes(organization.id)).value();
+
+            const instructor_organization_ids = db.get("instructor_org_memberships").filter({ instructor_id: verified.id }).flatMap(membership => membership.organization_id).value();
+            const instructor_organizations = db.get("organizations").filter(organization => instructor_organization_ids.includes(organization.id)).value();
+
+            // Separating students already in the instructor's courses (students variable) from all students in the instructor organizations
+            // alows for more control over display of information to different functionalities such as team editing or seeing all students in instructor's classes
+            const all_students_in_instructor_orgs = db.get("users").filter(student => instructor_organization_ids.includes(student.organization_id)).value();
 
             return res.status(200).json({
                 message: "success",
-                organization_info: organizations,
+                organization_info: course_organizations,
                 course_info: courses,
                 team_info: teams,
                 student_info: students,
-                membership_info: team_membership,
+                membership_info: team_memberships,
+                instructor_organizations: instructor_organizations,
+                all_students_in_instructor_orgs: all_students_in_instructor_orgs,
             });
         }
 
@@ -636,6 +654,182 @@ app.post('/get-student-feedback', (req, res) => {
     }
 })
 
+// Endpoint to edit student information
+app.post("/edit-student", (req, res) => {
+    const { studentData, selectedStudent } = req.body;
+    console.log("selected_student", selectedStudent);
+    console.log("student_data", studentData);
+
+    if (!selectedStudent.id) {
+        return res.status(400).json({ message: "Student ID is required" });
+    }
+
+    const oldId = selectedStudent.id;
+
+
+    try {
+        // Find the student by ID
+        const student = db.get("users").find({ id: oldId }).value();
+
+        if (!student) {
+            return res.status(404).json({ message: "Student not found" });
+        }
+
+        // Update the student information
+        db.get("users")
+            .find({ id: oldId }) // Find by the old ID
+            .assign({
+                id: studentData.student_id, // Update to the new ID
+                email: studentData.student_email, // Update email
+                name: studentData.first_name + " " + studentData.last_name, // Update name
+            })
+            .write();
+
+        //Update membership data
+        db.get("team_memberships")
+            .filter({ student_id: oldId }) // Find by the old ID
+            .each((membership) => {
+                membership.student_id = studentData.student_id; // Update to the new student ID
+            })
+            .write();
+
+        res.status(200).json({ message: "Student updated successfully" });
+    } catch (error) {
+        console.error("Error updating student:", error);
+        res.status(500).json({ message: "Internal Server Error", error });
+    }
+});
+
+app.post("/edit-team", (req, res) => {
+    const { teamData, selectedTeam } = req.body;
+
+    const team_id = selectedTeam?.id;
+
+    if (!team_id) {
+        return res.status(400).json({ message: "No Team" });
+    }
+
+    try {
+        // Find the team by ID
+        const team = db.get("teams").find({ id: team_id }).value();
+
+        if (!team) {
+            console.error(`Error: Team with ID ${team_id} not found.`);
+            return res.status(404).json({ message: "Team not found" });
+        }
+
+        if (!teamData?.team_name || typeof teamData.team_name !== "string") {
+            console.error("Error: Invalid team name provided.");
+            return res.status(400).json({ message: "Invalid Team Name" });
+        }
+
+        // Update the team information
+        db.get("teams")
+            .find({ id: team_id })
+            .assign({
+                name: teamData.team_name,
+                max_size: teamData.max_size,
+            })
+            .write();
+
+        console.log(`Team with ID ${team_id} updated successfully.`);
+
+        // Get current team memberships (IDs) and resolve to names
+        const currentMemberships = db.get("team_memberships").filter({ team_id }).map("student_id").value();
+        const currentStudents = db.get("users")
+            .filter((user) => currentMemberships.includes(user.id))
+            .map("name")
+            .value();
+
+        // Determine additions and deletions
+        if (Array.isArray(teamData.selected_students)) {
+            const newStudentNames = teamData.selected_students; // New student names
+            const studentsToAdd = newStudentNames.filter((studentName) => !currentStudents.includes(studentName));
+            const studentsToRemove = currentStudents.filter((studentName) => !newStudentNames.includes(studentName));
+
+            // Resolve names to IDs for addition and removal
+            const studentsToAddIds = db
+                .get("users")
+                .filter((user) => studentsToAdd.includes(user.name))
+                .map("id")
+                .value();
+            const studentsToRemoveIds = db
+                .get("users")
+                .filter((user) => studentsToRemove.includes(user.name))
+                .map("id")
+                .value();
+
+            // Add new students to the team
+            studentsToAddIds.forEach((studentId) => {
+                db.get("team_memberships")
+                    .push({ id: uuidv4(), team_id, student_id: studentId })
+                    .write();
+            });
+
+            // Remove students no longer in the team
+            studentsToRemoveIds.forEach((studentId) => {
+                db.get("team_memberships")
+                    .remove({ team_id, student_id: studentId })
+                    .write();
+            });
+        }
+
+        res.status(200).json({ message: "Team updated successfully" });
+    } catch (error) {
+        console.error("Error updating team:", error);
+        res.status(500).json({ message: "Internal Server Error", error });
+    }
+});
+
+app.post("/delete-student", (req, res) => {
+    const { studentId } = req.body;
+
+    if (!studentId) {
+        return res.status(400).json({ message: "Student ID is required" });
+    }
+
+    try {
+        // Remove the student
+        db.get("users").remove({ id: studentId }).write();
+
+        // Remove any memberships associated with this student
+        db.get("team_memberships").remove({ student_id: studentId }).write();
+
+        return res.status(200).json({ message: "Student deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting student:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+app.post("/delete-team", (req, res) => {
+    const { teamId } = req.body;
+
+    if (!teamId) {
+        return res.status(400).json({ message: "Team ID is required" });
+    }
+
+    try {
+        // Find and delete the team
+        const team = db.get("teams").find({ id: teamId }).value();
+        if (!team) {
+            return res.status(404).json({ message: "Team not found" });
+        }
+
+        db.get("teams").remove({ id: teamId }).write();
+
+        // Optionally, remove related memberships or references
+        db.get("team_memberships").remove({ team_id: teamId }).write();
+
+        res.status(200).json({ message: "Team deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting team:", error);
+        res.status(500).json({ message: "Internal Server Error", error });
+    }
+});
+
+
+
 app.post('/get-feedback-records', (req, res) => {
     const course = req.body.course;
     console.log("Course received:", course);
@@ -712,10 +906,10 @@ const authorizeRole = (role) => {
 
         next(); // User has the correct role, proceed to the route handler
     };
-  };
+};
 
-  module.exports = { authorizeRole };
-  
+module.exports = { authorizeRole };
+
 
 // Protected route for instructor dashboard
 app.get('/api/instructor-dashboard', authorizeRole('Instructor'), (req, res) => {

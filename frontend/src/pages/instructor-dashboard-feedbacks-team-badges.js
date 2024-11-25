@@ -5,10 +5,18 @@ const TeamFeedBackBadges = ({ feedbackBadgeTeam }) => {
     const [badges, setBadges] = useState([]);
 
     useEffect(() => {
+        
+        if (feedbackBadgeTeam) {
+            console.log("feedbackBadgeTeam", feedbackBadgeTeam)
+        }
+    }, [feedbackBadgeTeam]);
+
+    useEffect(() => {
         const badge_collections = [];
+
         if (feedbackBadgeTeam) {
 
-            if (feedbackBadgeTeam.numberOfFeedbacks === feedbackBadgeTeam.size) {
+            if (feedbackBadgeTeam.numberOfFeedbacks === (feedbackBadgeTeam.size * (feedbackBadgeTeam.size -1))) {
                 badge_collections.push(
                     <Tooltip label={"Full House: All members submitted feedback"} withArrow>
                         <Text size="xl" role="img" aria-label="Full House">✅</Text>
@@ -21,7 +29,7 @@ const TeamFeedBackBadges = ({ feedbackBadgeTeam }) => {
     }, [feedbackBadgeTeam]);
 
     return (
-        <Group style={{ gap: '5px' }}>
+        <Group justify="center" style={{ gap: '5px' }}>
             {badges.length > 0 ? (
                 badges.map((badge, index) => (
                     <span key={index}>{badge}</span>

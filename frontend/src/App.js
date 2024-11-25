@@ -23,11 +23,14 @@ import '@mantine/core/styles.css';
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [email, setEmail] = useState("");
+  const [role, setRole] = useState("");
   const [organizations, setOrganizations] = useState([]);
+  const [instructorOrganizations, setInstructorOrganizations] = useState([]);
   const [courses, setCourses] = useState([]);
   const [org, setOrg] = useState('');
   const [teams, setTeams] = useState([]);
   const [students, setStudents] = useState([]);
+  const [orgStudentList, setOrgStudentList] = useState([]);
   const [memberships, setMemberships] = useState([]);
   const [userRole] = useState([]);
 
@@ -35,7 +38,7 @@ function App() {
     const user = JSON.parse(localStorage.getItem("user"));
 
     if (!user || !user.token) {
-      console.error("JWT token not found. Please log in again.");
+      console.error("App: JWT token not found. Please log in again.");
       setLoggedIn(false);
       return;
     }
@@ -57,6 +60,8 @@ function App() {
             setTeams(data.team_info);
             setStudents(data.student_info);
             setMemberships(data.membership_info);
+            setInstructorOrganizations(data.instructor_organizations);
+            setOrgStudentList(data.all_students_in_instructor_orgs);
           } else {
             console.error('Failed to fetch options:', data.message);
           }
@@ -65,6 +70,13 @@ function App() {
       console.error('Error fetching options:', error);
     }
   };
+
+  useEffect(() => {
+    const storedRole = localStorage.getItem("role");
+    if (storedRole) {
+      setRole(storedRole);
+    }
+  }, [setRole]);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -121,20 +133,20 @@ function App() {
     <div className="App">
       <MantineProvider>
         <BrowserRouter>
-          <Header loggedIn={loggedIn} setLoggedIn={setLoggedIn} organizations={organizations} org={org} setOrg={setOrg} />
+          <Header loggedIn={loggedIn} setLoggedIn={setLoggedIn} role={role} setRole={setRole} org={org} setOrg={setOrg} instructorOrganizations={instructorOrganizations} />
           <Routes>
-            <Route path="/" element={<Home email={email} loggedIn={loggedIn} setLoggedIn={setLoggedIn}/>} />
-            <Route path="/login" element={<Login setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
+            <Route path="/" element={<Home email={email} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} />
+            <Route path="/login" element={<Login role={role} setRole={setRole} email={email} setEmail={setEmail} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} />
             <Route path='/create-new-account' element={<CreateNewAccount setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
             <Route path="/student-dashboard" element={<StudentDashboard email={email} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} />
-            <Route path="/instructor-dashboard" element={<InstructorDashboard organizations={organizations} org={org} courses={courses} teams={teams} students={students} memberships={memberships} email={email} fetchData={fetchData} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} />
-            <Route path='/Teams' element={<Teams/>} />
-            <Route path='/CreateTeams' element={<CreateTeams/>} />
-            <Route path='/TeamList' element={<TeamList/>} />
-            <Route path='/teams/:teamId' element={userRole === 'instructor' ? <TeamDetails /> 
-                    : <TeammatesList  
-                      />} 
-            />          
+            <Route path="/instructor-dashboard" element={<InstructorDashboard organizations={organizations} org={org} courses={courses} teams={teams} setTeams={setTeams} students={students} setStudents={setStudents} orgStudentList={orgStudentList} memberships={memberships} email={email} fetchData={fetchData} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} />
+            <Route path='/Teams' element={<Teams />} />
+            <Route path='/CreateTeams' element={<CreateTeams />} />
+            <Route path='/TeamList' element={<TeamList />} />
+            <Route path='/teams/:teamId' element={userRole === 'instructor' ? <TeamDetails />
+              : <TeammatesList
+              />}
+            />
             <Route path='/peer-evaluation' element={<PeerEvaluationForm teams={teams} />} />
             <Route path="/PeerEvaluationIntro" element={<PeerEvaluationIntro />} />
           </Routes>

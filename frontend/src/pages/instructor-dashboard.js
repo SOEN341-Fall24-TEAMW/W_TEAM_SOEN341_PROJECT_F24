@@ -7,9 +7,40 @@ import { IconUsers, IconUsersGroup, IconMessage, IconSearch, IconDatabaseImport,
 import Papa from "papaparse";
 import './styles.css';
 import InstructorDashboardFeedbacks from "./instructor-dashboard-feedbacks.js";
+import EditStudentInfo from "./edit-student-info.js";
+import EditTeamInfo from "./edit-team-info.js";
+import DeleteStudentButton from "./delete-student-button.js";
+import DeleteTeamButton from "./delete-team-button.js";
 
 
-const InstructorDashboard = ({ organizations, org, courses, teams, students, memberships, email, fetchData, loggedIn, setLoggedIn }) => {
+const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, students, setStudents, orgStudentList, memberships, email, fetchData, loggedIn, setLoggedIn }) => {
+
+  const [active, setActive] = useState('Students');
+  const [query, setQuery] = useState('');
+  const [opened, { open, close }] = useDisclosure(false);
+  const [step, setStep] = useState(1);
+  const [maxSizeError, setMaxSizeError] = useState("");
+
+  const [importSuccess, setImportSuccess] = useState(false);
+  const [importFail, setImportFail] = useState(false);
+  const [notifySuccess, setNotifySuccess] = useState(false);
+  const [notifyError, setNotifyError] = useState(false);
+
+  const [firstNameError, setFirstNameError] = useState("");
+  const [lastNameError, setLastNameError] = useState("");
+  const [idError, setIdError] = useState("");
+  const [emailError, setEmailError] = useState("");
+
+  const icon = [<IconCirclePlus size={14} />, <IconDatabaseImport size={14} />];
+  const xIcon = <IconX style={{ width: rem(20), height: rem(20) }} />;
+  const checkIcon = <IconCheck style={{ width: rem(20), height: rem(20) }} />;
+
+  const fileInputRef = useRef(null);
+
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editTeamModalOpen, setTeamEditModalOpen] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [selectedTeam, setSelectedTeam] = useState(null);
 
   const [filterSortOptions, setFilterSortOptions] = useState({
     sortBy: '',         // Column to sort by, e.g., 'ID'
@@ -49,47 +80,6 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
     }
   }, [loggedIn]);
 
-  {/*const exportCSV = () => {
-    const selectedOrg = organizations.find((organization) => organization.name === org);
-    const organizationId = selectedOrg?.id;
-
-    if (!organizationId) {
-      setNotifyError(true); // Show an error notification for missing organization
-      setTimeout(() => setNotifyError(false), 5000); // Clear notification after a timeout
-      return;
-    }
-
-    const user = JSON.parse(localStorage.getItem("user")); // Fetch user dynamically
-
-    fetch(`/instructor/export?organizationId=${organizationId}`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${user?.token}`,
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.blob();
-        }
-        throw new Error("Failed to fetch CSV data.");
-      })
-      .then((blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.style.display = "none";
-        a.href = url;
-        a.download = `students_${organizationId}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-      })
-      .catch((error) => {
-        console.error("Error exporting CSV:", error);
-        setNotifyError(true); // Show an error notification for export failure
-        setTimeout(() => setNotifyError(false), 5000); // Clear notification after a timeout
-      });
-  };*/}
-
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user'));
 
@@ -101,27 +91,79 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
     }
   }, [user, navigate, setLoggedIn]);
 
-  const [active, setActive] = useState('Students');
-  const [query, setQuery] = useState('');
-  const [opened, { open, close }] = useDisclosure(false);
-  const [step, setStep] = useState(1);
-  const [maxSizeError, setMaxSizeError] = useState("");
+  const handleRowClick = (student) => {
 
-  const [importSuccess, setImportSuccess] = useState(false);
-  const [importFail, setImportFail] = useState(false);
-  const [notifySuccess, setNotifySuccess] = useState(false);
-  const [notifyError, setNotifyError] = useState(false);
+    setSelectedStudent(student);
 
-  const [firstNameError, setFirstNameError] = useState("");
-  const [lastNameError, setLastNameError] = useState("");
-  const [idError, setIdError] = useState("");
-  const [emailError, setEmailError] = useState("");
+    const [first_name, ...last_name_parts] = (student.name || "").split(" ");
+    const last_name = last_name_parts.join(" "); // Handle names with multiple spaces gracefully
+    setStudentData({
+      student_id: student.id,
+      student_email: student.email,
+      first_name: first_name || "",
+      last_name: last_name || "",
+      organization_id: student.organization_id,
+    });
+    setEditModalOpen(true);
+  };
 
-  const icon = [<IconCirclePlus size={14} />, <IconDatabaseImport size={14} />];
-  const xIcon = <IconX style={{ width: rem(20), height: rem(20) }} />;
-  const checkIcon = <IconCheck style={{ width: rem(20), height: rem(20) }} />;
+  const handleTeamRowClick = (team) => {
 
-  const fileInputRef = useRef(null);
+    setSelectedTeam(team);
+    setTeamData({
+      team_name: team.name,
+      max_size: team.max_size,
+      selected_students: team.selected_students,
+    });
+    setTeamEditModalOpen(true);
+  };
+
+  const handleEditSubmit = async () => {
+    try {
+      const response = await fetch("http://localhost:3080/edit-student", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ studentData, selectedStudent }),
+      });
+
+      if (response.ok) {
+        setNotifySuccess(true);
+        fetchData(); // Refresh data
+      } else {
+        setNotifyError(true);
+      }
+      setEditModalOpen(false); // Close modal
+    } catch (error) {
+      console.error("Error updating student:", error);
+      setNotifyError(true);
+    }
+  };
+
+  const handleTeamEditSubmit = async () => {
+    try {
+      const response = await fetch("http://localhost:3080/edit-team", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ teamData, selectedTeam }),
+      });
+
+      if (response.ok) {
+        setNotifySuccess(true);
+        fetchData(); // Refresh data
+      } else {
+        setNotifyError(true);
+      }
+      setTeamEditModalOpen(false); // Close modal
+    } catch (error) {
+      console.error("Error updating student:", error);
+      setNotifyError(true);
+    }
+    resetForm();
+  };
 
   const handleFileInputClick = () => {
     // the file input click
@@ -309,6 +351,22 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
     }));
   };
 
+  useEffect(() => {
+    console.log("Student data updated:", studentData);
+  }, [studentData]);
+
+  useEffect(() => {
+    console.log("Selected Student:", selectedStudent);
+  }, [selectedStudent]);
+
+  useEffect(() => {
+    console.log("Team data updated:", teamData);
+  }, [teamData]);
+
+  useEffect(() => {
+    console.log("Selected Team:", selectedTeam);
+  }, [selectedTeam]);
+
   // Handler for closing form
   const modalClose = () => {
 
@@ -396,36 +454,6 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
       }}
     />
   ))
-  const calculateStudentRating = (studentId) => {
-    const studentMemberships = memberships.filter(membership => membership.student_id === studentId);
-    if (studentMemberships.length === 0) return null;
-
-    let totalScore = 0;
-    let feedbackCount = 0;
-
-    studentMemberships.forEach(membership => {
-      if (membership.feedbacks && Array.isArray(membership.feedbacks)) {
-        membership.feedbacks.forEach(feedback => {
-          totalScore += (feedback.cooperation || 0)
-            + (feedback.conceptualContribution || 0)
-            + (feedback.practicalContribution || 0)
-            + (feedback.workEthic || 0);
-          feedbackCount += 1;
-        });
-      }
-    });
-
-    if (feedbackCount === 0) return null;
-    const numberOfMetrics = 4;
-    return (totalScore / (feedbackCount * numberOfMetrics)).toFixed(2);
-  };
-
-  const getEmojiForRating = (rating) => {
-    if (rating >= 4.5) return " 😊";
-    if (rating >= 3.5) return " 🙂";
-    if (rating >= 2.5) return " 😐";
-    return " 😢";
-  };
 
   const rows = org
     ? applyFilterAndSort(
@@ -465,13 +493,21 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
       const organization_name = (organizations || []).find((organization) => organization.id === student.organization_id)?.name || "Unknown organization";
 
       return (
-        <Table.Tr key={student.id}>
+        <Table.Tr key={student.id} onClick={() => handleRowClick(student)} style={{ cursor: 'pointer' }}>
           <Table.Td>{student.name || "No name"}</Table.Td>
           <Table.Td>{student.id || "No id"}</Table.Td>
           <Table.Td>{student.email || "No email"}</Table.Td>
           <Table.Td>{team_names || "No team"}</Table.Td>
           <Table.Td>{course_names || "No course"}</Table.Td>
           <Table.Td>{organization_name || "No organization"}</Table.Td>
+          <Table.Td onClick={(e) => e.stopPropagation()}>
+            <DeleteStudentButton
+              studentId={student.id}
+              onDelete={(deletedId) =>
+                setStudents((prev) => prev.filter((s) => s.id !== deletedId))
+              }
+            />
+          </Table.Td>
         </Table.Tr>
       );
     })
@@ -480,38 +516,42 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
   const rows2 = org
     ? (teams || [])
       .filter((team) => {
-        const selected_org_id = (organizations.find((organization) => organization.name === org) || {}).id;
-        const team_course = (courses || []).find((course) => course.id === team.course_id);
-        return team_course && team_course.organization_id === selected_org_id;
+        const selectedOrgId = (organizations.find((organization) => organization.name === org) || {}).id;
+        const teamCourse = (courses || []).find((course) => course.id === team.course_id);
+        return teamCourse && teamCourse.organization_id === selectedOrgId;
       })
-      .filter((team) => team.name.toLowerCase().includes(query.toLowerCase())) // Filter teams based on query
+      .filter((team) => team.name.toLowerCase().includes(query.toLowerCase()))
       .map((team) => {
-        const team_memberships = (memberships || []).filter((membership) => membership.team_id === team.id);
+        const teamMemberships = (memberships || []).filter((membership) => membership.team_id === team.id);
 
-        const student_names = team_memberships
+        const studentNames = teamMemberships
           .map((membership) => (students || []).find((student) => student.id === membership.student_id)?.name)
-          .filter((student_name) => student_name)
+          .filter((studentName) => studentName)
           .join(", ");
 
-        const team_course = (courses || []).find((course) => course.id === team.course_id);
-        const course_names = team_course ? team_course.name : "No course";
-        const organization_name = (organizations.find((organization) => organization.id === team_course?.organization_id) || {}).name || "Unknown organization";
-        const rating = calculateStudentRating(student_names);
-        const emoji = rating ? getEmojiForRating(rating) : "";
-
+        const teamCourse = (courses || []).find((course) => course.id === team.course_id);
+        const courseNames = teamCourse ? teamCourse.name : "No course";
+        const organizationName = (organizations.find((organization) => organization.id === teamCourse?.organization_id) || {}).name || "Unknown organization";
 
         return (
-          <Table.Tr key={team.id}>
+          <Table.Tr key={team.id} onClick={() => {handleTeamRowClick(team); updateTeamData("selected_students", studentNames);}} style={{ cursor: 'pointer' }}>
             <Table.Td>{team.name || "No name"}</Table.Td>
-            <Table.Td>{student_names || "No members"}</Table.Td>
-            <Table.Td>{team.max_size || "No members"}</Table.Td>
-            <Table.Td>{course_names || "No course"}</Table.Td>
-            <Table.Td>{organization_name || "No organization"}</Table.Td>
+            <Table.Td>{studentNames || "No members"}</Table.Td>
+            <Table.Td>{team.max_size || "No max size"}</Table.Td>
+            <Table.Td>{courseNames || "No course"}</Table.Td>
+            <Table.Td>{organizationName || "No organization"}</Table.Td>
+            <Table.Td>
+              <DeleteTeamButton
+                teamId={team.id}
+                onDelete={(deletedId) =>
+                  setTeams((prev) => prev.filter((t) => t.id !== deletedId))
+                }
+              />
+            </Table.Td>
           </Table.Tr>
         );
       })
     : [];
-
 
   return (
     <AppShell navbar={{ width: 250 }}>
@@ -793,15 +833,16 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
           <Table stickyHeader verticalSpacing="md" striped highlightOnHover withTableBorder >
             <Table.Thead>
               <Table.Tr>
-                <Table.Th>Name</Table.Th>
-                <Table.Th>Student ID</Table.Th>
-                <Table.Th>Email Address</Table.Th>
-                <Table.Th>Team</Table.Th>
-                <Table.Th>Course</Table.Th>
-                <Table.Th>Organization</Table.Th>
+                <Table.Th style={{ textAlign: 'center' }}>Name</Table.Th>
+                <Table.Th style={{ textAlign: 'center' }}>Student ID</Table.Th>
+                <Table.Th style={{ textAlign: 'center' }}>Email Address</Table.Th>
+                <Table.Th style={{ textAlign: 'center' }}>Team</Table.Th>
+                <Table.Th style={{ textAlign: 'center' }}>Course</Table.Th>
+                <Table.Th style={{ textAlign: 'center' }}>Organization</Table.Th>
+                <Table.Th style={{ textAlign: 'center' }}>Remove Student</Table.Th>
               </Table.Tr>
             </Table.Thead>
-            <Table.Tbody>{rows}</Table.Tbody>
+            <Table.Tbody style={{ textAlign: 'center' }}>{rows}</Table.Tbody>
           </Table>
         </Table.ScrollContainer>
       </AppShell.Main>)}
@@ -997,21 +1038,22 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
                     <MultiSelect
                       label="Select Students"
                       placeholder="Select students"
-                      data={students.filter(student => student.organization_id === teamData.organization_id && !memberships.some(membership => membership.student_id === student.id)).map(student => ({ value: student.id, label: student.name }))}
-                      value={teamData.selected_students}
-                      onChange={(value) => {
-                        if (value.length <= teamData.max_size) {
-                          updateTeamData("selected_students", value);
-                          setMaxSizeError("");
-                        } else {
-                          setMaxSizeError("Maximum allotted size exceeded");
-                        }
-                      }}
-                      multiple
+                      data={
+                        orgStudentList
+                          .filter(student => {
+                            const studentMemberships = memberships.filter(membership => membership.student_id === student.id);
+                            // Allow only if the student is not in another team for the same course
+                            const inSameCourse = studentMemberships.some(membership => {
+                              const teamForMembership = teams.find(team => team.id === membership.team_id);
+                              return teamForMembership && teamForMembership.course_id === teamData.course_id;
+                            });
+                            return !inSameCourse;
+                          })
+                          .map(student => ({ value: student.id, label: student.name }))
+                      }
+                      searchable
+                      error={ maxSizeError ? maxSizeError : ""}
                     />
-                    {maxSizeError && (
-                      <><Space h="sm" /><Alert variant="light" color="red" title="Max Size Exceeded">{maxSizeError}</Alert></>
-                    )}
                   </div>
                   <Space h="md" />
                   <div style={{
@@ -1067,14 +1109,15 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
             <Table stickyHeader verticalSpacing="md" striped highlightOnHover withTableBorder>
               <Table.Thead>
                 <Table.Tr>
-                  <Table.Th data-testid="tableteam" >Team</Table.Th>
-                  <Table.Th>Members</Table.Th>
-                  <Table.Th>Maximum Size</Table.Th>
-                  <Table.Th>Course</Table.Th>
-                  <Table.Th>Organization</Table.Th>
+                  <Table.Th data-testid="tableteam" style={{ textAlign: 'center' }} >Team</Table.Th>
+                  <Table.Th style={{ textAlign: 'center' }}>Members</Table.Th>
+                  <Table.Th style={{ textAlign: 'center' }}>Maximum Size</Table.Th>
+                  <Table.Th style={{ textAlign: 'center' }}>Course</Table.Th>
+                  <Table.Th style={{ textAlign: 'center' }}>Organization</Table.Th>
+                  <Table.Th style={{ textAlign: 'center' }}>Remove Team</Table.Th>
                 </Table.Tr>
               </Table.Thead>
-              <Table.Tbody>{rows2}</Table.Tbody>
+              <Table.Tbody style={{ textAlign: 'center' }}>{rows2}</Table.Tbody>
             </Table>
           </Table.ScrollContainer>
         </AppShell.Main>
@@ -1086,6 +1129,22 @@ const InstructorDashboard = ({ organizations, org, courses, teams, students, mem
         </>
       )}
 
+      <EditStudentInfo
+        isOpen={editModalOpen}
+        onClose={() => {setEditModalOpen(false); modalClose();}}
+        studentData={studentData}
+        updateStudentData={updateStudentData}
+        handleSubmit={handleEditSubmit}
+      />
+
+      <EditTeamInfo
+        isOpen={editTeamModalOpen}
+        onClose={() => {setTeamEditModalOpen(false); modalClose();}}
+        teamData={teamData}
+        updateTeamData={updateTeamData}
+        orgStudentList={orgStudentList}
+        handleSubmit={handleTeamEditSubmit}
+      />
 
     </AppShell>
   );
