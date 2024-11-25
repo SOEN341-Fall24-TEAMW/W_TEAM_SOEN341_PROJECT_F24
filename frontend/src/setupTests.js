@@ -23,7 +23,6 @@ window.matchMedia = (query) => ({
 
 
  beforeEach(() => {
-    fetch.resetMocks();
     global.alert = jest.fn();
    
 
