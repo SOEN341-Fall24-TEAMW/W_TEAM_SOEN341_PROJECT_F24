@@ -37,3 +37,10 @@ jobs:
       - name: Run auth-server tests
         working-directory: auth-server/tests
         run: npm test
+
+      # Install Prettier and check formatting
+      - name: Install Prettier
+        run: npm install --save-dev prettier
+
+      - name: Check code formatting with Prettier
+        run: npx prettier --check .
