@@ -1,8 +1,10 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { React, useEffect, useState } from 'react';
 import { MantineProvider } from '@mantine/core';
+import { Notifications } from '@mantine/notifications';
 
 import Header from './header.js';
+import NotificationContainer from './pages/notification-container.js';
 import Home from './home.js';
 import Login from './login.js';
 import CreateNewAccount from './pages/create-new-account.js';
@@ -18,6 +20,7 @@ import PeerEvaluationIntro from './pages/peerEvaluationIntro.js';
 
 import Footer from './footer.js';
 
+import '@mantine/notifications/styles.css';
 import '@mantine/core/styles.css';
 
 function App() {
@@ -32,7 +35,7 @@ function App() {
   const [students, setStudents] = useState([]);
   const [orgStudentList, setOrgStudentList] = useState([]);
   const [memberships, setMemberships] = useState([]);
-  const [userRole] = useState([]);
+  const [userRole, setUserRole] = useState("");
 
   const fetchData = () => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -100,32 +103,8 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
-
-    if (!user || !user.token) {
-      console.error("JWT token not found. Please log in again.");
-      setLoggedIn(false);
-      return;
-    }
-    try {
-      fetch('http://localhost:3080/courses', {
-        method: "POST",
-        headers: {
-          'Content-Type': 'application/json',
-          'jwt-token': user.token,
-        },
-        body: JSON.stringify({ instructor: user.email }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.message === 'success') {
-            fetchData();
-          } else {
-            console.error('Failed to fetch options:', data.message);
-          }
-        })
-    } catch (error) {
-      console.error('Error fetching options:', error);
+    if (loggedIn) {
+      fetchData();
     }
   }, [loggedIn]);
 
@@ -134,12 +113,13 @@ function App() {
       <MantineProvider>
         <BrowserRouter>
           <Header loggedIn={loggedIn} setLoggedIn={setLoggedIn} role={role} setRole={setRole} org={org} setOrg={setOrg} instructorOrganizations={instructorOrganizations} />
+          <Notifications />
           <Routes>
             <Route path="/" element={<Home email={email} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} />
             <Route path="/login" element={<Login role={role} setRole={setRole} email={email} setEmail={setEmail} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} />
             <Route path='/create-new-account' element={<CreateNewAccount setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
             <Route path="/student-dashboard" element={<StudentDashboard email={email} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} />
-            <Route path="/instructor-dashboard" element={<InstructorDashboard organizations={organizations} org={org} courses={courses} teams={teams} setTeams={setTeams} students={students} setStudents={setStudents} orgStudentList={orgStudentList} memberships={memberships} email={email} fetchData={fetchData} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} />
+            <Route path="/instructor-dashboard" element={<InstructorDashboard organizations={organizations} org={org} courses={courses} teams={teams} setTeams={setTeams} students={students} setStudents={setStudents} orgStudentList={orgStudentList} setOrgStudentList={setOrgStudentList} memberships={memberships} email={email} fetchData={fetchData} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} />
             <Route path='/Teams' element={<Teams />} />
             <Route path='/CreateTeams' element={<CreateTeams />} />
             <Route path='/TeamList' element={<TeamList />} />

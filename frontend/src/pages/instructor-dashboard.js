@@ -4,7 +4,9 @@ import DashboardFilterSort from './DashboardFilterSort.js';
 import { NavLink, AppShell, Table, Group, Space, Modal, Button, Title, TextInput, rem, Select, Menu, NumberInput, MultiSelect, Text, FileInput, Notification, Grid } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconUsers, IconUsersGroup, IconMessage, IconSearch, IconDatabaseImport, IconCirclePlus, IconX, IconCheck } from '@tabler/icons-react';
+import { notifications } from '@mantine/notifications';
 import Papa from "papaparse";
+
 import './styles.css';
 import InstructorDashboardFeedbacks from "./instructor-dashboard-feedbacks.js";
 import EditStudentInfo from "./edit-student-info.js";
@@ -15,7 +17,7 @@ import PropTypes from 'prop-types';
 
 
 
-const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, students, setStudents, orgStudentList, memberships, email, fetchData, loggedIn, setLoggedIn }) => {
+const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, students, orgStudentList, setOrgStudentList, memberships, email, fetchData, loggedIn, setLoggedIn }) => {
 
   const [active, setActive] = useState('Students');
   const [query, setQuery] = useState('');
@@ -132,9 +134,18 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
       });
 
       if (response.ok) {
-        setNotifySuccess(true);
+        notifications.show({
+          title: 'Success',
+          message: 'Student information was updated successfully!',
+          style: { position: "fixed", top: "4rem", right: "1rem", zIndex: 9999 },
+          color: 'green',
+        });
         fetchData(); // Refresh data
       } else {
+        notifications.show({
+          title: 'Error',
+          message: 'Failed to update student information. Please try again.',
+        });
         setNotifyError(true);
       }
       setEditModalOpen(false); // Close modal
@@ -155,9 +166,20 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
       });
 
       if (response.ok) {
-        setNotifySuccess(true);
+        notifications.show({
+          title: 'Success',
+          message: 'Team information was updated successfully!',
+          style: { position: "fixed", top: "4rem", right: "1rem", zIndex: 9999 },
+          color: 'green',
+        });
         fetchData(); // Refresh data
       } else {
+        notifications.show({
+          title: 'Error',
+          message: 'Failed to update team information. Please try again.',
+          style: { position: "fixed", top: "4rem", right: "1rem", zIndex: 9999 },
+          color: 'red',
+        });
         setNotifyError(true);
       }
       setTeamEditModalOpen(false); // Close modal
@@ -200,14 +222,26 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
             });
 
             if (response.ok) {
-              console.log("Data uploaded successfully.");
+              console.log("Data imported successfully.");
+              notifications.show({
+                title: 'Success',
+                message: 'User(s) were imported successfully!',
+                style: { position: "fixed", top: "4rem", right: "1rem", zIndex: 9999 },
+                color: 'green',
+              })
               setImportSuccess(true);
               setNotifySuccess(true);
               fetchData();
               setTimeout(() => { setImportSuccess(false); }, 5000);
               setTimeout(() => { setNotifySuccess(false); }, 10000);
             } else {
-              console.error("Upload failed.");
+              console.error("Import failed.");
+              notifications.show({
+                title: 'Error',
+                message: 'Import Failed!',
+                style: { position: "fixed", top: "4rem", right: "1rem", zIndex: 9999 },
+                color: 'red',
+              })
               setImportFail(true);
               setNotifyError(true);
               fetchData();
@@ -460,7 +494,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
 
   const rows = org
     ? applyFilterAndSort(
-      (students || [])
+      (orgStudentList || [])
         .filter((student) => {
           // Filter by organization
           const organizationId = (organizations.find((organization) => organization.name === org) || {}).id;
@@ -507,7 +541,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
             <DeleteStudentButton
               studentId={student.id}
               onDelete={(deletedId) =>
-                setStudents((prev) => prev.filter((s) => s.id !== deletedId))
+                setOrgStudentList((prev) => prev.filter((s) => s.id !== deletedId))
               }
             />
           </Table.Td>
@@ -537,7 +571,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
         const organizationName = (organizations.find((organization) => organization.id === teamCourse?.organization_id) || {}).name || "Unknown organization";
 
         return (
-          <Table.Tr key={team.id} onClick={() => {handleTeamRowClick(team); updateTeamData("selected_students", studentNames);}} style={{ cursor: 'pointer' }}>
+          <Table.Tr key={team.id} onClick={() => { handleTeamRowClick(team); updateTeamData("selected_students", studentNames); }} style={{ cursor: 'pointer' }}>
             <Table.Td>{team.name || "No name"}</Table.Td>
             <Table.Td>{studentNames || "No members"}</Table.Td>
             <Table.Td>{team.max_size || "No max size"}</Table.Td>
@@ -812,7 +846,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
                 title="Import Success!"
                 mt="md"
                 withCloseButton={false}
-                style={{ opacity: importSuccess ? '1' : '0', transition: 'opacity 0.5s ease-in-out' }}
+                style={{ opacity: "0" }}
               >
                 New Students were successfully imported from file!
               </Notification>
@@ -823,7 +857,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
                 color="red"
                 title="Oops..."
                 withCloseButton={false}
-                style={{ opacity: importFail ? '1' : '0', transition: 'opacity 0.5s ease-in-out' }}
+                style={{ opacity: "0" }}
               >
                 Something went wrong
               </Notification>
@@ -1054,8 +1088,17 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
                           })
                           .map(student => ({ value: student.id, label: student.name }))
                       }
+                      value={teamData.selected_students}
+                      onChange={(value) => {
+                        if (value.length <= teamData.max_size) {
+                          updateTeamData("selected_students", value);
+                          setMaxSizeError("");
+                        } else {
+                          setMaxSizeError("Maximum allotted size exceeded");
+                        }
+                      }}
                       searchable
-                      error={ maxSizeError ? maxSizeError : ""}
+                      error={maxSizeError ? maxSizeError : ""}
                     />
                   </div>
                   <Space h="md" />
@@ -1134,7 +1177,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
 
       <EditStudentInfo
         isOpen={editModalOpen}
-        onClose={() => {setEditModalOpen(false); modalClose();}}
+        onClose={() => { setEditModalOpen(false); modalClose(); }}
         studentData={studentData}
         updateStudentData={updateStudentData}
         handleSubmit={handleEditSubmit}
@@ -1142,7 +1185,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
 
       <EditTeamInfo
         isOpen={editTeamModalOpen}
-        onClose={() => {setTeamEditModalOpen(false); modalClose();}}
+        onClose={() => { setTeamEditModalOpen(false); modalClose(); }}
         teamData={teamData}
         updateTeamData={updateTeamData}
         orgStudentList={orgStudentList}
