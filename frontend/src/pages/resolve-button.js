@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Group, Notification, Tooltip, Text, Portal } from "@mantine/core";
 import { IconCheck, IconAlertCircle } from "@tabler/icons-react";
+import { notifications } from '@mantine/notifications';
 
 const ResolveButton = ({ selectedStudent, setSelectedStudent }) => {
     const [showActions, setShowActions] = useState(false);
@@ -96,7 +97,7 @@ const ResolveButton = ({ selectedStudent, setSelectedStudent }) => {
                 notifySuccess();
                 setTimeout(() => {
                     setDismissed(true);
-                }, 3000); 
+                }, 3000);
             } else {
                 notifyFailure();
             }
@@ -123,10 +124,7 @@ const ResolveButton = ({ selectedStudent, setSelectedStudent }) => {
 
             const result = await response.json();
             if (result.message === "success") {
-                notifySuccess();
-                setTimeout(() => {
-                    setResolved(true); // Update the dismissed state after the notification is rendered
-                }, 3000); 
+                setResolved(true);
             } else {
                 notifyFailure();
             }
@@ -170,49 +168,45 @@ const ResolveButton = ({ selectedStudent, setSelectedStudent }) => {
 
     return (
         <div>
-            <Group spacing="xs">
-                <Button
-                    color="green"
-                    onClick={(e) => {
-                        handleDismiss();
-                        e.stopPropagation();
-                    }}
-                >
-                    Dismiss
-                </Button>
-                <Button
-                    color="blue"
-                    onClick={(e) => {
-                        handleContactTA();
-                        e.stopPropagation();
-                    }}
-                >
-                    Contact TA
-                </Button>
-            </Group>
-
-            <Portal target="#notification-container">
-                {notification ? (
-                    <Notification
-                        color={notification.type === "success" ? "green" : "red"}
-                        icon={
-                            notification.type === "success" ? (
-                                <IconCheck size={18} />
-                            ) : (
-                                <IconAlertCircle size={18} />
-                            )
-                        }
-                        title={notification.type === "success" ? "Success" : "Error"}
-                        onClose={() => setNotification(null)}
-                        style={{
-                            width: "300px",
-                            zIndex: 1000,
+            {showActions ? (
+                <Group spacing="xs">
+                    <Button
+                        color="green"
+                        onClick={(e) => {
+                            handleDismiss();
+                            notifications.show({
+                                title: 'Dismissed',
+                                message: 'The dispute was successfully dismissed!',
+                              })
+                            e.stopPropagation();
                         }}
                     >
-                        {notification.message}
-                    </Notification>
-                ) : null}
-            </Portal>
+                        Dismiss
+                    </Button>
+                    <Button
+                        color="blue"
+                        onClick={(e) => {
+                            handleContactTA();
+                            notifications.show({
+                                title: 'Success',
+                                message: 'A TA was contacted with the instructions to resolve conflict!',
+                              })
+                            e.stopPropagation();
+                        }}
+                    >
+                        Contact TA
+                    </Button>
+                </Group>
+            ) : (
+                <Button
+                    onClick={(e) => {
+                        setShowActions(true);
+                        e.stopPropagation();
+                    }}
+                >
+                    Resolve
+                </Button>
+            )}
         </div>
     );
 

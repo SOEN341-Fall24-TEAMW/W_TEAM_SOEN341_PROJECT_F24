@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { MantineProvider } from '@mantine/core';
+import { Notifications } from '@mantine/notifications';
 
 import Header from './header.js';
 import NotificationContainer from './pages/notification-container.js';
@@ -19,6 +20,7 @@ import PeerEvaluationIntro from './pages/peerEvaluationIntro.js';
 
 import Footer from './footer.js';
 
+import '@mantine/notifications/styles.css';
 import '@mantine/core/styles.css';
 
 function App() {
@@ -111,7 +113,7 @@ function App() {
       <MantineProvider>
         <BrowserRouter>
           <Header loggedIn={loggedIn} setLoggedIn={setLoggedIn} role={role} setRole={setRole} org={org} setOrg={setOrg} instructorOrganizations={instructorOrganizations} />
-          <NotificationContainer />
+          <Notifications />
           <Routes>
             <Route path="/" element={<Home email={email} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} />
             <Route path="/login" element={<Login role={role} setRole={setRole} email={email} setEmail={setEmail} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} />

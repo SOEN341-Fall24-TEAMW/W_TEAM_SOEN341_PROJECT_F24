@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Space, Button, TextInput, Select, MultiSelect, Divider, rem } from '@mantine/core';
 import { IconArrowLeft } from '@tabler/icons-react';
+import { notifications } from '@mantine/notifications';
 
 
 
@@ -22,6 +23,7 @@ const CreateNewAccount = (props) => {
     const [idError, setIdError] = useState("");
     const [organizationIdError, setOrganizationIdError] = useState("");
     const [organizationIdInstructorError, setOrganizationIdInstructorError] = useState("");
+    
 
     const navigate = useNavigate();
     const icon = <IconArrowLeft size={24} />
@@ -97,11 +99,11 @@ const CreateNewAccount = (props) => {
         // Check if email has an account associated with it
         checkAccountExists(accountExists => {
             // If yes, log in 
-            if (accountExists && window.confirm("An account already exists with this email address: " + email + ". Do you want to navigate to the login page?")) {
-                navigate("/login");
+            if (accountExists) {
+                setEmailError("An account is already associated with that email address!")
             }
             // Else, ask user if they want to create a new account and if yes, then log in
-            if ((accountExists === false) && window.confirm("An account does not exist with this email address: " + email + ". Do you want to create a new account?")) {
+            if (!accountExists) {
                 createAccount();
             } else {
                 return;
@@ -138,6 +140,10 @@ const CreateNewAccount = (props) => {
             .then(r => r.json())
             .then(r => {
                 if ('success' === r.message) {
+                    notifications.show({
+                        title: 'Success',
+                        message: 'Account created successfully!',
+                      })
                     navigate('/login');
                 } else {
                     window.alert(r.message);

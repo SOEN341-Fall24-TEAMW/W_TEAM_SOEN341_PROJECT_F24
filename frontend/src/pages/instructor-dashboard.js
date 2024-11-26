@@ -4,7 +4,9 @@ import DashboardFilterSort from './DashboardFilterSort.js';
 import { NavLink, AppShell, Table, Group, Space, Modal, Button, Title, TextInput, rem, Select, Menu, NumberInput, MultiSelect, Alert, Text, FileInput, Notification } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconUsers, IconUsersGroup, IconMessage, IconSearch, IconDatabaseImport, IconCirclePlus, IconX, IconCheck } from '@tabler/icons-react';
+import { notifications } from '@mantine/notifications';
 import Papa from "papaparse";
+
 import './styles.css';
 import InstructorDashboardFeedbacks from "./instructor-dashboard-feedbacks.js";
 import EditStudentInfo from "./edit-student-info.js";
@@ -129,9 +131,16 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
       });
 
       if (response.ok) {
-        setNotifySuccess(true);
+        notifications.show({
+          title: 'Success',
+          message: 'Student information was updated successfully!',
+        });
         fetchData(); // Refresh data
       } else {
+        notifications.show({
+          title: 'Error',
+          message: 'Failed to update student information. Please try again.',
+        });
         setNotifyError(true);
       }
       setEditModalOpen(false); // Close modal
@@ -152,9 +161,16 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
       });
 
       if (response.ok) {
-        setNotifySuccess(true);
+        notifications.show({
+          title: 'Success',
+          message: 'Team information was updated successfully!',
+        });
         fetchData(); // Refresh data
       } else {
+        notifications.show({
+          title: 'Error',
+          message: 'Failed to update team information. Please try again.',
+        });
         setNotifyError(true);
       }
       setTeamEditModalOpen(false); // Close modal
@@ -197,14 +213,22 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
             });
 
             if (response.ok) {
-              console.log("Data uploaded successfully.");
+              console.log("Data imported successfully.");
+              notifications.show({
+                title: 'Success',
+                message: 'User(s) were imported successfully!',
+              })
               setImportSuccess(true);
               setNotifySuccess(true);
               fetchData();
               setTimeout(() => { setImportSuccess(false); }, 5000);
               setTimeout(() => { setNotifySuccess(false); }, 10000);
             } else {
-              console.error("Upload failed.");
+              console.error("Import failed.");
+              notifications.show({
+                title: 'Failure',
+                message: 'Import Failed!',
+              })
               setImportFail(true);
               setNotifyError(true);
               fetchData();
@@ -809,7 +833,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
                 title="Import Success!"
                 mt="md"
                 withCloseButton={false}
-                style={{ opacity: importSuccess ? '1' : '0', transition: 'opacity 0.5s ease-in-out' }}
+                style={{ opacity: "0" }}
               >
                 New Students were successfully imported from file!
               </Notification>
@@ -820,7 +844,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
                 color="red"
                 title="Oops..."
                 withCloseButton={false}
-                style={{ opacity: importFail ? '1' : '0', transition: 'opacity 0.5s ease-in-out' }}
+                style={{ opacity: "0" }}
               >
                 Something went wrong
               </Notification>

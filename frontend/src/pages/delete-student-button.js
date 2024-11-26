@@ -2,6 +2,7 @@ import React from "react";
 import { Button, Modal, Group, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconTrash } from "@tabler/icons-react";
+import { notifications } from '@mantine/notifications';
 
 const DeleteStudentButton = ({ studentId, onDelete }) => {
   const [opened, { open, close }] = useDisclosure(false);
@@ -17,9 +18,17 @@ const DeleteStudentButton = ({ studentId, onDelete }) => {
       });
 
       if (response.ok) {
+        notifications.show({
+          title: 'Success',
+          message: 'Student was deleted successfully!',
+        });
         onDelete(studentId); // Notify parent to refresh the data or remove the student locally
         close();
       } else {
+        notifications.show({
+          title: 'Error',
+          message: 'Failed to delete the student. Please try again.',
+        });
         console.error("Failed to delete student");
       }
     } catch (error) {
