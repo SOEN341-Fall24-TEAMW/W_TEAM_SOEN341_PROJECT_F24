@@ -65,6 +65,10 @@ function PeerEvaluationForm() {
           evaluatee_id: evaluateeId,
           team_id: teamId,
           ...evaluation,
+          disputed: false,
+          reevaluated: false,
+          dismissed: false,
+          resolved: false,
         }),
       });
 

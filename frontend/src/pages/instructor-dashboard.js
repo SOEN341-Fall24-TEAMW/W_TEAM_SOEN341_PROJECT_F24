@@ -457,7 +457,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
 
   const rows = org
     ? applyFilterAndSort(
-      (students || [])
+      (orgStudentList || [])
         .filter((student) => {
           // Filter by organization
           const organizationId = (organizations.find((organization) => organization.name === org) || {}).id;

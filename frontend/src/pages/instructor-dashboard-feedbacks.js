@@ -5,12 +5,13 @@ import { IconArrowUp } from '@tabler/icons-react';
 
 import StudentFeedbackBadges from "./instructor-dashboard-feedbacks-student-badges.js";
 import TeamFeedBackBadges from "./instructor-dashboard-feedbacks-team-badges.js";
+import ResolveButton from "./resolve-button.js";
 import './styles.css';
 
 const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, memberships, setLoggedIn }) => {
     const navigate = useNavigate();
     const user = JSON.parse(localStorage.getItem('user'));
-    const icon = <IconArrowUp className="bouncing-arrow"/>;
+    const icon = <IconArrowUp className="bouncing-arrow" />;
 
     const [selectedCourse, setSelectedCourse] = useState(null);
     const [selectedTeam, setSelectedTeam] = useState(null);
@@ -204,7 +205,7 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
                     .then((response) => response.json())
                     .then((data) => {
                         if (data.message === 'success') {
-                            setTeamsForFeedbackBadge(data.results); // assuming data.results is an array of teams
+                            setTeamsForFeedbackBadge(data.results);
                         } else {
                             console.error('Failed to fetch teams:', data.message);
                         }
@@ -311,8 +312,8 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
                                     <Table stickyHeader verticalSpacing="md" striped highlightOnHover withTableBorder style={{ width: '100%', textAlign: 'center' }}>
                                         <Table.Thead>
                                             <Table.Tr>
-                                                <Table.Th style={{ textAlign: 'center' }}>Student ID</Table.Th>
                                                 <Table.Th style={{ textAlign: 'center' }}>Student Name</Table.Th>
+                                                <Table.Th style={{ textAlign: 'center' }}>Student ID</Table.Th>
                                                 <Table.Th style={{ textAlign: 'center' }}>Team Name</Table.Th>
                                                 <Table.Th style={{ textAlign: 'center' }}>Cooperation</Table.Th>
                                                 <Table.Th style={{ textAlign: 'center' }}>Conceptual Contribution</Table.Th>
@@ -321,6 +322,7 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
                                                 <Table.Th style={{ textAlign: 'center' }}>Average</Table.Th>
                                                 <Table.Th style={{ textAlign: 'center' }}>Peers Who Reviewed</Table.Th>
                                                 <Table.Th style={{ textAlign: 'center' }}>Badges</Table.Th>
+                                                <Table.Th style={{ textAlign: 'center' }}>Disputes</Table.Th>
                                             </Table.Tr>
                                         </Table.Thead>
 
@@ -336,6 +338,7 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
                                                 <Table.Td>{averageOverall ? averageOverall.toFixed(2) : '0.00'}</Table.Td>
                                                 <Table.Td>{studentFeedbacks.length || '0'}</Table.Td>
                                                 <Table.Td>{<StudentFeedbackBadges averageCooperation={averageCooperation} averageConceptualContribution={averageConceptualContribution} averagePracticalContribution={averagePracticalContribution} averageWorkEthic={averageWorkEthic} averageOverall={averageOverall} studentFeedbacks={studentFeedbacks} />}</Table.Td>
+                                                <Table.Td>{<ResolveButton selectedStudent={selectedStudent} setSelectedStudent={setSelectedStudent} />}</Table.Td>
                                             </Table.Tr>
                                         </Table.Tbody>
 

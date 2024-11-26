@@ -535,9 +535,9 @@ app.post("/import-student-csv", async (req, res) => {
     try {
         const errors = [];
         for (const student of data) {
-
             const { student_id, student_email, name, course_name, team_name, org_name } = student;
             console.log(student);
+
             // Check database for organization name
             let organization = db.get("organizations").find((org) => org.name === org_name).value();
 
@@ -559,6 +559,7 @@ app.post("/import-student-csv", async (req, res) => {
                 errors.push(`Email is required for student ${name || student_id}`);
                 continue;
             }
+
             // Hash password
             const account_password = student_email;
             const hashed_password = await bcrypt.hash(account_password, 10);
@@ -575,34 +576,37 @@ app.post("/import-student-csv", async (req, res) => {
                 })
                 .write();
 
-            // Check for course
-            let course = db.get("courses").find((course) => course.name === course_name && course.organization_id === organization.id).value();
-            if (!course) {
-                course = { id: uuidv4(), name: course_name, instructor_id: instructor_email, organization_id: organization.id };
-                db.get("courses").push(course).write();
-            }
+            // Skip course and team creation if fields are empty
+            if (course_name && team_name) {
+                // Check for course
+                let course = db.get("courses").find((course) => course.name === course_name && course.organization_id === organization.id).value();
+                if (!course) {
+                    course = { id: uuidv4(), name: course_name, instructor_id: instructor_email, organization_id: organization.id };
+                    db.get("courses").push(course).write();
+                }
 
-            // Check for team
-            let team = db.get("teams").find((team) => team.name === team_name && team.course_id === course.id).value();
-            if (!team) {
-                team = { id: uuidv4(), name: team_name, course_id: course.id, instructor_id: instructor_email, max_size: 5 };
-                db.get("teams").push(team).write();
-            }
+                // Check for team
+                let team = db.get("teams").find((team) => team.name === team_name && team.course_id === course.id).value();
+                if (!team) {
+                    team = { id: uuidv4(), name: team_name, course_id: course.id, instructor_id: instructor_email, max_size: 5 };
+                    db.get("teams").push(team).write();
+                }
 
-            // Add student to team if not at max capacity
-            const team_membership = db.get("team_memberships").filter((membership) => membership.team_id === team.id).value();
-            if (team_membership.length < team.max_size) {
-                db.get("team_memberships")
-                    .push({ id: uuidv4(), team_id: team.id, student_id: student_id })
-                    .write();
-            } else {
-                errors.push(`Team: ${team_name} is already at max limit`);
+                // Add student to team if not at max capacity
+                const team_membership = db.get("team_memberships").filter((membership) => membership.team_id === team.id).value();
+                if (team_membership.length < team.max_size) {
+                    db.get("team_memberships")
+                        .push({ id: uuidv4(), team_id: team.id, student_id: student_id })
+                        .write();
+                } else {
+                    errors.push(`Team: ${team_name} is already at max limit`);
+                }
             }
         }
         if (errors.length > 0) {
             res.status(400).json({ message: "Some students could not be added", errors });
         } else {
-            res.status(200).json({ message: "All students created and added to teams successfully" });
+            res.status(200).json({ message: "All students created successfully" });
         }
     } catch (error) {
         console.error("Error creating new student:", error);
@@ -878,6 +882,96 @@ app.post('/get-feedback-records', (req, res) => {
     }
 });
 
+app.post('/get-student-records', (req, res) => {
+    const { userId } = req.body;
+
+    if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+    }
+
+    try {
+        // Find all evaluations where the user is the evaluatee
+        const evaluations = db.get('peer_evaluations')
+            .filter({ evaluatee_id: userId })
+            .map(evaluation => ({
+                evaluationId: evaluation.id,
+                disputed: evaluation.disputed,
+                reevaluated: evaluation.reevaluated,
+                dismissed: evaluation.dismissed,
+                resolved: evaluation.resolved,
+            }))
+            .value();
+
+        if (!evaluations || evaluations.length === 0) {
+            return res.status(404).json({ message: "No evaluations found for the specified user" });
+        }
+
+        return res.status(200).json({
+            message: "success",
+            results: evaluations,
+        });
+    } catch (error) {
+        console.error("Error fetching student records:", error);
+        return res.status(500).json({
+            message: "Internal Server Error",
+            error,
+        });
+    }
+});
+
+app.post("/update-dispute", (req, res) => {
+    const { evaluationId, disputed, reevaluated } = req.body;
+    console.log("evaluation Id: ", evaluationId);
+
+    if (evaluationId === undefined || disputed === undefined || reevaluated === undefined) {
+        return res.status(400).json({ message: "Invalid request payload." });
+    }
+
+    try {
+        const evaluations = db.get("peer_evaluations").filter(eval => evaluationId.includes(eval.id)).value();
+
+        if (!evaluations) {
+            return res.status(404).json({ message: "Evaluation not found." });
+        }
+
+        // Update the dispute and reevaluation status
+        evaluationId.forEach((id) => {
+            db.get("peer_evaluations")
+                .find({ id })
+                .assign({ disputed, reevaluated })
+                .write();
+        });
+
+        res.status(200).json({ message: "success" });
+    } catch (error) {
+        console.error("Error updating dispute status:", error);
+        res.status(500).json({ message: "Internal Server Error", error });
+    }
+});
+
+app.post("/dispute-response", (req, res) => {
+    const { evaluationId, dismissed, resolved } = req.body;
+
+    try {
+        evaluationId.forEach((id) => {
+            db.get("peer_evaluations")
+                .find({ id })
+                .assign(
+                    dismissed !== undefined ? { dismissed } : false,
+                    resolved !== undefined ? { resolved } : false
+                )
+                .write();
+        });
+
+        res.status(200).json({ message: "success" });
+    } catch (error) {
+        console.error("Error updating evaluation:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+
+
 app.post('/get-student-peers', (req, res) => {
     const feedbacks = req.body;
     console.log("DJ KHALED LOGGING: ", feedbacks);
@@ -1028,7 +1122,11 @@ app.post('/submit-evaluation', (req, res) => {
         conceptualComment,
         practicalComment,
         ethicComment,
-        team_id
+        team_id,
+        disputed = false,
+        reevaluated = false,
+        dismissed = false,
+        resolved = false,
     } = req.body;
 
 
@@ -1062,6 +1160,10 @@ app.post('/submit-evaluation', (req, res) => {
                 practical_comment: practicalComment || "No comment",
                 ethic_comment: ethicComment || "No comment",
                 team_id,
+                disputed,
+                reevaluated,
+                dismissed,
+                resolved,
                 timestamp: new Date().toISOString()
             })
             .write();

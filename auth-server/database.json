@@ -1300,6 +1300,10 @@
       "practical_comment": "Helped a lot with documentation",
       "ethic_comment": "Always met deadlines",
       "team_id": 789,
+      "disputed": false,
+      "reevaluated": false,
+      "dismissed": false,
+      "resolved": false,
       "timestamp": "2024-10-01T10:00:00Z"
     },
     {
@@ -1315,6 +1319,10 @@
       "practical_comment": "",
       "ethic_comment": "",
       "team_id": "your-team-id",
+      "disputed": false,
+      "reevaluated": false,
+      "dismissed": false,
+      "resolved": false,
       "timestamp": "2024-10-29T00:04:46.823Z"
     },
     {
@@ -1330,6 +1338,10 @@
       "practical_comment": "",
       "ethic_comment": "",
       "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "disputed": false,
+      "reevaluated": false,
+      "dismissed": false,
+      "resolved": false,
       "timestamp": "2024-10-29T01:01:04.458Z"
     },
     {
@@ -1345,6 +1357,10 @@
       "practical_comment": "",
       "ethic_comment": "",
       "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "disputed": false,
+      "reevaluated": false,
+      "dismissed": false,
+      "resolved": false,
       "timestamp": "2024-10-29T01:17:17.808Z"
     },
     {
@@ -1360,6 +1376,10 @@
       "practical_comment": "",
       "ethic_comment": "",
       "team_id": "715b0271-4f84-49b6-abd6-e05c9e69a10b",
+      "disputed": false,
+      "reevaluated": false,
+      "dismissed": false,
+      "resolved": false,
       "timestamp": "2024-10-29T01:48:20.035Z"
     },
     {
@@ -1375,6 +1395,10 @@
       "practical_comment": "",
       "ethic_comment": "",
       "team_id": "a0d2e034-df4b-4947-982a-8b86d921b33a",
+      "disputed": false,
+      "reevaluated": false,
+      "dismissed": false,
+      "resolved": false,
       "timestamp": "2024-11-01T06:11:12.288Z"
     },
     {
@@ -1390,6 +1414,10 @@
       "practical_comment": "yes",
       "ethic_comment": "yes",
       "team_id": "33aab05e-0020-420a-949d-627f8772b791",
+      "disputed": false,
+      "reevaluated": false,
+      "dismissed": false,
+      "resolved": false,
       "timestamp": "2024-11-07T17:43:07.110Z"
     },
     {
@@ -1405,6 +1433,10 @@
       "practical_comment": "",
       "ethic_comment": "",
       "team_id": "33aab05e-0020-420a-949d-627f8772b791",
+      "disputed": false,
+      "reevaluated": false,
+      "dismissed": false,
+      "resolved": false,
       "timestamp": "2024-11-07T17:43:14.746Z"
     },
     {
@@ -1420,6 +1452,10 @@
       "practical_comment": "",
       "ethic_comment": "",
       "team_id": "33aab05e-0020-420a-949d-627f8772b791",
+      "disputed": false,
+      "reevaluated": false,
+      "dismissed": false,
+      "resolved": false,
       "timestamp": "2024-11-07T21:39:06.537Z"
     },
     {
@@ -1435,6 +1471,10 @@
       "practical_comment": "",
       "ethic_comment": "",
       "team_id": "bd79670a-4013-4da6-b793-048b287c6566",
+      "disputed": false,
+      "reevaluated": false,
+      "dismissed": false,
+      "resolved": false,
       "timestamp": "2024-11-09T10:39:34.017Z"
     },
     {
@@ -1450,6 +1490,10 @@
       "practical_comment": "",
       "ethic_comment": "",
       "team_id": "undefined",
+      "disputed": false,
+      "reevaluated": false,
+      "dismissed": false,
+      "resolved": false,
       "timestamp": "2024-11-09T20:03:33.162Z"
     },
     {
@@ -1465,6 +1509,10 @@
       "practical_comment": "",
       "ethic_comment": "",
       "team_id": "undefined",
+      "disputed": false,
+      "reevaluated": false,
+      "dismissed": false,
+      "resolved": false,
       "timestamp": "2024-11-09T20:06:47.812Z"
     },
     {
@@ -1480,6 +1528,10 @@
       "practical_comment": "",
       "ethic_comment": "",
       "team_id": "a6236aed-84db-45c9-8827-9477087a1658",
+      "disputed": true,
+      "reevaluated": true,
+      "dismissed": false,
+      "resolved": false,
       "timestamp": "2024-11-09T21:08:50.068Z"
     },
     {
@@ -1495,6 +1547,10 @@
       "practical_comment": "",
       "ethic_comment": "",
       "team_id": "a6236aed-84db-45c9-8827-9477087a1658",
+      "disputed": true,
+      "reevaluated": true,
+      "dismissed": false,
+      "resolved": false,
       "timestamp": "2024-11-09T21:10:03.116Z"
     },
     {
@@ -1510,6 +1566,10 @@
       "practical_comment": "No comment",
       "ethic_comment": "No comment",
       "team_id": "6d4346f5-dd01-4491-88bd-7692a47129df",
+      "disputed": false,
+      "reevaluated": false,
+      "dismissed": false,
+      "resolved": false,
       "timestamp": "2024-11-09T18:29:30.661Z"
     },
     {
@@ -1525,6 +1585,10 @@
       "practical_comment": "No comment",
       "ethic_comment": "No comment",
       "team_id": "6d4346f5-dd01-4491-88bd-7692a47129df",
+      "disputed": false,
+      "reevaluated": false,
+      "dismissed": false,
+      "resolved": false,
       "timestamp": "2024-11-09T18:45:54.073Z"
     },
     {
@@ -1540,6 +1604,10 @@
       "practical_comment": "No comment",
       "ethic_comment": "No comment",
       "team_id": "a6236aed-84db-45c9-8827-9477087a1658",
+      "disputed": false,
+      "reevaluated": false,
+      "dismissed": false,
+      "resolved": false,
       "timestamp": "2024-11-10T00:48:09.188Z"
     },
     {
@@ -1555,6 +1623,10 @@
       "practical_comment": "yes",
       "ethic_comment": "yes",
       "team_id": "33aab05e-0020-420a-949d-627f8772b791",
+      "disputed": true,
+      "reevaluated": true,
+      "dismissed": false,
+      "resolved": false,
       "timestamp": "2024-11-07T17:43:07.110Z"
     }
   ],
