@@ -941,7 +941,7 @@ app.post("/update-dispute", (req, res) => {
     }
 
     try {
-        const evaluations = db.get("peer_evaluations").filter(eval => evaluationId.includes(eval.id)).value();
+        const evaluations = db.get("peer_evaluations").filter(evaluation => evaluationId.includes(eval.id)).value();
 
         if (!evaluations) {
             return res.status(404).json({ message: "Evaluation not found." });
