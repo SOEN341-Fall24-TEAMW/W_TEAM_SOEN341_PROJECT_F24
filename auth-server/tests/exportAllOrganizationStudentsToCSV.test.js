@@ -16,17 +16,22 @@ const mockDb = {
 // Mock database and supporting functions
 let mockUsers = mockDb.users; // Default mock data
 
-global.db = {
-    get: jest.fn((collection) => {
-        const data = {
-            organizations: mockDb.organizations,
-            users: mockUsers,
-        };
-        return {
-            value: () => data[collection],
-        };
-    }),
-};
+beforeEach(() => {
+    // Reset the mock db before each test
+    global.db = {
+        get: jest.fn((collection) => {
+            const data = {
+                organizations: mockDb.organizations,
+                users: mockUsers,
+            };
+            return {
+                value: () => data[collection],
+            };
+        }),
+    };
+    // Clear all mocks to ensure test isolation
+    jest.clearAllMocks();
+});
 
 // Mock json2csv parser
 jest.mock('json2csv', () => {

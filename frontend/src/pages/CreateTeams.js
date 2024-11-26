@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router-dom";
+import React from 'react'; // Add this import at the top of your file
+
 
 function CreateTeams() {
   const navigate = useNavigate();

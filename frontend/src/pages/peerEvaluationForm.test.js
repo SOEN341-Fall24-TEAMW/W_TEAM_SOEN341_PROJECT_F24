@@ -1,11 +1,11 @@
 import React from "react";
-import {act} from "react";
-import { render, screen, fireEvent, waitFor, within, getAllByRole } from "@testing-library/react";
+//import {act} from "react";
+import { render, screen } from "@testing-library/react";
 import PeerEvaluationForm from './peerEvaluationForm';
 import { MemoryRouter } from "react-router-dom";
 import { MantineProvider } from "@mantine/core";
 import fetchMock from 'jest-fetch-mock';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+//import { useNavigate, useSearchParams } from 'react-router-dom';
 
 
 
@@ -17,9 +17,9 @@ fetchMock.enableMocks();
        global.alert = jest.fn();
        jest.spyOn(URLSearchParams.prototype,
            "get").mockImplementation(
-               (evaluatorId) =>"12",
-               (evaluateeId) =>"34",
-               (teamId) => "347"
+               //(evaluatorId) =>"12",
+               //(evaluateeId) =>"34",
+               //(teamId) => "347"
            );
 
 
@@ -92,7 +92,7 @@ afterEach(() => {
                    expect(comments.length).toBe(1);
                    expect(screen.getByText(/1. Cooperation/i)).toBeInTheDocument();
 
-                   expect(comments).toBeInTheDocument;
+                   expect(comments).toBeInTheDocument();
         });
 
 
@@ -110,7 +110,7 @@ afterEach(() => {
 
                     expect(screen.getByText(/2. Conceptual Contribution/i)).toBeInTheDocument();
 
-                    expect(comments).toBeInTheDocument;
+                    expect(comments).toBeInTheDocument();
          });
 
 
@@ -128,7 +128,7 @@ afterEach(() => {
 
                     expect(screen.getByText(/3. Practical Contribution/i)).toBeInTheDocument();
 
-                    expect(comments).toBeInTheDocument;
+                    expect(comments).toBeInTheDocument();
          });
 
          it("displays comment boxes for work ethic", () => {
@@ -145,7 +145,7 @@ afterEach(() => {
 
                     expect(screen.getByText(/4. Work Ethic/i)).toBeInTheDocument();
 
-                    expect(comments).toBeInTheDocument;
+                    expect(comments).toBeInTheDocument();
          });
 
         it("displays 7 ratings to choose from for cooperation dimension", () => {
@@ -157,10 +157,11 @@ afterEach(() => {
                </MemoryRouter>
                </MantineProvider>
                );
-                   const btn = screen.getAllByRole("rateCooperation");
+                
+               const btn = screen.getAllByRole("button", { name: /rateCooperation/i }); // If the button has a label
 
                expect(btn.length).toBe(7);                
-               expect()
+               expect(btn[0]).toBeInTheDocument(); // Check if the first button is in the document
 
         });
 

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Title, Table, Center, Text, Modal } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
+
 
 const TeammatesList = ({ teams, memberships, students, email, selectedTeam }) => {
     const navigate = useNavigate();
@@ -156,6 +158,17 @@ const TeammatesList = ({ teams, memberships, students, email, selectedTeam }) =>
         </div>
     );
 };
+
+TeammatesList.propTypes = {
+    teams: PropTypes.array.isRequired,
+    memberships: PropTypes.array.isRequired,
+    students: PropTypes.array.isRequired,
+    email: PropTypes.string.isRequired,
+    selectedTeam: PropTypes.shape({
+      id: PropTypes.string.isRequired,
+    }).isRequired,
+  };
+  
 
 export default TeammatesList;
 

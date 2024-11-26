@@ -18,4 +18,6 @@ function isInstructor(req, res, next) {
     }
 }
 
-module.exports = { isInstructor };
+// Export the middleware for ES6 modules
+export { isInstructor };
+

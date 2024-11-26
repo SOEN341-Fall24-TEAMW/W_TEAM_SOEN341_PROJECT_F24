@@ -1,6 +1,8 @@
 import React from 'react';
 import { NavLink } from '@mantine/core'; 
 import { IconUsers, IconClipboardList, IconMessageCircle } from '@tabler/icons-react'; // Icons
+import PropTypes from 'prop-types';
+
 
 // Define tabs available in the navigation bar
 const tabs = [
@@ -27,3 +29,10 @@ export function NavbarStudentDashboard({ active, setActive }) {
     </nav>
   );
 }
+
+NavbarStudentDashboard.propTypes = {
+  active: PropTypes.string.isRequired,  // active should be a string (label of the active tab)
+  setActive: PropTypes.func.isRequired,  // setActive should be a function
+};
+
+export default NavbarStudentDashboard;

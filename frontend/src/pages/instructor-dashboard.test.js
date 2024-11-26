@@ -1,51 +1,27 @@
-import React, { useRef } from "react";
-import { render, screen, fireEvent, waitFor, within, getAllByRole } from "@testing-library/react";
+import React from "react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { ColorSchemeScript, MantineProvider } from "@mantine/core";
+import { MantineProvider } from "@mantine/core";
 import "@testing-library/jest-dom";
 
 
 
 
 import fetchMock from 'jest-fetch-mock';
-import { useNavigate, useSearchParams } from 'react-router-dom';
 import InstructorDashboard from './instructor-dashboard';
-import { IconUsers, IconUsersGroup, IconSettings, IconSearch, IconDatabaseImport, IconCirclePlus, IconX, IconCheck } from '@tabler/icons-react';
 import {  Table } from '@mantine/core';
 
-
-
-
-import { Space, Button, TextInput, Select, Alert } from '@mantine/core';
-import { IconAlertTriangle } from '@tabler/icons-react';
-
-
-
-
 jest.mock('@mantine/hooks', () => {
-  const actualHooks = jest.requireActual('@mantine/hooks');
-  return {
-      ...actualHooks,
-  useMediaQuery: jest.fn(() => [true]),
-
-
-
-
-};
+    const actualHooks = jest.requireActual('@mantine/hooks');
+    return {
+        ...actualHooks,
+        useMediaQuery: jest.fn(() => [true]),
+    };
 });
-
-
-
 
 fetchMock.enableMocks();
 
-
-
-
 global.HTMLElement.prototype.scrollIntoView = jest.fn();
-
-
-
 
 beforeEach(() => {
   fetch.resetMocks();
@@ -57,25 +33,16 @@ beforeEach(() => {
 
 });
 
-
-
-
-
 afterEach(() => {
 jest.resetAllMocks();
 jest.restoreAllMocks();
 });
 
-
-
-
 const mockuser = {token: "token"};
 const mocknavigation = jest.fn();
 const mocksetLoggedIn = jest.fn();
+
 describe("InstructorDashboard", ()=>{
-
-
-
   it("has student, and teams in the navigation bar ",()=>{
        render(
           <MantineProvider withGlobalStyles withNormalizeCSS>
@@ -88,11 +55,7 @@ describe("InstructorDashboard", ()=>{
           expect(screen.getByTestId(/Student/i)).toBeInTheDocument();
           expect(screen.getByTestId(/Teams/i)).toBeInTheDocument();
 
-
   });
-
-
-
 
   it("teams tab takes you to team page ", async ()=>{
 

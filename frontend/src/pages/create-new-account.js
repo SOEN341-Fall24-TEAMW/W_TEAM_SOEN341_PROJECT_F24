@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Space, Button, TextInput, Select, MultiSelect, Divider, rem } from '@mantine/core';
+import { Space, Button, TextInput, Select, MultiSelect, Divider} from '@mantine/core';
 import { IconArrowLeft } from '@tabler/icons-react';
 
 
 
-const CreateNewAccount = (props) => {
+const CreateNewAccount = () => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [role, setRole] = useState("");

@@ -28,6 +28,7 @@ app.post("/assign-random", (req, res) => {
         const assignments = assignStudentsToTeams(students, teams);
         res.status(200).json({ message: "Students assigned successfully", assignments });
     } catch (error) {
+        console.error("Error during student assignment:", error);  // Log the error
         res.status(500).json({ message: "Internal Server Error" });
     }
 });

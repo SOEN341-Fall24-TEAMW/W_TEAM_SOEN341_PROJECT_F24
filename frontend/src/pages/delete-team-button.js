@@ -2,6 +2,8 @@ import React from "react";
 import { Button, Modal, Group, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconTrash } from "@tabler/icons-react";
+import PropTypes from 'prop-types';
+
 
 const DeleteTeamButton = ({ teamId, onDelete }) => {
   const [opened, { open, close }] = useDisclosure(false);
@@ -75,6 +77,11 @@ const DeleteTeamButton = ({ teamId, onDelete }) => {
       </Modal>
     </>
   );
+};
+
+DeleteTeamButton.propTypes = {
+  teamId: PropTypes.string.isRequired, // Assuming teamId is a string (can be UUID or other identifier)
+  onDelete: PropTypes.func.isRequired, // Assuming onDelete is a function to handle the deletion
 };
 
 export default DeleteTeamButton;

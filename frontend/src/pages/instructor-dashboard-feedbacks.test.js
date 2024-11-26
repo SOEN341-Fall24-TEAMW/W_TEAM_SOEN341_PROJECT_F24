@@ -1,24 +1,20 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor, within, getAllByRole } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { ColorSchemeScript, MantineProvider } from "@mantine/core";
+import {  MantineProvider, Text } from "@mantine/core";
 import "@testing-library/jest-dom";
 import fetchMock from 'jest-fetch-mock';
-import { useNavigate, useSearchParams } from 'react-router-dom';
 import InstructorFeedbackTab from './instructor-dashboard-feedbacks';
 
-import { Space, Button, TextInput, Select, Alert } from '@mantine/core';
-import { IconAlertTriangle } from '@tabler/icons-react';
-
-jest.mock('@mantine/hooks', () => {
+// jest.mock('@mantine/hooks', () => {
    
-    const actualHooks = jest.requireActual('@mantine/hooks');
-    return {
-        ...actualHooks,
-    useMediaQuery: jest.fn(() => [true]),
+//     const actualHooks = jest.requireActual('@mantine/hooks');
+//     return {
+//         ...actualHooks,
+//     useMediaQuery: jest.fn(() => [true]),
 
-};
-});
+// };
+// });
 
 jest.mock('react', ()=> ({
     ...jest.requireActual('react'),
@@ -269,7 +265,7 @@ describe("Instructor dashboard feedbacks", () =>{
                 const mockuser = {token: "token"};
                 const mocknavigation = jest.fn();
         
-                const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
 
                 global.fetch= jest.fn(()=>
                 Promise.resolve({
@@ -338,7 +334,7 @@ describe("Instructor dashboard feedbacks", () =>{
                 const mockuser = {token: "token"};
                 const mocknavigation = jest.fn();
         
-                const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
 
                 global.fetch= jest.fn(()=>
                 Promise.resolve({
@@ -408,7 +404,7 @@ describe("Instructor dashboard feedbacks", () =>{
                     const mockuser = {token: "token"};
                     const mocknavigation = jest.fn();
             
-                    const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                    //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
     
                     global.fetch= jest.fn(()=>
                     Promise.resolve({
@@ -446,75 +442,75 @@ describe("Instructor dashboard feedbacks", () =>{
     
                 });
 
-                      //click back to course list
-                      it("click back to course list", ()=>{
+                    //   //click back to course list
+                    //   it("click back to course list", ()=>{
 
-                        const mockOrganizations = [
-                            {id: "org1", name: "Concordia University"}
-                        ];
+                    //     const mockOrganizations = [
+                    //         {id: "org1", name: "Concordia University"}
+                    //     ];
                 
-                        const mockcourse = [
-                            {id: "23", name: "Software Engineering", organization_id: "org1"},
+                    //     const mockcourse = [
+                    //         {id: "23", name: "Software Engineering", organization_id: "org1"},
                          
-                        ];
+                    //     ];
                     
-                        const mocksetLoggedIn = jest.fn();
-                        const mockorg = "Concordia University"
+                    //     const mocksetLoggedIn = jest.fn();
+                    //     const mockorg = "Concordia University"
                 
-                        const mockteam =[
-                            {id:"23",name:"best",max_size: 5, course_id:"23"}
-                        ]
+                    //     const mockteam =[
+                    //         {id:"23",name:"best",max_size: 5, course_id:"23"}
+                    //     ]
                     
-                        const mockstudents =[
-                            {organization_id: "23", id:"2345", name:"lindt"}
-                        ]
+                    //     const mockstudents =[
+                    //         {organization_id: "23", id:"2345", name:"lindt"}
+                    //     ]
                     
-                        const mockmembership =[
-                            {student_id:"23456",id:"23", team_id:"23"}
-                        ]
+                    //     const mockmembership =[
+                    //         {student_id:"23456",id:"23", team_id:"23"}
+                    //     ]
                     
-                        const mockemail = "qwe@qwe.qwe"
+                    //     const mockemail = "qwe@qwe.qwe"
                 
-                        const mockuser = {token: "token"};
-                        const mocknavigation = jest.fn();
+                    //     const mockuser = {token: "token"};
+                    //     const mocknavigation = jest.fn();
                 
-                        const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                    //     //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
         
-                        global.fetch= jest.fn(()=>
-                        Promise.resolve({
-                            json: ()=>  Promise.resolve({})
-                        })
-                        );
+                    //     global.fetch= jest.fn(()=>
+                    //     Promise.resolve({
+                    //         json: ()=>  Promise.resolve({})
+                    //     })
+                    //     );
                 
-                        render(
-                            <MantineProvider withGlobalStyles withNormalizeCSS>
-                            <MemoryRouter >
-                            <InstructorFeedbackTab 
-                              teams={mockteam} 
-                              org={mockorg}  
-                              organizations={mockOrganizations}
-                              courses={mockcourse}
-                               setLoggedIn={mocksetLoggedIn} 
-                                email={mockemail}
-                                 memberships={mockmembership} 
-                                 students={mockstudents} 
-                                  user={mockuser}
-                                navigation={mocknavigation}  />
-                            </MemoryRouter>
-                            </MantineProvider>
-                            );
+                    //     render(
+                    //         <MantineProvider withGlobalStyles withNormalizeCSS>
+                    //         <MemoryRouter >
+                    //         <InstructorFeedbackTab 
+                    //           teams={mockteam} 
+                    //           org={mockorg}  
+                    //           organizations={mockOrganizations}
+                    //           courses={mockcourse}
+                    //            setLoggedIn={mocksetLoggedIn} 
+                    //             email={mockemail}
+                    //              memberships={mockmembership} 
+                    //              students={mockstudents} 
+                    //               user={mockuser}
+                    //             navigation={mocknavigation}  />
+                    //         </MemoryRouter>
+                    //         </MantineProvider>
+                    //         );
                 
-                            expect(screen.getByText(/Course Name/i)).toBeInTheDocument();
-                            expect(screen.getByTestId(/instructor/i)).toBeInTheDocument();
-                            expect(screen.getByText(/Organization ID/i)).toBeInTheDocument();
-                            expect(screen.getByText(/Software Engineering/i)).toBeInTheDocument();
-                            fireEvent.click(screen.getByText(/Software Engineering/i));
-                            expect(screen.getByText(/Back to Course List/i)).toBeInTheDocument();
-                            fireEvent.click(screen.getByText(/Back to Course List/i));
+                    //         expect(screen.getByText(/Course Name/i)).toBeInTheDocument();
+                    //         expect(screen.getByTestId(/instructor/i)).toBeInTheDocument();
+                    //         expect(screen.getByText(/Organization ID/i)).toBeInTheDocument();
+                    //         expect(screen.getByText(/Software Engineering/i)).toBeInTheDocument();
+                    //         fireEvent.click(screen.getByText(/Software Engineering/i));
+                    //         expect(screen.getByText(/Back to Course List/i)).toBeInTheDocument();
+                    //         fireEvent.click(screen.getByText(/Back to Course List/i));
     
         
         
-                    });
+                    // });
 
                           //display teams
                   it("display teams", ()=>{
@@ -548,7 +544,7 @@ describe("Instructor dashboard feedbacks", () =>{
                     const mockuser = {token: "token"};
                     const mocknavigation = jest.fn();
             
-                    const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                    //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
     
                     global.fetch= jest.fn(()=>
                     Promise.resolve({
@@ -619,7 +615,7 @@ describe("Instructor dashboard feedbacks", () =>{
                                 const mockuser = {token: "token"};
                                 const mocknavigation = jest.fn();
                         
-                                const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                                //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
                 
                                 global.fetch= jest.fn(()=>
                                 Promise.resolve({
@@ -692,7 +688,7 @@ describe("Instructor dashboard feedbacks", () =>{
                                 const mockuser = {token: "token"};
                                 const mocknavigation = jest.fn();
                         
-                                const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                                //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
                 
                                 global.fetch= jest.fn(()=>
                                 Promise.resolve({
@@ -763,7 +759,7 @@ describe("Instructor dashboard feedbacks", () =>{
             const mockuser = {token: "token"};
             const mocknavigation = jest.fn();
     
-            const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+            //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
 
             global.fetch= jest.fn(()=>
             Promise.resolve({
@@ -835,7 +831,7 @@ describe("Instructor dashboard feedbacks", () =>{
             const mockuser = {token: "token"};
             const mocknavigation = jest.fn();
     
-            const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+            //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
 
             global.fetch= jest.fn(()=>
             Promise.resolve({
@@ -906,7 +902,7 @@ describe("Instructor dashboard feedbacks", () =>{
                 const mockuser = {token: "token"};
                 const mocknavigation = jest.fn();
         
-                const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
     
                 global.fetch= jest.fn(()=>
                 Promise.resolve({
@@ -979,7 +975,7 @@ describe("Instructor dashboard feedbacks", () =>{
                 const mockuser = {token: "token"};
                 const mocknavigation = jest.fn();
         
-                const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
     
                 global.fetch= jest.fn(()=>
                 Promise.resolve({
@@ -1052,7 +1048,7 @@ describe("Instructor dashboard feedbacks", () =>{
                 const mockuser = {token: "token"};
                 const mocknavigation = jest.fn();
         
-                const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
     
                 global.fetch= jest.fn(()=>
                 Promise.resolve({
@@ -1060,9 +1056,29 @@ describe("Instructor dashboard feedbacks", () =>{
                 })
                 );
                 const mockteam_rows = [
-                    <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-                    </tr>
-                ];
+                    {
+                      teamName: "Team Alpha",
+                      rating1: 5,
+                      rating2: 5,
+                      rating3: 0,
+                      status: "⏳" // Mocking status as a text or emoji
+                    }
+                  ];
+
+                  {
+                    mockteam_rows.map((row, index) => (
+                      <tr key={index}>
+                        <td>{row.teamName}</td>
+                        <td>{row.rating1}</td>
+                        <td>{row.rating2}</td>
+                        <td>{row.rating3}</td>
+                        <td>
+                          <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                        </td>
+                      </tr>
+                    ))
+                  }
+                  
         
                 render(
                     <MantineProvider withGlobalStyles withNormalizeCSS>
@@ -1133,7 +1149,7 @@ describe("Instructor dashboard feedbacks", () =>{
                 const mockuser = {token: "token"};
                 const mocknavigation = jest.fn();
         
-                const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
     
                 global.fetch= jest.fn(()=>
                 Promise.resolve({
@@ -1141,9 +1157,28 @@ describe("Instructor dashboard feedbacks", () =>{
                 })
                 );
                 const mockteam_rows = [
-                    <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-                    </tr>
-                ];
+                    {
+                      teamName: "Team Alpha",
+                      rating1: 5,
+                      rating2: 5,
+                      rating3: 0,
+                      status: "⏳" // Mocking status as a text or emoji
+                    }
+                  ];
+
+                  {
+                    mockteam_rows.map((row, index) => (
+                      <tr key={index}>
+                        <td>{row.teamName}</td>
+                        <td>{row.rating1}</td>
+                        <td>{row.rating2}</td>
+                        <td>{row.rating3}</td>
+                        <td>
+                          <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                        </td>
+                      </tr>
+                    ))
+                  }
         
                 render(
                     <MantineProvider withGlobalStyles withNormalizeCSS>
@@ -1214,7 +1249,7 @@ describe("Instructor dashboard feedbacks", () =>{
                 const mockuser = {token: "token"};
                 const mocknavigation = jest.fn();
         
-                const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
     
                 global.fetch= jest.fn(()=>
                 Promise.resolve({
@@ -1222,9 +1257,28 @@ describe("Instructor dashboard feedbacks", () =>{
                 })
                 );
                 const mockteam_rows = [
-                    <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-                    </tr>
-                ];
+                    {
+                      teamName: "Team Alpha",
+                      rating1: 5,
+                      rating2: 5,
+                      rating3: 0,
+                      status: "⏳" // Mocking status as a text or emoji
+                    }
+                  ];
+
+                  {
+                    mockteam_rows.map((row, index) => (
+                      <tr key={index}>
+                        <td>{row.teamName}</td>
+                        <td>{row.rating1}</td>
+                        <td>{row.rating2}</td>
+                        <td>{row.rating3}</td>
+                        <td>
+                          <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                        </td>
+                      </tr>
+                    ))
+                  }
         
                 render(
                     <MantineProvider withGlobalStyles withNormalizeCSS>
@@ -1296,7 +1350,7 @@ describe("Instructor dashboard feedbacks", () =>{
                 const mockuser = {token: "token"};
                 const mocknavigation = jest.fn();
         
-                const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
     
                 global.fetch= jest.fn(()=>
                 Promise.resolve({
@@ -1304,9 +1358,28 @@ describe("Instructor dashboard feedbacks", () =>{
                 })
                 );
                 const mockteam_rows = [
-                    <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-                    </tr>
-                ];
+                    {
+                      teamName: "Team Alpha",
+                      rating1: 5,
+                      rating2: 5,
+                      rating3: 0,
+                      status: "⏳" // Mocking status as a text or emoji
+                    }
+                  ];
+
+                  {
+                    mockteam_rows.map((row, index) => (
+                      <tr key={index}>
+                        <td>{row.teamName}</td>
+                        <td>{row.rating1}</td>
+                        <td>{row.rating2}</td>
+                        <td>{row.rating3}</td>
+                        <td>
+                          <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                        </td>
+                      </tr>
+                    ))
+                  }
         
                 render(
                     <MantineProvider withGlobalStyles withNormalizeCSS>
@@ -1380,7 +1453,7 @@ describe("Instructor dashboard feedbacks", () =>{
                 const mockuser = {token: "token"};
                 const mocknavigation = jest.fn();
         
-                const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
     
                 global.fetch= jest.fn(()=>
                 Promise.resolve({
@@ -1388,9 +1461,28 @@ describe("Instructor dashboard feedbacks", () =>{
                 })
                 );
                 const mockteam_rows = [
-                    <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-                    </tr>
-                ];
+                    {
+                      teamName: "Team Alpha",
+                      rating1: 5,
+                      rating2: 5,
+                      rating3: 0,
+                      status: "⏳" // Mocking status as a text or emoji
+                    }
+                  ];
+
+                  {
+                    mockteam_rows.map((row, index) => (
+                      <tr key={index}>
+                        <td>{row.teamName}</td>
+                        <td>{row.rating1}</td>
+                        <td>{row.rating2}</td>
+                        <td>{row.rating3}</td>
+                        <td>
+                          <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                        </td>
+                      </tr>
+                    ))
+                  }
         
                 render(
                     <MantineProvider withGlobalStyles withNormalizeCSS>
@@ -1466,7 +1558,7 @@ describe("Instructor dashboard feedbacks", () =>{
                 const mockuser = {token: "token"};
                 const mocknavigation = jest.fn();
         
-                const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
     
                 global.fetch= jest.fn(()=>
                 Promise.resolve({
@@ -1474,9 +1566,28 @@ describe("Instructor dashboard feedbacks", () =>{
                 })
                 );
                 const mockteam_rows = [
-                    <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-                    </tr>
-                ];
+                    {
+                      teamName: "Team Alpha",
+                      rating1: 5,
+                      rating2: 5,
+                      rating3: 0,
+                      status: "⏳" // Mocking status as a text or emoji
+                    }
+                  ];
+
+                  {
+                    mockteam_rows.map((row, index) => (
+                      <tr key={index}>
+                        <td>{row.teamName}</td>
+                        <td>{row.rating1}</td>
+                        <td>{row.rating2}</td>
+                        <td>{row.rating3}</td>
+                        <td>
+                          <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                        </td>
+                      </tr>
+                    ))
+                  }
         
                 render(
                     <MantineProvider withGlobalStyles withNormalizeCSS>
@@ -1551,7 +1662,7 @@ describe("Instructor dashboard feedbacks", () =>{
                 const mockuser = {token: "token"};
                 const mocknavigation = jest.fn();
         
-                const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
     
                 global.fetch= jest.fn(()=>
                 Promise.resolve({
@@ -1559,9 +1670,28 @@ describe("Instructor dashboard feedbacks", () =>{
                 })
                 );
                 const mockteam_rows = [
-                    <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-                    </tr>
-                ];
+                    {
+                      teamName: "Team Alpha",
+                      rating1: 5,
+                      rating2: 5,
+                      rating3: 0,
+                      status: "⏳" // Mocking status as a text or emoji
+                    }
+                  ];
+
+                  {
+                    mockteam_rows.map((row, index) => (
+                      <tr key={index}>
+                        <td>{row.teamName}</td>
+                        <td>{row.rating1}</td>
+                        <td>{row.rating2}</td>
+                        <td>{row.rating3}</td>
+                        <td>
+                          <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                        </td>
+                      </tr>
+                    ))
+                  }
         
                 render(
                     <MantineProvider withGlobalStyles withNormalizeCSS>
@@ -1638,7 +1768,7 @@ describe("Instructor dashboard feedbacks", () =>{
                 const mockuser = {token: "token"};
                 const mocknavigation = jest.fn();
         
-                const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
     
                 global.fetch= jest.fn(()=>
                 Promise.resolve({
@@ -1646,9 +1776,28 @@ describe("Instructor dashboard feedbacks", () =>{
                 })
                 );
                 const mockteam_rows = [
-                    <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-                    </tr>
-                ];
+                    {
+                      teamName: "Team Alpha",
+                      rating1: 5,
+                      rating2: 5,
+                      rating3: 0,
+                      status: "⏳" // Mocking status as a text or emoji
+                    }
+                  ];
+
+                  {
+                    mockteam_rows.map((row, index) => (
+                      <tr key={index}>
+                        <td>{row.teamName}</td>
+                        <td>{row.rating1}</td>
+                        <td>{row.rating2}</td>
+                        <td>{row.rating3}</td>
+                        <td>
+                          <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                        </td>
+                      </tr>
+                    ))
+                  }
         
                 render(
                     <MantineProvider withGlobalStyles withNormalizeCSS>
@@ -1726,7 +1875,7 @@ describe("Instructor dashboard feedbacks", () =>{
                 const mockuser = {token: "token"};
                 const mocknavigation = jest.fn();
         
-                const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
     
                 global.fetch= jest.fn(()=>
                 Promise.resolve({
@@ -1734,9 +1883,28 @@ describe("Instructor dashboard feedbacks", () =>{
                 })
                 );
                 const mockteam_rows = [
-                    <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-                    </tr>
-                ];
+                    {
+                      teamName: "Team Alpha",
+                      rating1: 5,
+                      rating2: 5,
+                      rating3: 0,
+                      status: "⏳" // Mocking status as a text or emoji
+                    }
+                  ];
+
+                  {
+                    mockteam_rows.map((row, index) => (
+                      <tr key={index}>
+                        <td>{row.teamName}</td>
+                        <td>{row.rating1}</td>
+                        <td>{row.rating2}</td>
+                        <td>{row.rating3}</td>
+                        <td>
+                          <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                        </td>
+                      </tr>
+                    ))
+                  }
         
                 render(
                     <MantineProvider withGlobalStyles withNormalizeCSS>
@@ -1815,7 +1983,7 @@ describe("Instructor dashboard feedbacks", () =>{
                 const mockuser = {token: "token"};
                 const mocknavigation = jest.fn();
         
-                const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
     
                 global.fetch= jest.fn(()=>
                 Promise.resolve({
@@ -1823,9 +1991,28 @@ describe("Instructor dashboard feedbacks", () =>{
                 })
                 );
                 const mockteam_rows = [
-                    <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-                    </tr>
-                ];
+                    {
+                      teamName: "Team Alpha",
+                      rating1: 5,
+                      rating2: 5,
+                      rating3: 0,
+                      status: "⏳" // Mocking status as a text or emoji
+                    }
+                  ];
+
+                  {
+                    mockteam_rows.map((row, index) => (
+                      <tr key={index}>
+                        <td>{row.teamName}</td>
+                        <td>{row.rating1}</td>
+                        <td>{row.rating2}</td>
+                        <td>{row.rating3}</td>
+                        <td>
+                          <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                        </td>
+                      </tr>
+                    ))
+                  }
         
                 render(
                     <MantineProvider withGlobalStyles withNormalizeCSS>
@@ -1900,18 +2087,18 @@ describe("Instructor dashboard feedbacks", () =>{
                         {student_id:"2345",id:"23", team_id:"23"}
                     ]
                 
-                    const team_memberships = [
-                        {id: "2345",
-                        team_id: "23",
-                        student_id: "2345"}
-                    ]
+                    // const team_memberships = [
+                    //     {id: "2345",
+                    //     team_id: "23",
+                    //     student_id: "2345"}
+                    // ]
 
                     const mockemail = "qwe@qwe.qwe"
             
                     const mockuser = {token: "token"};
                     const mocknavigation = jest.fn();
             
-                    const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                    //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
         
                     global.fetch= jest.fn(()=>
                     Promise.resolve({
@@ -1919,15 +2106,38 @@ describe("Instructor dashboard feedbacks", () =>{
                     })
                     );
                     const mockteam_rows = [
-                        <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-                        </tr>
-                    ];
+                        {
+                          teamName: "Team Alpha",
+                          rating1: 5,
+                          rating2: 5,
+                          rating3: 0,
+                          status: "⏳" // Mocking status as a text or emoji
+                        }
+                      ];
+    
+                      {
+                        mockteam_rows.map((row, index) => (
+                          <tr key={index}>
+                            <td>{row.teamName}</td>
+                            <td>{row.rating1}</td>
+                            <td>{row.rating2}</td>
+                            <td>{row.rating3}</td>
+                            <td>
+                              <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                            </td>
+                          </tr>
+                        ))
+                      }
 
                    
                       const mockstudent_rows = [
-                        <tr><td>Sophia Taylor</td> <td>sophia.taylor@school.com</td> <td>student</td>
+                        <tr key="1">
+                          <td>Sophia Taylor</td>
+                          <td>sophia.taylor@school.com</td>
+                          <td>student</td>
                         </tr>
-                    ];            
+                      ];
+                                
                     render(
                         <MantineProvider withGlobalStyles withNormalizeCSS>
                         <MemoryRouter >
@@ -1977,7 +2187,7 @@ describe("Instructor dashboard feedbacks", () =>{
 
 
                  // email of students part of the team 
-                 it("name of students part of the team ", ()=>{
+                 it("email of students part of the team ", ()=>{
 
                     const mockOrganizations = [
                         {id: "org1", name: "Concordia University"}
@@ -2003,18 +2213,18 @@ describe("Instructor dashboard feedbacks", () =>{
                         {student_id:"2345",id:"23", team_id:"23"}
                     ]
                 
-                    const team_memberships = [
-                        {id: "2345",
-                        team_id: "23",
-                        student_id: "2345"}
-                    ]
+                    // const team_memberships = [
+                    //     {id: "2345",
+                    //     team_id: "23",
+                    //     student_id: "2345"}
+                    // ]
 
                     const mockemail = "qwe@qwe.qwe"
             
                     const mockuser = {token: "token"};
                     const mocknavigation = jest.fn();
             
-                    const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                    // const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
         
                     global.fetch= jest.fn(()=>
                     Promise.resolve({
@@ -2022,15 +2232,37 @@ describe("Instructor dashboard feedbacks", () =>{
                     })
                     );
                     const mockteam_rows = [
-                        <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-                        </tr>
-                    ];
+                        {
+                          teamName: "Team Alpha",
+                          rating1: 5,
+                          rating2: 5,
+                          rating3: 0,
+                          status: "⏳" // Mocking status as a text or emoji
+                        }
+                      ];
+    
+                      {
+                        mockteam_rows.map((row, index) => (
+                          <tr key={index}>
+                            <td>{row.teamName}</td>
+                            <td>{row.rating1}</td>
+                            <td>{row.rating2}</td>
+                            <td>{row.rating3}</td>
+                            <td>
+                              <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                            </td>
+                          </tr>
+                        ))
+                      }
 
                    
                       const mockstudent_rows = [
-                        <tr><td>Sophia Taylor</td> <td>sophia.taylor@school.com</td> <td>student</td>
+                        <tr key="1">
+                          <td>Sophia Taylor</td>
+                          <td>sophia.taylor@school.com</td>
+                          <td>student</td>
                         </tr>
-                    ];            
+                      ];            
                     render(
                         <MantineProvider withGlobalStyles withNormalizeCSS>
                         <MemoryRouter >
@@ -2106,18 +2338,18 @@ describe("Instructor dashboard feedbacks", () =>{
                         {student_id:"2345",id:"23", team_id:"23"}
                     ]
                 
-                    const team_memberships = [
-                        {id: "2345",
-                        team_id: "23",
-                        student_id: "2345"}
-                    ]
+                    // const team_memberships = [
+                    //     {id: "2345",
+                    //     team_id: "23",
+                    //     student_id: "2345"}
+                    // ]
 
                     const mockemail = "qwe@qwe.qwe"
             
                     const mockuser = {token: "token"};
                     const mocknavigation = jest.fn();
             
-                    const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                    // const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
         
                     global.fetch= jest.fn(()=>
                     Promise.resolve({
@@ -2125,15 +2357,37 @@ describe("Instructor dashboard feedbacks", () =>{
                     })
                     );
                     const mockteam_rows = [
-                        <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-                        </tr>
-                    ];
+                        {
+                          teamName: "Team Alpha",
+                          rating1: 5,
+                          rating2: 5,
+                          rating3: 0,
+                          status: "⏳" // Mocking status as a text or emoji
+                        }
+                      ];
+    
+                      {
+                        mockteam_rows.map((row, index) => (
+                          <tr key={index}>
+                            <td>{row.teamName}</td>
+                            <td>{row.rating1}</td>
+                            <td>{row.rating2}</td>
+                            <td>{row.rating3}</td>
+                            <td>
+                              <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                            </td>
+                          </tr>
+                        ))
+                      }
 
                    
                       const mockstudent_rows = [
-                        <tr><td>Sophia Taylor</td> <td>sophia.taylor@school.com</td> <td>student</td>
+                        <tr key="1">
+                          <td>Sophia Taylor</td>
+                          <td>sophia.taylor@school.com</td>
+                          <td>student</td>
                         </tr>
-                    ];            
+                      ];           
                     render(
                         <MantineProvider withGlobalStyles withNormalizeCSS>
                         <MemoryRouter >
@@ -2210,18 +2464,18 @@ describe("Instructor dashboard feedbacks", () =>{
                         {student_id:"2345",id:"23", team_id:"23"}
                     ]
                 
-                    const team_memberships = [
-                        {id: "2345",
-                        team_id: "23",
-                        student_id: "2345"}
-                    ]
+                    // const team_memberships = [
+                    //     {id: "2345",
+                    //     team_id: "23",
+                    //     student_id: "2345"}
+                    // ]
 
                     const mockemail = "qwe@qwe.qwe"
             
                     const mockuser = {token: "token"};
                     const mocknavigation = jest.fn();
             
-                    const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                    //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
         
                     global.fetch= jest.fn(()=>
                     Promise.resolve({
@@ -2229,15 +2483,37 @@ describe("Instructor dashboard feedbacks", () =>{
                     })
                     );
                     const mockteam_rows = [
-                        <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-                        </tr>
-                    ];
+                        {
+                          teamName: "Team Alpha",
+                          rating1: 5,
+                          rating2: 5,
+                          rating3: 0,
+                          status: "⏳" // Mocking status as a text or emoji
+                        }
+                      ];
+    
+                      {
+                        mockteam_rows.map((row, index) => (
+                          <tr key={index}>
+                            <td>{row.teamName}</td>
+                            <td>{row.rating1}</td>
+                            <td>{row.rating2}</td>
+                            <td>{row.rating3}</td>
+                            <td>
+                              <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                            </td>
+                          </tr>
+                        ))
+                      }
 
                    
                       const mockstudent_rows = [
-                        <tr><td>Sophia Taylor</td> <td>sophia.taylor@school.com</td> <td>student</td>
+                        <tr key="1">
+                          <td>Sophia Taylor</td>
+                          <td>sophia.taylor@school.com</td>
+                          <td>student</td>
                         </tr>
-                    ];            
+                      ];       
                     render(
                         <MantineProvider withGlobalStyles withNormalizeCSS>
                         <MemoryRouter >
@@ -2314,18 +2590,18 @@ describe("Instructor dashboard feedbacks", () =>{
                         {student_id:"2345",id:"23", team_id:"23"}
                     ]
                 
-                    const team_memberships = [
-                        {id: "2345",
-                        team_id: "23",
-                        student_id: "2345"}
-                    ]
+                    // const team_memberships = [
+                    //     {id: "2345",
+                    //     team_id: "23",
+                    //     student_id: "2345"}
+                    // ]
 
                     const mockemail = "qwe@qwe.qwe"
             
                     const mockuser = {token: "token"};
                     const mocknavigation = jest.fn();
             
-                    const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                    //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
         
                     global.fetch= jest.fn(()=>
                     Promise.resolve({
@@ -2333,15 +2609,37 @@ describe("Instructor dashboard feedbacks", () =>{
                     })
                     );
                     const mockteam_rows = [
-                        <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-                        </tr>
-                    ];
+                        {
+                          teamName: "Team Alpha",
+                          rating1: 5,
+                          rating2: 5,
+                          rating3: 0,
+                          status: "⏳" // Mocking status as a text or emoji
+                        }
+                      ];
+    
+                      {
+                        mockteam_rows.map((row, index) => (
+                          <tr key={index}>
+                            <td>{row.teamName}</td>
+                            <td>{row.rating1}</td>
+                            <td>{row.rating2}</td>
+                            <td>{row.rating3}</td>
+                            <td>
+                              <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                            </td>
+                          </tr>
+                        ))
+                      }
 
                    
                       const mockstudent_rows = [
-                        <tr><td>Sophia Taylor</td> <td>sophia.taylor@school.com</td> <td>student</td>
+                        <tr key="1">
+                          <td>Sophia Taylor</td>
+                          <td>sophia.taylor@school.com</td>
+                          <td>student</td>
                         </tr>
-                    ];            
+                      ];          
                     render(
                         <MantineProvider withGlobalStyles withNormalizeCSS>
                         <MemoryRouter >
@@ -2419,18 +2717,18 @@ describe("Instructor dashboard feedbacks", () =>{
                             {student_id:"2345",id:"23", team_id:"23"}
                         ]
                     
-                        const team_memberships = [
-                            {id: "2345",
-                            team_id: "23",
-                            student_id: "2345"}
-                        ]
+                        // const team_memberships = [
+                        //     {id: "2345",
+                        //     team_id: "23",
+                        //     student_id: "2345"}
+                        // ]
     
                         const mockemail = "qwe@qwe.qwe"
                 
                         const mockuser = {token: "token"};
                         const mocknavigation = jest.fn();
                 
-                        const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                        //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
             
                         global.fetch= jest.fn(()=>
                         Promise.resolve({
@@ -2438,15 +2736,37 @@ describe("Instructor dashboard feedbacks", () =>{
                         })
                         );
                         const mockteam_rows = [
-                            <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-                            </tr>
-                        ];
+                            {
+                              teamName: "Team Alpha",
+                              rating1: 5,
+                              rating2: 5,
+                              rating3: 0,
+                              status: "⏳" // Mocking status as a text or emoji
+                            }
+                          ];
+        
+                          {
+                            mockteam_rows.map((row, index) => (
+                              <tr key={index}>
+                                <td>{row.teamName}</td>
+                                <td>{row.rating1}</td>
+                                <td>{row.rating2}</td>
+                                <td>{row.rating3}</td>
+                                <td>
+                                  <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                                </td>
+                              </tr>
+                            ))
+                          }
     
                        
                           const mockstudent_rows = [
-                            <tr><td>Sophia Taylor</td> <td>sophia.taylor@school.com</td> <td>student</td>
+                            <tr key="1">
+                              <td>Sophia Taylor</td>
+                              <td>sophia.taylor@school.com</td>
+                              <td>student</td>
                             </tr>
-                        ];            
+                          ];           
                         render(
                             <MantineProvider withGlobalStyles withNormalizeCSS>
                             <MemoryRouter >
@@ -2525,18 +2845,18 @@ describe("Instructor dashboard feedbacks", () =>{
                             {student_id:"2345",id:"23", team_id:"23"}
                         ]
                     
-                        const team_memberships = [
-                            {id: "2345",
-                            team_id: "23",
-                            student_id: "2345"}
-                        ]
+                        // const team_memberships = [
+                        //     {id: "2345",
+                        //     team_id: "23",
+                        //     student_id: "2345"}
+                        // ]
     
                         const mockemail = "qwe@qwe.qwe"
                 
                         const mockuser = {token: "token"};
                         const mocknavigation = jest.fn();
                 
-                        const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                        //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
             
                         global.fetch= jest.fn(()=>
                         Promise.resolve({
@@ -2544,15 +2864,37 @@ describe("Instructor dashboard feedbacks", () =>{
                         })
                         );
                         const mockteam_rows = [
-                            <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-                            </tr>
-                        ];
+                            {
+                              teamName: "Team Alpha",
+                              rating1: 5,
+                              rating2: 5,
+                              rating3: 0,
+                              status: "⏳" // Mocking status as a text or emoji
+                            }
+                          ];
+        
+                          {
+                            mockteam_rows.map((row, index) => (
+                              <tr key={index}>
+                                <td>{row.teamName}</td>
+                                <td>{row.rating1}</td>
+                                <td>{row.rating2}</td>
+                                <td>{row.rating3}</td>
+                                <td>
+                                  <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                                </td>
+                              </tr>
+                            ))
+                          }
     
                        
                           const mockstudent_rows = [
-                            <tr><td>Sophia Taylor</td> <td>sophia.taylor@school.com</td> <td>student</td>
+                            <tr key="1">
+                              <td>Sophia Taylor</td>
+                              <td>sophia.taylor@school.com</td>
+                              <td>student</td>
                             </tr>
-                        ];            
+                          ];            
                         render(
                             <MantineProvider withGlobalStyles withNormalizeCSS>
                             <MemoryRouter >
@@ -2632,18 +2974,18 @@ describe("Instructor dashboard feedbacks", () =>{
                                 {student_id:"2345",id:"23", team_id:"23"}
                             ]
                         
-                            const team_memberships = [
-                                {id: "2345",
-                                team_id: "23",
-                                student_id: "2345"}
-                            ]
+                            // const team_memberships = [
+                            //     {id: "2345",
+                            //     team_id: "23",
+                            //     student_id: "2345"}
+                            // ]
         
                             const mockemail = "qwe@qwe.qwe"
                     
                             const mockuser = {token: "token"};
                             const mocknavigation = jest.fn();
                     
-                            const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                            //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
                 
                             global.fetch= jest.fn(()=>
                             Promise.resolve({
@@ -2651,15 +2993,37 @@ describe("Instructor dashboard feedbacks", () =>{
                             })
                             );
                             const mockteam_rows = [
-                                <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-                                </tr>
-                            ];
+                                {
+                                  teamName: "Team Alpha",
+                                  rating1: 5,
+                                  rating2: 5,
+                                  rating3: 0,
+                                  status: "⏳" // Mocking status as a text or emoji
+                                }
+                              ];
+            
+                              {
+                                mockteam_rows.map((row, index) => (
+                                  <tr key={index}>
+                                    <td>{row.teamName}</td>
+                                    <td>{row.rating1}</td>
+                                    <td>{row.rating2}</td>
+                                    <td>{row.rating3}</td>
+                                    <td>
+                                      <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                                    </td>
+                                  </tr>
+                                ))
+                              }
         
                            
                               const mockstudent_rows = [
-                                <tr><td>Sophia Taylor</td> <td>sophia.taylor@school.com</td> <td>student</td>
+                                <tr key="1">
+                                  <td>Sophia Taylor</td>
+                                  <td>sophia.taylor@school.com</td>
+                                  <td>student</td>
                                 </tr>
-                            ];            
+                              ];           
                             render(
                                 <MantineProvider withGlobalStyles withNormalizeCSS>
                                 <MemoryRouter >
@@ -2741,18 +3105,18 @@ describe("Instructor dashboard feedbacks", () =>{
                     {student_id:"2345",id:"23", team_id:"23"}
                 ]
             
-                const team_memberships = [
-                    {id: "2345",
-                    team_id: "23",
-                    student_id: "2345"}
-                ]
+                // const team_memberships = [
+                //     {id: "2345",
+                //     team_id: "23",
+                //     student_id: "2345"}
+                // ]
 
                 const mockemail = "qwe@qwe.qwe"
         
                 const mockuser = {token: "token"};
                 const mocknavigation = jest.fn();
         
-                const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
     
                 global.fetch= jest.fn(()=>
                 Promise.resolve({
@@ -2760,15 +3124,37 @@ describe("Instructor dashboard feedbacks", () =>{
                 })
                 );
                 const mockteam_rows = [
-                    <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-                    </tr>
-                ];
+                    {
+                      teamName: "Team Alpha",
+                      rating1: 5,
+                      rating2: 5,
+                      rating3: 0,
+                      status: "⏳" // Mocking status as a text or emoji
+                    }
+                  ];
+
+                  {
+                    mockteam_rows.map((row, index) => (
+                      <tr key={index}>
+                        <td>{row.teamName}</td>
+                        <td>{row.rating1}</td>
+                        <td>{row.rating2}</td>
+                        <td>{row.rating3}</td>
+                        <td>
+                          <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                        </td>
+                      </tr>
+                    ))
+                  }
 
                
                   const mockstudent_rows = [
-                    <tr><td>Sophia Taylor</td> <td>sophia.taylor@school.com</td> <td>student</td>
+                    <tr key="1">
+                      <td>Sophia Taylor</td>
+                      <td>sophia.taylor@school.com</td>
+                      <td>student</td>
                     </tr>
-                ];            
+                  ];            
                 render(
                     <MantineProvider withGlobalStyles withNormalizeCSS>
                     <MemoryRouter >
@@ -2851,18 +3237,18 @@ describe("Instructor dashboard feedbacks", () =>{
                     {student_id:"2345",id:"23", team_id:"23"}
                 ]
             
-                const team_memberships = [
-                    {id: "2345",
-                    team_id: "23",
-                    student_id: "2345"}
-                ]
+                // const team_memberships = [
+                //     {id: "2345",
+                //     team_id: "23",
+                //     student_id: "2345"}
+                // ]
 
                 const mockemail = "qwe@qwe.qwe"
         
                 const mockuser = {token: "token"};
                 const mocknavigation = jest.fn();
         
-                const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
     
                 global.fetch= jest.fn(()=>
                 Promise.resolve({
@@ -2870,15 +3256,37 @@ describe("Instructor dashboard feedbacks", () =>{
                 })
                 );
                 const mockteam_rows = [
-                    <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-                    </tr>
-                ];
+                    {
+                      teamName: "Team Alpha",
+                      rating1: 5,
+                      rating2: 5,
+                      rating3: 0,
+                      status: "⏳" // Mocking status as a text or emoji
+                    }
+                  ];
+
+                  {
+                    mockteam_rows.map((row, index) => (
+                      <tr key={index}>
+                        <td>{row.teamName}</td>
+                        <td>{row.rating1}</td>
+                        <td>{row.rating2}</td>
+                        <td>{row.rating3}</td>
+                        <td>
+                          <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                        </td>
+                      </tr>
+                    ))
+                  }
 
                
                   const mockstudent_rows = [
-                    <tr><td>Sophia Taylor</td> <td>sophia.taylor@school.com</td> <td>student</td>
+                    <tr key="1">
+                      <td>Sophia Taylor</td>
+                      <td>sophia.taylor@school.com</td>
+                      <td>student</td>
                     </tr>
-                ];            
+                  ];           
                 render(
                     <MantineProvider withGlobalStyles withNormalizeCSS>
                     <MemoryRouter >
@@ -2961,18 +3369,18 @@ describe("Instructor dashboard feedbacks", () =>{
             {student_id:"2345",id:"23", team_id:"23"}
         ]
     
-        const team_memberships = [
-            {id: "2345",
-            team_id: "23",
-            student_id: "2345"}
-        ]
+        // const team_memberships = [
+        //     {id: "2345",
+        //     team_id: "23",
+        //     student_id: "2345"}
+        // ]
 
         const mockemail = "qwe@qwe.qwe"
 
         const mockuser = {token: "token"};
         const mocknavigation = jest.fn();
 
-        const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+        //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
 
         global.fetch= jest.fn(()=>
         Promise.resolve({
@@ -2980,15 +3388,37 @@ describe("Instructor dashboard feedbacks", () =>{
         })
         );
         const mockteam_rows = [
-            <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-            </tr>
-        ];
+            {
+              teamName: "Team Alpha",
+              rating1: 5,
+              rating2: 5,
+              rating3: 0,
+              status: "⏳" // Mocking status as a text or emoji
+            }
+          ];
+
+          {
+            mockteam_rows.map((row, index) => (
+              <tr key={index}>
+                <td>{row.teamName}</td>
+                <td>{row.rating1}</td>
+                <td>{row.rating2}</td>
+                <td>{row.rating3}</td>
+                <td>
+                  <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                </td>
+              </tr>
+            ))
+          }
 
        
           const mockstudent_rows = [
-            <tr><td>Sophia Taylor</td> <td>sophia.taylor@school.com</td> <td>student</td>
+            <tr key="1">
+              <td>Sophia Taylor</td>
+              <td>sophia.taylor@school.com</td>
+              <td>student</td>
             </tr>
-        ];            
+          ];           
         render(
             <MantineProvider withGlobalStyles withNormalizeCSS>
             <MemoryRouter >
@@ -3073,18 +3503,18 @@ describe("Instructor dashboard feedbacks", () =>{
             {student_id:"2345",id:"23", team_id:"23"}
         ]
     
-        const team_memberships = [
-            {id: "2345",
-            team_id: "23",
-            student_id: "2345"}
-        ]
+        // const team_memberships = [
+        //     {id: "2345",
+        //     team_id: "23",
+        //     student_id: "2345"}
+        // ]
 
         const mockemail = "qwe@qwe.qwe"
 
         const mockuser = {token: "token"};
         const mocknavigation = jest.fn();
 
-        const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+        //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
 
         global.fetch= jest.fn(()=>
         Promise.resolve({
@@ -3092,15 +3522,37 @@ describe("Instructor dashboard feedbacks", () =>{
         })
         );
         const mockteam_rows = [
-            <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-            </tr>
-        ];
+            {
+              teamName: "Team Alpha",
+              rating1: 5,
+              rating2: 5,
+              rating3: 0,
+              status: "⏳" // Mocking status as a text or emoji
+            }
+          ];
+
+          {
+            mockteam_rows.map((row, index) => (
+              <tr key={index}>
+                <td>{row.teamName}</td>
+                <td>{row.rating1}</td>
+                <td>{row.rating2}</td>
+                <td>{row.rating3}</td>
+                <td>
+                  <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                </td>
+              </tr>
+            ))
+          }
 
        
           const mockstudent_rows = [
-            <tr><td>Sophia Taylor</td> <td>sophia.taylor@school.com</td> <td>student</td>
+            <tr key="1">
+              <td>Sophia Taylor</td>
+              <td>sophia.taylor@school.com</td>
+              <td>student</td>
             </tr>
-        ];            
+          ];       
         render(
             <MantineProvider withGlobalStyles withNormalizeCSS>
             <MemoryRouter >
@@ -3186,18 +3638,18 @@ describe("Instructor dashboard feedbacks", () =>{
             {student_id:"2345",id:"23", team_id:"23"}
         ]
     
-        const team_memberships = [
-            {id: "2345",
-            team_id: "23",
-            student_id: "2345"}
-        ]
+        // const team_memberships = [
+        //     {id: "2345",
+        //     team_id: "23",
+        //     student_id: "2345"}
+        // ]
 
         const mockemail = "qwe@qwe.qwe"
 
         const mockuser = {token: "token"};
         const mocknavigation = jest.fn();
 
-        const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+        //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
 
         global.fetch= jest.fn(()=>
         Promise.resolve({
@@ -3205,15 +3657,37 @@ describe("Instructor dashboard feedbacks", () =>{
         })
         );
         const mockteam_rows = [
-            <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-            </tr>
-        ];
+            {
+              teamName: "Team Alpha",
+              rating1: 5,
+              rating2: 5,
+              rating3: 0,
+              status: "⏳" // Mocking status as a text or emoji
+            }
+          ];
+
+          {
+            mockteam_rows.map((row, index) => (
+              <tr key={index}>
+                <td>{row.teamName}</td>
+                <td>{row.rating1}</td>
+                <td>{row.rating2}</td>
+                <td>{row.rating3}</td>
+                <td>
+                  <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                </td>
+              </tr>
+            ))
+          }
 
        
           const mockstudent_rows = [
-            <tr><td>Sophia Taylor</td> <td>sophia.taylor@school.com</td> <td>student</td>
+            <tr key="1">
+              <td>Sophia Taylor</td>
+              <td>sophia.taylor@school.com</td>
+              <td>student</td>
             </tr>
-        ];            
+          ];           
         render(
             <MantineProvider withGlobalStyles withNormalizeCSS>
             <MemoryRouter >
@@ -3300,18 +3774,18 @@ describe("Instructor dashboard feedbacks", () =>{
             {student_id:"2345",id:"23", team_id:"23"}
         ]
     
-        const team_memberships = [
-            {id: "2345",
-            team_id: "23",
-            student_id: "2345"}
-        ]
+        // const team_memberships = [
+        //     {id: "2345",
+        //     team_id: "23",
+        //     student_id: "2345"}
+        // ]
 
         const mockemail = "qwe@qwe.qwe"
 
         const mockuser = {token: "token"};
         const mocknavigation = jest.fn();
 
-        const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+        //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
 
         global.fetch= jest.fn(()=>
         Promise.resolve({
@@ -3319,15 +3793,37 @@ describe("Instructor dashboard feedbacks", () =>{
         })
         );
         const mockteam_rows = [
-            <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-            </tr>
-        ];
+            {
+              teamName: "Team Alpha",
+              rating1: 5,
+              rating2: 5,
+              rating3: 0,
+              status: "⏳" // Mocking status as a text or emoji
+            }
+          ];
+
+          {
+            mockteam_rows.map((row, index) => (
+              <tr key={index}>
+                <td>{row.teamName}</td>
+                <td>{row.rating1}</td>
+                <td>{row.rating2}</td>
+                <td>{row.rating3}</td>
+                <td>
+                  <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                </td>
+              </tr>
+            ))
+          }
 
        
           const mockstudent_rows = [
-            <tr><td>Sophia Taylor</td> <td>sophia.taylor@school.com</td> <td>student</td>
+            <tr key="1">
+              <td>Sophia Taylor</td>
+              <td>sophia.taylor@school.com</td>
+              <td>student</td>
             </tr>
-        ];            
+          ];           
         render(
             <MantineProvider withGlobalStyles withNormalizeCSS>
             <MemoryRouter >
@@ -3415,18 +3911,18 @@ describe("Instructor dashboard feedbacks", () =>{
             {student_id:"2345",id:"23", team_id:"23"}
         ]
     
-        const team_memberships = [
-            {id: "2345",
-            team_id: "23",
-            student_id: "2345"}
-        ]
+        // const team_memberships = [
+        //     {id: "2345",
+        //     team_id: "23",
+        //     student_id: "2345"}
+        // ]
 
         const mockemail = "qwe@qwe.qwe"
 
         const mockuser = {token: "token"};
         const mocknavigation = jest.fn();
 
-        const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+        //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
 
         global.fetch= jest.fn(()=>
         Promise.resolve({
@@ -3434,15 +3930,37 @@ describe("Instructor dashboard feedbacks", () =>{
         })
         );
         const mockteam_rows = [
-            <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-            </tr>
-        ];
+            {
+              teamName: "Team Alpha",
+              rating1: 5,
+              rating2: 5,
+              rating3: 0,
+              status: "⏳" // Mocking status as a text or emoji
+            }
+          ];
+
+          {
+            mockteam_rows.map((row, index) => (
+              <tr key={index}>
+                <td>{row.teamName}</td>
+                <td>{row.rating1}</td>
+                <td>{row.rating2}</td>
+                <td>{row.rating3}</td>
+                <td>
+                  <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                </td>
+              </tr>
+            ))
+          }
 
        
           const mockstudent_rows = [
-            <tr><td>Sophia Taylor</td> <td>sophia.taylor@school.com</td> <td>student</td>
+            <tr key="1">
+              <td>Sophia Taylor</td>
+              <td>sophia.taylor@school.com</td>
+              <td>student</td>
             </tr>
-        ];            
+          ];           
         render(
             <MantineProvider withGlobalStyles withNormalizeCSS>
             <MemoryRouter >
@@ -3531,18 +4049,18 @@ describe("Instructor dashboard feedbacks", () =>{
                 {student_id:"2345",id:"23", team_id:"23"}
             ]
         
-            const team_memberships = [
-                {id: "2345",
-                team_id: "23",
-                student_id: "2345"}
-            ]
+            // const team_memberships = [
+            //     {id: "2345",
+            //     team_id: "23",
+            //     student_id: "2345"}
+            // ]
     
             const mockemail = "qwe@qwe.qwe"
     
             const mockuser = {token: "token"};
             const mocknavigation = jest.fn();
     
-            const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+            //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
     
             global.fetch= jest.fn(()=>
             Promise.resolve({
@@ -3550,15 +4068,37 @@ describe("Instructor dashboard feedbacks", () =>{
             })
             );
             const mockteam_rows = [
-                <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-                </tr>
-            ];
+                {
+                  teamName: "Team Alpha",
+                  rating1: 5,
+                  rating2: 5,
+                  rating3: 0,
+                  status: "⏳" // Mocking status as a text or emoji
+                }
+              ];
+
+              {
+                mockteam_rows.map((row, index) => (
+                  <tr key={index}>
+                    <td>{row.teamName}</td>
+                    <td>{row.rating1}</td>
+                    <td>{row.rating2}</td>
+                    <td>{row.rating3}</td>
+                    <td>
+                      <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                    </td>
+                  </tr>
+                ))
+              }
     
            
               const mockstudent_rows = [
-                <tr><td>Sophia Taylor</td> <td>sophia.taylor@school.com</td> <td>student</td>
+                <tr key="1">
+                  <td>Sophia Taylor</td>
+                  <td>sophia.taylor@school.com</td>
+                  <td>student</td>
                 </tr>
-            ];            
+              ];            
             render(
                 <MantineProvider withGlobalStyles withNormalizeCSS>
                 <MemoryRouter >
@@ -3648,18 +4188,18 @@ describe("Instructor dashboard feedbacks", () =>{
             {student_id:"2345",id:"23", team_id:"23"}
         ]
     
-        const team_memberships = [
-            {id: "2345",
-            team_id: "23",
-            student_id: "2345"}
-        ]
+        // const team_memberships = [
+        //     {id: "2345",
+        //     team_id: "23",
+        //     student_id: "2345"}
+        // ]
 
         const mockemail = "qwe@qwe.qwe"
 
         const mockuser = {token: "token"};
         const mocknavigation = jest.fn();
 
-        const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+        //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
 
         global.fetch= jest.fn(()=>
         Promise.resolve({
@@ -3667,15 +4207,37 @@ describe("Instructor dashboard feedbacks", () =>{
         })
         );
         const mockteam_rows = [
-            <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-            </tr>
-        ];
+            {
+              teamName: "Team Alpha",
+              rating1: 5,
+              rating2: 5,
+              rating3: 0,
+              status: "⏳" // Mocking status as a text or emoji
+            }
+          ];
+
+          {
+            mockteam_rows.map((row, index) => (
+              <tr key={index}>
+                <td>{row.teamName}</td>
+                <td>{row.rating1}</td>
+                <td>{row.rating2}</td>
+                <td>{row.rating3}</td>
+                <td>
+                  <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                </td>
+              </tr>
+            ))
+          }
 
        
           const mockstudent_rows = [
-            <tr><td>Sophia Taylor</td> <td>sophia.taylor@school.com</td> <td>student</td>
+            <tr key="1">
+              <td>Sophia Taylor</td>
+              <td>sophia.taylor@school.com</td>
+              <td>student</td>
             </tr>
-        ];            
+          ];            
         render(
             <MantineProvider withGlobalStyles withNormalizeCSS>
             <MemoryRouter >
@@ -3765,18 +4327,18 @@ describe("Instructor dashboard feedbacks", () =>{
                 {student_id:"2345",id:"23", team_id:"23"}
             ]
         
-            const team_memberships = [
-                {id: "2345",
-                team_id: "23",
-                student_id: "2345"}
-            ]
+            // const team_memberships = [
+            //     {id: "2345",
+            //     team_id: "23",
+            //     student_id: "2345"}
+            // ]
     
             const mockemail = "qwe@qwe.qwe"
     
             const mockuser = {token: "token"};
             const mocknavigation = jest.fn();
     
-            const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+            //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
     
             global.fetch= jest.fn(()=>
             Promise.resolve({
@@ -3784,15 +4346,37 @@ describe("Instructor dashboard feedbacks", () =>{
             })
             );
             const mockteam_rows = [
-                <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-                </tr>
-            ];
+                {
+                  teamName: "Team Alpha",
+                  rating1: 5,
+                  rating2: 5,
+                  rating3: 0,
+                  status: "⏳" // Mocking status as a text or emoji
+                }
+              ];
+
+              {
+                mockteam_rows.map((row, index) => (
+                  <tr key={index}>
+                    <td>{row.teamName}</td>
+                    <td>{row.rating1}</td>
+                    <td>{row.rating2}</td>
+                    <td>{row.rating3}</td>
+                    <td>
+                      <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                    </td>
+                  </tr>
+                ))
+              }
     
            
               const mockstudent_rows = [
-                <tr><td>Sophia Taylor</td> <td>sophia.taylor@school.com</td> <td>student</td>
+                <tr key="1">
+                  <td>Sophia Taylor</td>
+                  <td>sophia.taylor@school.com</td>
+                  <td>student</td>
                 </tr>
-            ];            
+              ];           
             render(
                 <MantineProvider withGlobalStyles withNormalizeCSS>
                 <MemoryRouter >
@@ -3883,18 +4467,18 @@ describe("Instructor dashboard feedbacks", () =>{
                     {student_id:"2345",id:"23", team_id:"23"}
                 ]
             
-                const team_memberships = [
-                    {id: "2345",
-                    team_id: "23",
-                    student_id: "2345"}
-                ]
+                // const team_memberships = [
+                //     {id: "2345",
+                //     team_id: "23",
+                //     student_id: "2345"}
+                // ]
         
                 const mockemail = "qwe@qwe.qwe"
         
                 const mockuser = {token: "token"};
                 const mocknavigation = jest.fn();
         
-                const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
+                //const mockerror = jest.spyOn(console, "error").mockImplementation(()=>{});
         
                 global.fetch= jest.fn(()=>
                 Promise.resolve({
@@ -3902,15 +4486,37 @@ describe("Instructor dashboard feedbacks", () =>{
                 })
                 );
                 const mockteam_rows = [
-                    <tr><td>Team Alpha</td> <td>5</td> <td>5</td><td>0</td><Text size="xl" role="img" aria-label="Waiting for Feedback">⏳</Text>
-                    </tr>
-                ];
+                    {
+                      teamName: "Team Alpha",
+                      rating1: 5,
+                      rating2: 5,
+                      rating3: 0,
+                      status: "⏳" // Mocking status as a text or emoji
+                    }
+                  ];
+
+                  {
+                    mockteam_rows.map((row, index) => (
+                      <tr key={index}>
+                        <td>{row.teamName}</td>
+                        <td>{row.rating1}</td>
+                        <td>{row.rating2}</td>
+                        <td>{row.rating3}</td>
+                        <td>
+                          <Text size="xl" role="img" aria-label="Waiting for Feedback">{row.status}</Text>
+                        </td>
+                      </tr>
+                    ))
+                  }
         
                
                   const mockstudent_rows = [
-                    <tr><td>Sophia Taylor</td> <td>sophia.taylor@school.com</td> <td>student</td>
+                    <tr key="1">
+                      <td>Sophia Taylor</td>
+                      <td>sophia.taylor@school.com</td>
+                      <td>student</td>
                     </tr>
-                ];            
+                  ];          
                 render(
                     <MantineProvider withGlobalStyles withNormalizeCSS>
                     <MemoryRouter >

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Tooltip, Text, Group } from '@mantine/core';
+import PropTypes from 'prop-types';
+
 
 const TeamFeedBackBadges = ({ feedbackBadgeTeam }) => {
     const [badges, setBadges] = useState([]);
@@ -43,4 +45,12 @@ const TeamFeedBackBadges = ({ feedbackBadgeTeam }) => {
     );
 }
 
+TeamFeedBackBadges.propTypes = {
+    feedbackBadgeTeam: PropTypes.shape({
+      numberOfFeedbacks: PropTypes.number.isRequired,
+      size: PropTypes.number.isRequired,
+    }).isRequired,
+  };
+
+  
 export default TeamFeedBackBadges;

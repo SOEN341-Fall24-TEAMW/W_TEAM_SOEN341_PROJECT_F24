@@ -9,6 +9,7 @@ function isValidToken(token) {
         const decoded = jwt.verify(token, jwtSecretKey);
         return decoded && decoded.role === "instructor"; // Adjust if you need to check a specific role
     } catch (error) {
+        console.error("Error during token verification:", error.message);
         return false;
     }
 }

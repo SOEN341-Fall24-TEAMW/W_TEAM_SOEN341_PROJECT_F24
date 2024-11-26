@@ -1,0 +1,7 @@
+
+/Users/mikdriver/SOEN341_code/W_TEAM_SOEN341_PROJECT_F24/auth-server/tests/exportAllOrganizationStudentsToCSV.test.js
+  54:12  error  'db' is not defined  no-undef
+  66:27  error  'db' is not defined  no-undef
+
+✖ 2 problems (2 errors, 0 warnings)
+

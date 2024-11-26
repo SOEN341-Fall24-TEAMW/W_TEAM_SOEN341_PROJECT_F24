@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { NavLink, AppShell, Table, Group, Space, Button, Title, TextInput, rem, Select, Alert } from '@mantine/core';
-import { IconUsersGroup, IconMessageCircle, IconSearch, IconFileText , IconThumbUp} from '@tabler/icons-react';
+import { IconUsersGroup,  IconSearch, IconFileText , IconThumbUp} from '@tabler/icons-react';
 
-import { NavbarStudentDashboard } from './NavbarStudentDashboard.js';
-import PeerFeedback from './peerFeedback.js';
+//import { NavbarStudentDashboard } from './NavbarStudentDashboard.js';
+//import PeerFeedback from './peerFeedback.js';
 import TeammatesList from './TeammatesList.js';
+import PropTypes from 'prop-types';
+
 
 import './styles.css';
 
@@ -30,8 +32,7 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [active, setActive] = useState('Students');
   const [query, setQuery] = useState('');
-  const [setShowForm] = useState(false);
-  const [filteredTeamsByQuery, setFilteredTeamsByQuery] = useState([]); // State for filtered teams
+  //const [filteredTeamsByQuery, setFilteredTeamsByQuery] = useState([]); // State for filtered teams
 
   const [organizations, setOrganizations] = useState([]);
   const [courses, setCourses] = useState([]);
@@ -93,20 +94,20 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
     }
   };
 
-  const fetchPeerFeedback = (teamId) => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    fetch(`http://localhost:3080/peer-evaluations/feedback?teamId=${teamId}`, {
-      method: "GET",
-      headers: { 'jwt-token': user.token },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.message === 'success') {
-          setPeerFeedbackData(data.feedback);
-        }
-      })
-      .catch((error) => console.error("Error fetching peer feedback:", error));
-  };
+  // const fetchPeerFeedback = (teamId) => {
+  //   const user = JSON.parse(localStorage.getItem("user"));
+  //   fetch(`http://localhost:3080/peer-evaluations/feedback?teamId=${teamId}`, {
+  //     method: "GET",
+  //     headers: { 'jwt-token': user.token },
+  //   })
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       if (data.message === 'success') {
+  //         setPeerFeedbackData(data.feedback);
+  //       }
+  //     })
+  //     .catch((error) => console.error("Error fetching peer feedback:", error));
+  // };
 
   useEffect(() => {
     fetchData();
@@ -190,9 +191,9 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
     />
   ));
 
-  const handleTeamClick = (team) => {
-    setSelectedTeam(team);
-  };
+  // const handleTeamClick = (team) => {
+  //   setSelectedTeam(team);
+  // };
 
   useEffect(() => {
     console.log("currently selected team: ", selectedTeam);
@@ -207,20 +208,20 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
   //const teamsToDisplay = query ? filteredTeamsByQuery : teams;
   //console.log("teams to display", teamsToDisplay);
 
-  const rows = teams.map((team) => {
-    const team_course = courses.find((course) => course.id === team.course_id); // Find course by course_id
-    const course_name = team_course ? team_course.name : "No course"; // Get course name or fallback
-    const organization_name = organizations.find((org) => org.id === team_course?.organization_id)?.name || "Unknown organization"; // Get organization name or fallback
+  // const rows = teams.map((team) => {
+  //   const team_course = courses.find((course) => course.id === team.course_id); // Find course by course_id
+  //   const course_name = team_course ? team_course.name : "No course"; // Get course name or fallback
+  //   const organization_name = organizations.find((org) => org.id === team_course?.organization_id)?.name || "Unknown organization"; // Get organization name or fallback
 
-    return (
-      <Table.Tr key={team.id} onClick={() => handleTeamClick(team)}>
-        <Table.Td>{team.name || "No name"}</Table.Td>
-        <Table.Td>{team.max_size || "No max size"}</Table.Td>
-        <Table.Td>{course_name}</Table.Td>
-        <Table.Td>{organization_name}</Table.Td>
-      </Table.Tr>
-    );
-  });
+  //   return (
+  //     <Table.Tr key={team.id} onClick={() => handleTeamClick(team)}>
+  //       <Table.Td>{team.name || "No name"}</Table.Td>
+  //       <Table.Td>{team.max_size || "No max size"}</Table.Td>
+  //       <Table.Td>{course_name}</Table.Td>
+  //       <Table.Td>{organization_name}</Table.Td>
+  //     </Table.Tr>
+  //   );
+  // });
 
   const filteredFeedback = peerFeedbackData.filter((feedback) => {
     const evaluatee = students.find(student => student.id === feedback.evaluatee_id);  // Assuming `students` holds user data
@@ -357,7 +358,6 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
             <th className="team-column">Team</th>
             <th className="comments-column">Comments</th>
             <th className="average-score-column">Average Score</th>
-            <th>Average Score</th>
           </tr>
         </thead>
   
@@ -495,6 +495,12 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
 
     </AppShell>
   );
+};
+
+StudentDashboard.propTypes = {
+  email: PropTypes.string.isRequired,
+  loggedIn: PropTypes.bool.isRequired,
+  setLoggedIn: PropTypes.func.isRequired,
 };
 
 export default StudentDashboard;

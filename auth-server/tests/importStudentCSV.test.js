@@ -99,6 +99,7 @@ app.post("/import-student-csv", async (req, res) => {
             res.status(200).json({ message: "All students created and added to teams successfully" });
         }
     } catch (error) {
+        console.error("Error during token verification:", error.message);
         res.status(500).json({ message: "Error creating new user" });
     }
 });

@@ -24,6 +24,7 @@ app.post("/verify", (req, res) => {
             return res.status(401).json({ status: "invalid auth", message: "error" });
         }
     } catch (error) {
+        console.error("Error during token verification:", error.message);
         return res.status(401).json({ status: "invalid auth", message: "error" });
     }
 });

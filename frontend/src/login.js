@@ -2,6 +2,8 @@ import { React, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Select, TextInput, Button, Space, PasswordInput, Divider } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import PropTypes from 'prop-types';
+
 
 const Login = ({ role, setRole, email, setEmail, loggedIn, setLoggedIn }) => {
 
@@ -190,5 +192,14 @@ const Login = ({ role, setRole, email, setEmail, loggedIn, setLoggedIn }) => {
         </div>
     </div>
 }
+
+Login.propTypes = {
+    role: PropTypes.string.isRequired,        // Assuming role is a string
+    setRole: PropTypes.func.isRequired,       // setRole is a function
+    email: PropTypes.string.isRequired,       // Assuming email is a string
+    setEmail: PropTypes.func.isRequired,      // setEmail is a function
+    loggedIn: PropTypes.bool.isRequired,      // loggedIn is a boolean
+    setLoggedIn: PropTypes.func.isRequired,   // setLoggedIn is a function
+  };
 
 export default Login

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Tooltip, Text, Group } from '@mantine/core';
+import PropTypes from 'prop-types';
+
 
 const StudentFeedbackBadges = ({ averageCooperation, averageConceptualContribution, averagePracticalContribution, averageWorkEthic, averageOverall, studentFeedbacks }) => {
     const [badges, setBadges] = useState([]);
@@ -74,5 +76,14 @@ const StudentFeedbackBadges = ({ averageCooperation, averageConceptualContributi
         </Group>
     );
 }
+
+StudentFeedbackBadges.propTypes = {
+    averageCooperation: PropTypes.number.isRequired,
+    averageConceptualContribution: PropTypes.number.isRequired,
+    averagePracticalContribution: PropTypes.number.isRequired,
+    averageWorkEthic: PropTypes.number.isRequired,
+    averageOverall: PropTypes.number.isRequired,
+    studentFeedbacks: PropTypes.arrayOf(PropTypes.object).isRequired,  // assuming feedbacks are objects
+  };
 
 export default StudentFeedbackBadges;

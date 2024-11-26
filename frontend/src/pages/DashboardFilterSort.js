@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Select, Group } from '@mantine/core';
+import PropTypes from 'prop-types';  // Import PropTypes for prop validation
+
 
 const DashboardSort = ({ onChange }) => {
   const [sortBy, setSortBy] = useState('');
@@ -40,6 +42,10 @@ const DashboardSort = ({ onChange }) => {
       />
     </Group>
   );
+};
+
+DashboardSort.propTypes = {
+  onChange: PropTypes.func.isRequired,  // onChange should be a function
 };
 
 export default DashboardSort;

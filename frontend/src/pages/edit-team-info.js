@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Button, TextInput, Title, Space, NumberInput, MultiSelect } from "@mantine/core";
+import PropTypes from 'prop-types';
 
 const EditTeamInfo = ({ isOpen, onClose, teamData, updateTeamData, handleSubmit, orgStudentList }) => {
 
@@ -137,4 +138,18 @@ const EditTeamInfo = ({ isOpen, onClose, teamData, updateTeamData, handleSubmit,
     );
 };
 
+
+EditTeamInfo.propTypes = {
+    isOpen: PropTypes.bool.isRequired, // Assuming it's a boolean (open or closed state)
+    onClose: PropTypes.func.isRequired, // Assuming it's a function to close the modal
+    teamData: PropTypes.shape({
+      selected_students: PropTypes.arrayOf(PropTypes.string).isRequired, // Assuming selected_students is an array of student IDs or names
+      team_name: PropTypes.string.isRequired, // Assuming team_name is a string
+      max_size: PropTypes.number.isRequired, // Assuming max_size is a number
+    }).isRequired,
+    updateTeamData: PropTypes.func.isRequired, // Assuming updateTeamData is a function
+    handleSubmit: PropTypes.func.isRequired, // Assuming handleSubmit is a function
+    orgStudentList: PropTypes.arrayOf(PropTypes.object).isRequired, // Assuming it's an array of student objects
+  };
+  
 export default EditTeamInfo;
