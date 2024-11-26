@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Space, Button, TextInput, Select, Alert } from '@mantine/core';
-import { IconAlertTriangle } from '@tabler/icons-react';
+import { Space, Button, TextInput, Select, MultiSelect, Divider, rem } from '@mantine/core';
+import { IconArrowLeft } from '@tabler/icons-react';
+
 
 
 const CreateNewAccount = (props) => {
@@ -12,6 +13,7 @@ const CreateNewAccount = (props) => {
     const [lastName, setLastName] = useState("");
     const [id, setId] = useState("");
     const [organizationId, setOrganizationId] = useState("");
+    const [organizationIdInstructor, setOrganizationIdInstructor] = useState([]);
     const [emailError, setEmailError] = useState("")
     const [passwordError, setPasswordError] = useState("")
     const [roleError, setRoleError] = useState("");
@@ -19,10 +21,10 @@ const CreateNewAccount = (props) => {
     const [lastNameError, setLastNameError] = useState("");
     const [idError, setIdError] = useState("");
     const [organizationIdError, setOrganizationIdError] = useState("");
+    const [organizationIdInstructorError, setOrganizationIdInstructorError] = useState("");
 
     const navigate = useNavigate();
-
-    const icon = <IconAlertTriangle />;
+    const icon = <IconArrowLeft size={24} />
 
     const onButtonClick = async () => {
 
@@ -34,6 +36,7 @@ const CreateNewAccount = (props) => {
         setEmailError("");
         setPasswordError("");
         setOrganizationIdError("");
+        setOrganizationIdInstructorError("");
 
         let hasError = false;
 
@@ -77,8 +80,13 @@ const CreateNewAccount = (props) => {
             hasError = true;
         }
 
-        if (!organizationId) {
+        if ((role === "student") && !organizationId) {
             setOrganizationIdError("Please select an organization");
+            hasError = true;
+        }
+
+        if ((role === "instructor") && !organizationIdInstructor) {
+            setOrganizationIdInstructorError("Please select an organization");
             hasError = true;
         }
 
@@ -88,7 +96,6 @@ const CreateNewAccount = (props) => {
 
         // Check if email has an account associated with it
         checkAccountExists(accountExists => {
-            console.log("here");
             // If yes, log in 
             if (accountExists && window.confirm("An account already exists with this email address: " + email + ". Do you want to navigate to the login page?")) {
                 navigate("/login");
@@ -126,7 +133,7 @@ const CreateNewAccount = (props) => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ role, firstName, lastName, id, email, password, organizationId })
+            body: JSON.stringify({ role, firstName, lastName, id, email, password, organizationId, organizationIdInstructor })
         })
             .then(r => r.json())
             .then(r => {
@@ -145,82 +152,108 @@ const CreateNewAccount = (props) => {
             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1)", boxSizing: "border-box"
         }}
         >
-            <Select
-                label={"Role"}
-                placeholder="Select a Role"
-                role="roles"
-                data={['student', 'instructor']}
-                value={role ? role : ""}
-                onChange={(value) => { setRole(value); setRoleError(""); } }
-                style={{ width: 335.14, fontSize: 24, borderRadius: 11, margin: 0, padding: 0 }}
-                clearable
-                error={roleError ? roleError : ""}
-            />
-            {(role === 'student') && <>
-                <TextInput
-                    value={id}
-                    label="Enter your student ID:"
-                    placeholder="Student ID"
-                    onChange={ev => { setId(ev.target.value); setIdError(""); }}
-                    style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
-                    error={idError ? idError : ""}
+            <form onSubmit={onButtonClick}>
+                <Select
+                    label={"Role"}
+                    placeholder="Select a Role"
+                    role="roles"
+                    data={['student', 'instructor']}
+                    value={role ? role : ""}
+                    onChange={(value) => { setRole(value); setRoleError(""); }}
+                    style={{ width: 335.14, fontSize: 24, borderRadius: 11, margin: 0, padding: 0 }}
+                    clearable
+                    error={roleError ? roleError : ""}
                 />
-                <Space h={idError ? "lg" : "sm"} />
-            </>}
-            <TextInput
-                value={firstName}
-                label="Enter your first name:"
-                placeholder="First Name"
-                onChange={ev => { setFirstName(ev.target.value); setFirstNameError(""); }}
-                style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
-                error={firstNameError ? firstNameError : ""}
-            />
-            <Space h={firstNameError ? "lg" : "sm"} />
-            <TextInput
-                value={lastName}
-                label="Enter your last name:"
-                placeholder="Last Name"
-                onChange={ev => { setLastName(ev.target.value); setLastNameError(""); }}
-                style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
-                error={lastNameError ? lastNameError : ""}
-            />
-            <Space h={lastNameError ? "lg" : "sm"} />
-            <TextInput
-                value={email}
-                label="Enter your email address:"
-                placeholder="Email Adress"
-                onChange={ev => { setEmail(ev.target.value); setEmailError(""); }}
-                style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
-                error={emailError ? emailError : ""}
-            />
-            <Space h={emailError ? "lg" : "sm"} />
-            <TextInput
-                value={password}
-                label="Password"
-                placeholder="Password"
-                type="password"
-                onChange={ev => { setPassword(ev.target.value); setPasswordError(""); }}
-                style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
-                error={passwordError ? passwordError : ""}
-            />
-            <Space h={passwordError ? "lg" : "sm"} />
-            <Select
-                label="Choose an existing organization"
-                role="orgDropdown"
-                placeholder="Select Organization"
-                data={organization_list.map((org) => ({ value: org.id, label: org.name }))}
-                value={organizationId}
-                style={{ width: 335.14, fontSize: 24, borderRadius: 11, margin: 0, padding: 0 }}
-                onChange={(value) => { setOrganizationId(value); setOrganizationIdError(''); }}
-                error={organizationIdError ? organizationIdError : ""}
-            />
-            <Space h="lg" />
+                {(role === 'student') && <>
+                    <TextInput
+                        value={id}
+                        label="Enter your student ID:"
+                        placeholder="Student ID"
+                        onChange={ev => { setId(ev.target.value); setIdError(""); }}
+                        style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
+                        error={idError ? idError : ""}
+                    />
+                    <Space h={idError ? "lg" : "sm"} />
+                </>}
+                <TextInput
+                    value={firstName}
+                    label="Enter your first name:"
+                    placeholder="First Name"
+                    onChange={ev => { setFirstName(ev.target.value); setFirstNameError(""); }}
+                    style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
+                    error={firstNameError ? firstNameError : ""}
+                />
+                <Space h={firstNameError ? "lg" : "sm"} />
+                <TextInput
+                    value={lastName}
+                    label="Enter your last name:"
+                    placeholder="Last Name"
+                    onChange={ev => { setLastName(ev.target.value); setLastNameError(""); }}
+                    style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
+                    error={lastNameError ? lastNameError : ""}
+                />
+                <Space h={lastNameError ? "lg" : "sm"} />
+                <TextInput
+                    value={email}
+                    label="Enter your email address:"
+                    placeholder="Email Adress"
+                    onChange={ev => { setEmail(ev.target.value); setEmailError(""); }}
+                    style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
+                    error={emailError ? emailError : ""}
+                />
+                <Space h={emailError ? "lg" : "sm"} />
+                <TextInput
+                    value={password}
+                    label="Password"
+                    placeholder="Password"
+                    type="password"
+                    onChange={ev => { setPassword(ev.target.value); setPasswordError(""); }}
+                    style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
+                    error={passwordError ? passwordError : ""}
+                />
+                <Space h={passwordError ? "lg" : "sm"} />
+                {(role === 'student') && <>
+                    <Select
+                        label="Choose your organization"
+                        role="orgDropdown"
+                        placeholder="Select Organization"
+                        data={organization_list.map((org) => ({ value: org.id, label: org.name }))}
+                        value={organizationId}
+                        style={{ width: 335.14, fontSize: 24, borderRadius: 11, margin: 0, padding: 0 }}
+                        onChange={(value) => { setOrganizationId(value); setOrganizationIdError(''); }}
+                        error={organizationIdError ? organizationIdError : ""}
+                    />
+                </>}
+                {(role === 'instructor') && <>
+                    <MultiSelect
+                        label="Choose your organizations"
+                        role="orgDropdown"
+                        placeholder="Select Organization"
+                        data={(organization_list || []).map((org) => ({ value: org.id, label: org.name }))}
+                        value={organizationIdInstructor}
+                        style={{ width: 335.14, fontSize: 24, borderRadius: 11, margin: 0, padding: 0 }}
+                        onChange={(value) => { setOrganizationIdInstructor(value); setOrganizationIdInstructorError(''); }}
+                        error={organizationIdInstructorError ? organizationIdInstructorError : ""}
+                    />
+                </>}
+                <Space h="lg" />
+                <Button
+                    variant="gradient"
+                    gradient={{ from: 'green', to: 'cyan', deg: 90 }}
+                    onClick={onButtonClick}
+                    style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
+                >{"Create Account"}</Button>
+            </form>
+            <Divider my="sm" />
+            <div style={{ height: 1, width: 300, backgroundColor: "#d3d3d3" }}></div>
+            <Divider my="sm" />
             <Button
+                leftSection={icon}
                 variant="gradient"
-                gradient={{ from: 'green', to: 'cyan', deg: 90 }}
-                onClick={onButtonClick}
-                style={{ width: 335.14, height: 60, fontSize: 24, borderRadius: 11 }}
-            >{"Create Account"}</Button>
+                gradient={{ from: 'blue', to: 'cyan', deg: 90 }}
+                onClick={() => navigate('/login')}
+                style={{ width: "fit-content", height: 50, fontSize: 20, borderRadius: 11 }}
+            >{"Return to Login"}</Button>
         </div>
     </div>
 }

@@ -285,3 +285,49 @@ body {
 .comment-column {
   width: 300px; /* Wider width for the comments column */
 }
+
+.bouncing-arrow {
+  animation: bounce 1.5s infinite;
+  display: inline-block;
+  transform-origin: center;
+}
+
+@keyframes bounce {
+  0%, 100% {
+      transform: translateY(0);
+  }
+  50% {
+      transform: translateY(-10px);
+  }
+}
+
+.wobble-important {
+  display: inline-block;
+  font-size: 1rem;
+  transform-origin: center;
+  transition: transform 0.3s ease-in-out;
+  overflow: visible;
+}
+
+.wobble-important:hover {
+  animation: bounce-shake 0.3s ease-in-out;
+}
+
+/* Bounce with Shake effect */
+@keyframes bounce-shake {
+  0% {
+    transform: translateX(0) rotate(0deg) /* Original size */
+  }
+  20% {
+    transform: translateX(-3px) rotate(0deg); /* Grow slightly and shift left */
+  }
+  50% {
+    transform: translateX(3px) rotate(5deg); /* Max size and shift right */
+  }
+  70% {
+    transform: translateX(-2px) rotate(-5deg); /* Shrink slightly and shift left */
+  }
+  100% {
+    transform: translateX(0) rotate(0deg); /* Return to original size */
+  }
+}

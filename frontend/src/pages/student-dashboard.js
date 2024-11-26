@@ -133,7 +133,7 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
     const organizationName = organizations.find((org) => org.id === teamCourse?.organization_id)?.name || "Unknown organization";
 
     return (
-      <Table.Tr key={team.id} onClick={() => setSelectedTeam(team)}>
+      <Table.Tr key={team.id} onClick={() => setSelectedTeam(team)} style={{ cursor: 'pointer' }}>
         <Table.Td>{team.name || "No name"}</Table.Td>
         <Table.Td>{team.max_size || "No max size"}</Table.Td>
         <Table.Td>{courseName}</Table.Td>
@@ -357,6 +357,7 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
             <th className="team-column">Team</th>
             <th className="comments-column">Comments</th>
             <th className="average-score-column">Average Score</th>
+            <th>Average Score</th>
           </tr>
         </thead>
   
