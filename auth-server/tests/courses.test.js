@@ -27,12 +27,12 @@ const app = express();
 app.use(bodyParser.json());
 
 app.post("/courses", (req, res) => {
-    const tokenHeaderKey = "jwt-token";
-    const authToken = req.headers[tokenHeaderKey];
+    //const tokenHeaderKey = "jwt-token";
+    //const authToken = req.headers[tokenHeaderKey];
     const instructor = req.body.instructor;
 
     try {
-        const verified = jwt.verify(authToken, "mockSecretKey");
+        //const verified = jwt.verify(authToken, "mockSecretKey");
 
         const user = mockDb.users.find((u) => u.email === instructor);
         if (user && user.role === "instructor") {

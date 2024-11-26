@@ -18,6 +18,7 @@ function isInstructor(req, res, next) {
     }
     next();
   } catch (error) {
+    console.error("Error during token verification:", error.message);
     res.status(401).json({ message: "Invalid token" });
   }
 }

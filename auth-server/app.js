@@ -10,8 +10,9 @@ var adapter = new FileSync("./database.json");
 var db = low(adapter);
 const { v4: uuidv4 } = require('uuid');
 
-const { Parser } = require("json2csv"); // For converting JSON to CSV format
-const router = express.Router();
+//const router = express.Router();
+
+
 app.use('/instructor', instructorRoutes);
 app.use(cors());
 app.use(express.json());
@@ -34,6 +35,7 @@ db.defaults({ organizations: [], users: [], courses: [], teams: [], team_members
 const fs = require("fs"); // File system module to read CSV files
 const csvParser = require("csv-parser"); // CSV parser library for reading the CSV file
 
+
 // Real-time communication setup
 const http = require('http');
 const { Server } = require("socket.io");
@@ -44,16 +46,17 @@ const io = new Server(server);
 
 // Define a JWT secret key. This should be isolated by using env variables for security
 const jwtSecretKey = "dsfdsfsdfdsvcsvdfgefg"
-module.exports = app;
+export default app;  // Export the app object
 
-function isValidToken(token) {
-    try {
-        const decoded = jwt.verify(token, jwtSecretKey);
-        return decoded && decoded.role === 'instructor'; // Adjust if you need to check a specific role
-    } catch (error) {
-        return false;
-    }
-}
+// function isValidToken(token) {
+//     try {
+//         const decoded = jwt.verify(token, jwtSecretKey);
+//         return decoded && decoded.role === 'instructor'; // Adjust if you need to check a specific role
+//     } catch (error) {
+//         return false;
+//     }
+// }
+
 // Fetch student data for export, including team, course, and organization details
 function fetchStudentDataToExport(organizationId) {
     return db.get("users")
@@ -83,6 +86,7 @@ app.get('/export', isInstructor, (req, res) => {
     }
 
     const fields = ['name', 'studentId', 'email', 'team', 'course', 'organization'];
+    const { Parser } = require('json2csv'); // Use require for CommonJS
     const json2csvParser = new Parser({ fields });
     const csvData = json2csvParser.parse(studentData);
 
@@ -93,38 +97,38 @@ app.get('/export', isInstructor, (req, res) => {
 });
 
 
-// Helper function to fetch students by organization ID
-function fetchStudentsByOrganization(orgId) {
-    return db.get("users")
-        .filter({ role: 'student', organization_id: orgId })
-        .map(student => ({
-            id: student.id,
-            email: student.email,
-            password: student.password,
-            name: student.name
-        }))
-        .value();
-}
+// // Helper function to fetch students by organization ID
+// function fetchStudentsByOrganization(orgId) {
+//     return db.get("users")
+//         .filter({ role: 'student', organization_id: orgId })
+//         .map(student => ({
+//             id: student.id,
+//             email: student.email,
+//             password: student.password,
+//             name: student.name
+//         }))
+//         .value();
+// }
 
 // Function to export students for all organizations
-function exportAllOrganizationStudentsToCSV() {
-    const organizations = db.get("organizations").value();
-    const csvFiles = [];
+// function exportAllOrganizationStudentsToCSV() {
+//     const organizations = db.get("organizations").value();
+//     const csvFiles = [];
 
-    organizations.forEach(org => {
-        const students = fetchStudentsByOrganization(org.id);
+//     organizations.forEach(org => {
+//         const students = fetchStudentsByOrganization(org.id);
 
-        if (students.length > 0) {
-            const csvData = json2csvParser.parse(students);
+//         if (students.length > 0) {
+//             const csvData = json2csvParser.parse(students);
 
-            const filename = `students_${org.name.replace(/ /g, "_").toLowerCase()}.csv`;
-            fs.writeFileSync(filename, csvData);
-            csvFiles.push(filename);
-            console.log(`CSV file ${filename} created successfully for organization: ${org.name}`);
-        }
-    });
-    return csvFiles;
-}
+//             const filename = `students_${org.name.replace(/ /g, "_").toLowerCase()}.csv`;
+//             fs.writeFileSync(filename, csvData);
+//             csvFiles.push(filename);
+//             console.log(`CSV file ${filename} created successfully for organization: ${org.name}`);
+//         }
+//     });
+//     return csvFiles;
+// }
 
 
 // Basic home route for the API
@@ -211,7 +215,7 @@ function assignStudentsToTeams(students, teams) {
     return assignments;
 }
 
-module.exports = { assignStudentsToTeams };
+export { assignStudentsToTeams };
 
 
 app.post("/create-account", (req, res) => {
@@ -260,6 +264,7 @@ app.post('/verify', (req, res) => {
             return res.status(401).json({ status: "invalid auth", message: "error" });
         }
     } catch (error) {
+        console.error("JWT verification error:", error.message); // Log the error
         // Access Denied
         return res.status(401).json({ status: "invalid auth", message: "error" });
     }
@@ -351,7 +356,7 @@ app.get("/teams", (req, res) => {
 
 
         // If the role is neither student nor instructor, return a 403 forbidden error
-        return res.status(403).json({ message: "Access forbidden: invalid role" });
+        //return res.status(403).json({ message: "Access forbidden: invalid role" });
 
     } catch (error) {
         // If there's an error (e.g., token is invalid), return a 401 unauthorized error
@@ -620,7 +625,15 @@ app.get("/users", (req, res) => {
     const authToken = req.headers[tokenHeaderKey];
 
     try {
+        // Verify JWT token and extract user role
         const verified = jwt.verify(authToken, jwtSecretKey);
+
+        // Fetch all users from the database
+        const allUsers = db.get("users").value();
+
+        // Filter out students from all users
+        const students = allUsers.filter(user => user.role === 'student');
+        console.log("Students:", students);
 
         if (verified.role === "instructor" || verified.role === "student") {
             const allUsers = db.get("users").value();
@@ -1003,7 +1016,8 @@ const authorizeRole = (role) => {
     };
 };
 
-module.exports = { authorizeRole };
+export { authorizeRole };
+
 
 
 // Protected route for instructor dashboard
@@ -1079,7 +1093,7 @@ app.get("/teams/:id", (req, res) => {
 // API to add a student to a team
 app.post("/teams/:id/students", (req, res) => {
     const teamId = req.params.id;
-    const { studentId, name, email } = req.body;
+    const { studentId, email } = req.body;
 
     // Find the team
     const team = db.get("teams").find({ id: teamId }).value();

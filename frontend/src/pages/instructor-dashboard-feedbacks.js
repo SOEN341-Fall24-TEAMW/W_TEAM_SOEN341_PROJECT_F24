@@ -7,6 +7,8 @@ import StudentFeedbackBadges from "./instructor-dashboard-feedbacks-student-badg
 import TeamFeedBackBadges from "./instructor-dashboard-feedbacks-team-badges.js";
 import ResolveButton from "./resolve-button.js";
 import './styles.css';
+import PropTypes from 'prop-types';
+
 
 const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, memberships, setLoggedIn }) => {
     const navigate = useNavigate();
@@ -393,4 +395,15 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
     );
 };
 
+InstructorFeedbackTab.propTypes = {
+    organizations: PropTypes.array.isRequired,
+    org: PropTypes.object.isRequired,
+    courses: PropTypes.array.isRequired,
+    teams: PropTypes.array.isRequired,
+    students: PropTypes.array.isRequired,
+    memberships: PropTypes.array.isRequired,
+    setLoggedIn: PropTypes.func.isRequired,
+};
+
+  
 export default InstructorFeedbackTab;

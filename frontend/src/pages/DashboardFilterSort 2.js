@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Select, TextInput, Button, Group } from '@mantine/core';
+import PropTypes from 'prop-types';  // Import PropTypes for prop validation
+
 
 const DashboardFilterSort = ({ onApply }) => {
   const [filterBy, setFilterBy] = useState('');       // Column to filter by
@@ -68,6 +70,11 @@ const DashboardFilterSort = ({ onApply }) => {
       <Button onClick={handleApply}>Apply</Button>
     </Group>
   );
+};
+
+DashboardFilterSort.propTypes = {
+  onChange: PropTypes.func.isRequired,  // onChange should be a function
+  onApply: PropTypes.func.isRequired,   // onApply should be a function
 };
 
 export default DashboardFilterSort;

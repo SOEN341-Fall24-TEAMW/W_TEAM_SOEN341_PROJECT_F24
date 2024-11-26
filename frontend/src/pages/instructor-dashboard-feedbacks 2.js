@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { AppShell, Table, Group, Space, Button, Title } from '@mantine/core';
 import { useNavigate } from "react-router-dom";
+import PropTypes from 'prop-types';
+
 
 import './styles.css';
 
@@ -361,6 +363,16 @@ const InstructorFeedbackTab = ({ organizations, org, courses, teams, students, m
             </AppShell.Main>
         </AppShell >
     );
+};
+
+InstructorFeedbackTab.propTypes = {
+    organizations: PropTypes.arrayOf(PropTypes.object).isRequired,
+    org: PropTypes.object.isRequired, // Assuming org is an object
+    courses: PropTypes.arrayOf(PropTypes.object).isRequired,
+    teams: PropTypes.arrayOf(PropTypes.object).isRequired,
+    students: PropTypes.arrayOf(PropTypes.object).isRequired,
+    memberships: PropTypes.arrayOf(PropTypes.object).isRequired,
+    setLoggedIn: PropTypes.func.isRequired, // Assuming setLoggedIn is a function
 };
 
 export default InstructorFeedbackTab;

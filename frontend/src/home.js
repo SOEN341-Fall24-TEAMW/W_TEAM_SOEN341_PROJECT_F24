@@ -1,6 +1,7 @@
 import React from "react"
 import { useNavigate } from "react-router-dom";
 import { Flex, Space, Button } from '@mantine/core';
+import PropTypes from 'prop-types';
 
 const Home = (props) => {
     const { loggedIn, email, setLoggedIn } = props;
@@ -50,4 +51,10 @@ const Home = (props) => {
     </div>
 }
 
+Home.propTypes = {
+    loggedIn: PropTypes.bool.isRequired,  // Assuming loggedIn is a boolean
+    email: PropTypes.string.isRequired,   // Assuming email is a string
+    setLoggedIn: PropTypes.func.isRequired,  // Assuming setLoggedIn is a function
+  };
+  
 export default Home

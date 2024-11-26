@@ -121,10 +121,10 @@ function PeerEvaluationForm() {
               <tr>
                 <td style={{ fontWeight: 'bold' , fontSize: '15px'}}>Consideration of others</td>
                 <td><input type="radio" name="considerationOfOthers" value="Bad" /> Shows little to no consideration for the ideas or feelings of others in the group.</td>
-                <td><input type="radio" name="considerationOfOthers" value="Quite Good" /> Occasionally shows awareness of others' feelings, but requires regular reminders to show sensitivity or consideration.</td>
+                <td><input type="radio" name="considerationOfOthers" value="Quite Good" /> Occasionally shows awareness of others&apos; feelings, but requires regular reminders to show sensitivity or consideration.</td>
                 <td><input type="radio" name="considerationOfOthers" value="Good" /> Often shows sensitivity and consideration for others; contributes positively to group morale and engagement.</td>
-                <td><input type="radio" name="considerationOfOthers" value="Very Good" /> Consistently shows respect for others' ideas and feelings; encourages active participation and cooperation within the group.</td>
-                <td><input type="radio" name="considerationOfOthers" value="Excellent" /> Demonstrates exceptional sensitivity to others' needs and feelings; fosters a collaborative and inclusive environment for all group members.</td>
+                <td><input type="radio" name="considerationOfOthers" value="Very Good" /> Consistently shows respect for others&apos; ideas and feelings; encourages active participation and cooperation within the group.</td>
+                <td><input type="radio" name="considerationOfOthers" value="Excellent" /> Demonstrates exceptional sensitivity to others&apos; needs and feelings; fosters a collaborative and inclusive environment for all group members.</td>
               </tr>
               <tr>
                 <td style={{ fontWeight: 'bold' , fontSize: '15px'}}>Contribution of knowledge</td>
@@ -132,7 +132,7 @@ function PeerEvaluationForm() {
                 <td><input type="radio" name="contributionOfKnowledge" value="Quite Good" /> Occasionally shares ideas and insights, but contributions may require prompting or lack depth.</td>
                 <td><input type="radio" name="contributionOfKnowledge" value="Good" /> Regularly contributes valuable ideas, knowledge, and insights to the group discussions and problem-solving efforts.</td>
                 <td><input type="radio" name="contributionOfKnowledge" value="Very Good" /> Consistently provides high-quality ideas and knowledge; encourages knowledge-sharing and learning among group members.</td>
-                <td><input type="radio" name="contributionOfKnowledge" value="Excellent" /> Contributes highly innovative and insightful knowledge; often leads discussions and elevates the group's problem-solving capabilities.</td>
+                <td><input type="radio" name="contributionOfKnowledge" value="Excellent" /> Contributes highly innovative and insightful knowledge; often leads discussions and elevates the group&apos;s problem-solving capabilities.</td>
               </tr>
               <tr>
                 <td style={{ fontWeight: 'bold' , fontSize: '15px'}} >Working and sharing with others</td>
@@ -216,7 +216,7 @@ function PeerEvaluationForm() {
                   <td><input type="radio" name="connectingIdeas" value="Quite Good" /> Sometimes connects ideas, but contributions are inconsistent or unclear.</td>
                   <td><input type="radio" name="connectingIdeas" value="Good" /> Regularly ties ideas together effectively, helping the team understand complex concepts.</td>
                   <td><input type="radio" name="connectingIdeas" value="Very Good" /> Consistently ties ideas and concepts together in a clear and cohesive way, improving the overall understanding of the team.</td>
-                  <td><input type="radio" name="connectingIdeas" value="Excellent" /> Demonstrates exceptional ability to connect complex ideas in a way that enhances the team's problem-solving and project development.</td>
+                  <td><input type="radio" name="connectingIdeas" value="Excellent" /> Demonstrates exceptional ability to connect complex ideas in a way that enhances the team&apos;s problem-solving and project development.</td>
                 </tr>
               </tbody>
             </table>
@@ -275,11 +275,11 @@ function PeerEvaluationForm() {
 
                 <tr>
                   <td style={{ fontWeight: 'bold', fontSize: '15px' }}>Reviewing Reports or Sections</td>
-                  <td><input type="radio" name="reviewingReports" value="Bad" /> Rarely reviews or checks others' work; needs frequent reminders.</td>
-                  <td><input type="radio" name="reviewingReports" value="Quite Good" /> Occasionally reviews others' work, but needs prompting.</td>
-                  <td><input type="radio" name="reviewingReports" value="Good" /> Consistently reviews others' work and provides useful feedback.</td>
-                  <td><input type="radio" name="reviewingReports" value="Very Good" /> Regularly reviews others' work; feedback is detailed and helps improve the final result.</td>
-                  <td><input type="radio" name="reviewingReports" value="Excellent" /> Consistently reviews and enhances others' work; ensures high quality and completeness in all sections.</td>
+                  <td><input type="radio" name="reviewingReports" value="Bad" /> Rarely reviews or checks others&apos; work; needs frequent reminders.</td>
+                  <td><input type="radio" name="reviewingReports" value="Quite Good" /> Occasionally reviews others&apos; work, but needs prompting.</td>
+                  <td><input type="radio" name="reviewingReports" value="Good" /> Consistently reviews others&apos; work and provides useful feedback.</td>
+                  <td><input type="radio" name="reviewingReports" value="Very Good" /> Regularly reviews others&apos; work; feedback is detailed and helps improve the final result.</td>
+                  <td><input type="radio" name="reviewingReports" value="Excellent" /> Consistently reviews and enhances others&apos; work; ensures high quality and completeness in all sections.</td>
                 </tr>
 
                 <tr>
@@ -356,11 +356,11 @@ function PeerEvaluationForm() {
 
                 <tr>
                   <td style={{ fontWeight: 'bold', fontSize: '15px' }}>Respect for Teammates</td>
-                  <td><input type="radio" name="respectTeammates" value="Bad" /> Rarely respects others' ideas, contributions, or deadlines.</td>
-                  <td><input type="radio" name="respectTeammates" value="Quite Good" /> Occasionally respects teammates, but sometimes misses deadlines or dismisses others' ideas.</td>
-                  <td><input type="radio" name="respectTeammates" value="Good" /> Regularly respects others' ideas and meets deadlines; works well with the team.</td>
-                  <td><input type="radio" name="respectTeammates" value="Very Good" /> Consistently respects others' ideas, opinions, and deadlines; supports a positive team environment.</td>
-                  <td><input type="radio" name="respectTeammates" value="Excellent" /> Always shows the highest level of respect for others' ideas and deadlines; fosters a respectful and collaborative atmosphere.</td>
+                  <td><input type="radio" name="respectTeammates" value="Bad" /> Rarely respects others&apos; ideas, contributions, or deadlines.</td>
+                  <td><input type="radio" name="respectTeammates" value="Quite Good" /> Occasionally respects teammates, but sometimes misses deadlines or dismisses others&apos; ideas.</td>
+                  <td><input type="radio" name="respectTeammates" value="Good" /> Regularly respects others&apos; ideas and meets deadlines; works well with the team.</td>
+                  <td><input type="radio" name="respectTeammates" value="Very Good" /> Consistently respects others&apos; ideas, opinions, and deadlines; supports a positive team environment.</td>
+                  <td><input type="radio" name="respectTeammates" value="Excellent" /> Always shows the highest level of respect for others&apos; ideas and deadlines; fosters a respectful and collaborative atmosphere.</td>
                 </tr>
 
                 <tr>

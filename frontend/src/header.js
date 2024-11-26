@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 import { Select, AppShell } from '@mantine/core';
 import { IconSchool } from '@tabler/icons-react';
+import PropTypes from 'prop-types';
 
 const Header = ({ loggedIn, setLoggedIn, role, setRole, org, setOrg, instructorOrganizations }) => {
     const navigate = useNavigate();
@@ -55,5 +56,15 @@ const Header = ({ loggedIn, setLoggedIn, role, setRole, org, setOrg, instructorO
         </AppShell>
     );
 };
+
+Header.propTypes = {
+    loggedIn: PropTypes.bool.isRequired,              // loggedIn should be a boolean
+    setLoggedIn: PropTypes.func.isRequired,           // setLoggedIn should be a function
+    role: PropTypes.string.isRequired,                // role should be a string
+    setRole: PropTypes.func.isRequired,               // setRole should be a function
+    org: PropTypes.string.isRequired,                 // org should be a string
+    setOrg: PropTypes.func.isRequired,                // setOrg should be a function
+    instructorOrganizations: PropTypes.array.isRequired, // instructorOrganizations should be an array
+  };
 
 export default Header;

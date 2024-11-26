@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './peerFeedback.css'; // Add a new CSS file for styling
+import PropTypes from 'prop-types';
 
 function PeerFeedback({ feedbackData }) {
   const [feedback, setFeedback] = useState([]);
@@ -26,5 +27,9 @@ function PeerFeedback({ feedbackData }) {
     </div>
   );
 }
+
+PeerFeedback.propTypes = {
+  feedbackData: PropTypes.array.isRequired,  // Example type, adjust as necessary
+};
 
 export default PeerFeedback;

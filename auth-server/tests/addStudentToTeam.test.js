@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 // Mock route handler for /teams/:id/students
 app.post("/teams/:id/students", (req, res) => {
     const teamId = req.params.id;
-    const { studentId, name, email } = req.body;
+    const { studentId, email } = req.body;
 
     // Find the team
     const team = mockDb.get("teams").find({ id: teamId }).value();

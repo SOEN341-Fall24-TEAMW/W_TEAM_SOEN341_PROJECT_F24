@@ -2,7 +2,12 @@ import React from "react";
 import { Button, Modal, Group, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconTrash } from "@tabler/icons-react";
+
+import PropTypes from 'prop-types';
+
+
 import { notifications } from '@mantine/notifications';
+
 
 const DeleteStudentButton = ({ studentId, onDelete }) => {
   const [opened, { open, close }] = useDisclosure(false);
@@ -88,6 +93,11 @@ const DeleteStudentButton = ({ studentId, onDelete }) => {
       </Modal>
     </>
   );
+};
+
+DeleteStudentButton.propTypes = {
+  studentId: PropTypes.string.isRequired, // Assuming studentId is a string (could be a UUID or other identifier)
+  onDelete: PropTypes.func.isRequired,    // Assuming onDelete is a function to handle the deletion
 };
 
 export default DeleteStudentButton;

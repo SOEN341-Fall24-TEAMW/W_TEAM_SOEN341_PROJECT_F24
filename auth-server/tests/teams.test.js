@@ -63,6 +63,7 @@ app.get("/teams", (req, res) => {
 
         return res.status(403).json({ message: "Access forbidden: invalid role" });
     } catch (error) {
+        console.error("Error during token verification:", error.message);
         return res.status(401).json({ message: "Invalid token" });
     }
 });

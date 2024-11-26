@@ -1,9 +1,8 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor, within, getAllByRole, getByPlaceholderText, getByText } from "@testing-library/react";
+import { render, screen} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { MantineProvider } from "@mantine/core";
 import fetchMock from 'jest-fetch-mock';
-import { useNavigate } from 'react-router-dom';
 import Login from "./login";
 
 
@@ -15,18 +14,18 @@ const mockedUseNavigate = jest.fn();
 global.localStorage = {
     setItem: jest.fn()
 };
-let setRoleError;
-let setEmailError;
-let setPasswordError;
-const mocksetLoggedIn = jest.fn();
-const mocksetEmail = jest.fn();
+//let setRoleError;
+//let setEmailError;
+//let setPasswordError;
+// const mocksetLoggedIn = jest.fn();
+// const mocksetEmail = jest.fn();
 
-let mockOnButtonClick;
-let setPassword;
-let setRole;
+// let mockOnButtonClick;
+// let setPassword;
+// let setRole;
 
-let mockcheckAccountExists;
-let mocklogIn;
+// let mockcheckAccountExists;
+// let mocklogIn;
 
 
 
@@ -38,16 +37,16 @@ jest.mock('react-router-dom', () => ({
 beforeEach(() => {
     fetch.resetMocks();
 
-    setRoleError  = jest.fn();
-    setEmailError = jest.fn();
-    setPasswordError = jest.fn();
+    // setRoleError  = jest.fn();
+    // setEmailError = jest.fn();
+    // setPasswordError = jest.fn();
 
-    mockOnButtonClick = jest.fn();
-    setPassword = jest.fn();
-    setRole = jest.fn();
+    // mockOnButtonClick = jest.fn();
+    // setPassword = jest.fn();
+    // setRole = jest.fn();
 
-    mockcheckAccountExists = jest.fn();
-    mocklogIn = jest.fn();
+    // mockcheckAccountExists = jest.fn();
+    // mocklogIn = jest.fn();
 
     jest.clearAllMocks();
     global.alert = jest.fn();

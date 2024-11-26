@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardFilterSort from './DashboardFilterSort.js';
-import { NavLink, AppShell, Table, Group, Space, Modal, Button, Title, TextInput, rem, Select, Menu, NumberInput, MultiSelect, Alert, Text, FileInput, Notification } from '@mantine/core';
+import { NavLink, AppShell, Table, Group, Space, Modal, Button, Title, TextInput, rem, Select, Menu, NumberInput, MultiSelect, Text, FileInput, Notification, Grid } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconUsers, IconUsersGroup, IconMessage, IconSearch, IconDatabaseImport, IconCirclePlus, IconX, IconCheck } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
@@ -13,6 +13,8 @@ import EditStudentInfo from "./edit-student-info.js";
 import EditTeamInfo from "./edit-team-info.js";
 import DeleteStudentButton from "./delete-student-button.js";
 import DeleteTeamButton from "./delete-team-button.js";
+import PropTypes from 'prop-types';
+
 
 
 const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, students, orgStudentList, setOrgStudentList, memberships, email, fetchData, loggedIn, setLoggedIn }) => {
@@ -21,7 +23,8 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
   const [query, setQuery] = useState('');
   const [opened, { open, close }] = useDisclosure(false);
   const [step, setStep] = useState(1);
-  const [maxSizeError, setMaxSizeError] = useState("");
+  const [maxSizeError] = useState("");
+  
 
   const [importSuccess, setImportSuccess] = useState(false);
   const [importFail, setImportFail] = useState(false);
@@ -623,7 +626,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
         </Button>
 
         <DashboardFilterSort onApply={setFilterSortOptions} />*/}
-        <Group justify="space-between">
+        <Grid justify="space-between">
           <Title data-testid="stuTitle" >Students</Title>
           <Modal
             opened={opened}
@@ -764,7 +767,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
                   />
                 </div>
 
-                <div justify="flex-end" style={{
+                <Grid justify="flex-end" style={{
                   backgroundColor: "#f8f9fa",
                   borderTop: "1px solid #e3e3e3",
                   padding: "16px",
@@ -788,7 +791,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
                   <Button onClick={handleSubmit} disabled={!studentData.organization_id && !studentData.new_org_name} >
                     Add Organization and Finish
                   </Button>
-                </div>
+                </Grid>
               </div>
             )}
           </Modal>
@@ -820,7 +823,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
               accept=".csv"
             />
           </div>
-        </Group>
+        </Grid>
         <Space h="xl" />
         <Group justify="space-between" style={{ alignItems: "center", height: "62.59px" }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -1192,5 +1195,22 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
     </AppShell>
   );
 };
+
+InstructorDashboard.propTypes = {
+  organizations: PropTypes.array.isRequired,
+  org: PropTypes.object.isRequired,
+  courses: PropTypes.array.isRequired,
+  teams: PropTypes.array.isRequired,
+  setTeams: PropTypes.func.isRequired,
+  students: PropTypes.array.isRequired,
+  setStudents: PropTypes.func.isRequired,
+  orgStudentList: PropTypes.array.isRequired,
+  memberships: PropTypes.array.isRequired,
+  email: PropTypes.string.isRequired,
+  fetchData: PropTypes.func.isRequired,
+  loggedIn: PropTypes.bool.isRequired,
+  setLoggedIn: PropTypes.func.isRequired,
+};
+
 
 export default InstructorDashboard;

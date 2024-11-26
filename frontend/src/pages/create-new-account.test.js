@@ -1,24 +1,21 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor, within, getAllByRole } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { ColorSchemeScript, MantineProvider } from "@mantine/core";
+import { MantineProvider } from "@mantine/core";
 import "@testing-library/jest-dom";
 import fetchMock from 'jest-fetch-mock';
-import { useNavigate, useSearchParams } from 'react-router-dom';
 import CreateNewAccount from './create-new-account';
 
-import { Space, Button, TextInput, Select, Alert } from '@mantine/core';
-import { IconAlertTriangle } from '@tabler/icons-react';
 
-jest.mock('@mantine/hooks', () => {
+// jest.mock('@mantine/hooks', () => {
    
-    const actualHooks = jest.requireActual('@mantine/hooks');
-    return {
-        ...actualHooks,
-    useMediaQuery: jest.fn(() => [true]),
+//     const actualHooks = jest.requireActual('@mantine/hooks');
+//     return {
+//         ...actualHooks,
+//     useMediaQuery: jest.fn(() => [true]),
 
-};
-});
+// };
+// });
 
 fetchMock.enableMocks();
 

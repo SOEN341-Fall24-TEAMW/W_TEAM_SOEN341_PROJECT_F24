@@ -1,0 +1,11 @@
+
+> frontend@0.1.0 lint
+> eslint .
+
+
+/Users/mikdriver/SOEN341_code/W_TEAM_SOEN341_PROJECT_F24/frontend/src/pages/instructor-dashboard.js
+  37:17  error  Missing "key" prop for element in array  react/jsx-key
+  37:47  error  Missing "key" prop for element in array  react/jsx-key
+
+✖ 2 problems (2 errors, 0 warnings)
+

@@ -1,5 +1,6 @@
 import React from "react";
 import { Modal, Button, TextInput, Title, Space } from "@mantine/core";
+import PropTypes from 'prop-types';
 
 const EditStudentModal = ({ isOpen, onClose, studentData, updateStudentData, handleSubmit }) => {
 
@@ -123,6 +124,19 @@ const EditStudentModal = ({ isOpen, onClose, studentData, updateStudentData, han
             </div>
         </Modal>
     );
+};
+
+EditStudentModal.propTypes = {
+    isOpen: PropTypes.bool.isRequired, // Assuming it's a boolean (open or closed state)
+    onClose: PropTypes.func.isRequired, // Assuming it's a function to close the modal
+    studentData: PropTypes.shape({
+      first_name: PropTypes.string.isRequired, // Assuming first_name is a string
+      last_name: PropTypes.string.isRequired,  // Assuming last_name is a string
+      student_id: PropTypes.string.isRequired, // Assuming student_id is a string
+      student_email: PropTypes.string.isRequired, // Assuming student_email is a string
+    }).isRequired,
+    updateStudentData: PropTypes.func.isRequired, // Assuming updateStudentData is a function
+    handleSubmit: PropTypes.func.isRequired, // Assuming handleSubmit is a function
 };
 
 export default EditStudentModal;
