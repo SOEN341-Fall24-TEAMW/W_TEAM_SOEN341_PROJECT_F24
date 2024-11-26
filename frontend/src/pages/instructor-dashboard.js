@@ -534,7 +534,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
         const organizationName = (organizations.find((organization) => organization.id === teamCourse?.organization_id) || {}).name || "Unknown organization";
 
         return (
-          <Table.Tr key={team.id} onClick={() => {handleTeamRowClick(team); updateTeamData("selected_students", studentNames);}} style={{ cursor: 'pointer' }}>
+          <Table.Tr key={team.id} onClick={() => { handleTeamRowClick(team); updateTeamData("selected_students", studentNames); }} style={{ cursor: 'pointer' }}>
             <Table.Td>{team.name || "No name"}</Table.Td>
             <Table.Td>{studentNames || "No members"}</Table.Td>
             <Table.Td>{team.max_size || "No max size"}</Table.Td>
@@ -1051,8 +1051,17 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
                           })
                           .map(student => ({ value: student.id, label: student.name }))
                       }
+                      value={teamData.selected_students}
+                      onChange={(value) => {
+                        if (value.length <= teamData.max_size) {
+                          updateTeamData("selected_students", value);
+                          setMaxSizeError("");
+                        } else {
+                          setMaxSizeError("Maximum allotted size exceeded");
+                        }
+                      }}
                       searchable
-                      error={ maxSizeError ? maxSizeError : ""}
+                      error={maxSizeError ? maxSizeError : ""}
                     />
                   </div>
                   <Space h="md" />
@@ -1131,7 +1140,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
 
       <EditStudentInfo
         isOpen={editModalOpen}
-        onClose={() => {setEditModalOpen(false); modalClose();}}
+        onClose={() => { setEditModalOpen(false); modalClose(); }}
         studentData={studentData}
         updateStudentData={updateStudentData}
         handleSubmit={handleEditSubmit}
@@ -1139,7 +1148,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
 
       <EditTeamInfo
         isOpen={editTeamModalOpen}
-        onClose={() => {setTeamEditModalOpen(false); modalClose();}}
+        onClose={() => { setTeamEditModalOpen(false); modalClose(); }}
         teamData={teamData}
         updateTeamData={updateTeamData}
         orgStudentList={orgStudentList}
