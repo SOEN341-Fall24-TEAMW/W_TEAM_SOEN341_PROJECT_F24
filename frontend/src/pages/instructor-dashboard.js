@@ -23,7 +23,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
   const [query, setQuery] = useState('');
   const [opened, { open, close }] = useDisclosure(false);
   const [step, setStep] = useState(1);
-  const [maxSizeError] = useState("");
+  const [maxSizeError, setMaxSizeError] = useState("");
   
 
   const [importSuccess, setImportSuccess] = useState(false);
