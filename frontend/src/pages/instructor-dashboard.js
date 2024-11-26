@@ -15,7 +15,7 @@ import DeleteStudentButton from "./delete-student-button.js";
 import DeleteTeamButton from "./delete-team-button.js";
 
 
-const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, students, setStudents, orgStudentList, memberships, email, fetchData, loggedIn, setLoggedIn }) => {
+const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, students, orgStudentList, setOrgStudentList, memberships, email, fetchData, loggedIn, setLoggedIn }) => {
 
   const [active, setActive] = useState('Students');
   const [query, setQuery] = useState('');
@@ -134,6 +134,8 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
         notifications.show({
           title: 'Success',
           message: 'Student information was updated successfully!',
+          style: { position: "fixed", top: "4rem", right: "1rem", zIndex: 9999 },
+          color: 'green',
         });
         fetchData(); // Refresh data
       } else {
@@ -164,12 +166,16 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
         notifications.show({
           title: 'Success',
           message: 'Team information was updated successfully!',
+          style: { position: "fixed", top: "4rem", right: "1rem", zIndex: 9999 },
+          color: 'green',
         });
         fetchData(); // Refresh data
       } else {
         notifications.show({
           title: 'Error',
           message: 'Failed to update team information. Please try again.',
+          style: { position: "fixed", top: "4rem", right: "1rem", zIndex: 9999 },
+          color: 'red',
         });
         setNotifyError(true);
       }
@@ -217,6 +223,8 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
               notifications.show({
                 title: 'Success',
                 message: 'User(s) were imported successfully!',
+                style: { position: "fixed", top: "4rem", right: "1rem", zIndex: 9999 },
+                color: 'green',
               })
               setImportSuccess(true);
               setNotifySuccess(true);
@@ -226,8 +234,10 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
             } else {
               console.error("Import failed.");
               notifications.show({
-                title: 'Failure',
+                title: 'Error',
                 message: 'Import Failed!',
+                style: { position: "fixed", top: "4rem", right: "1rem", zIndex: 9999 },
+                color: 'red',
               })
               setImportFail(true);
               setNotifyError(true);
@@ -528,7 +538,7 @@ const InstructorDashboard = ({ organizations, org, courses, teams, setTeams, stu
             <DeleteStudentButton
               studentId={student.id}
               onDelete={(deletedId) =>
-                setStudents((prev) => prev.filter((s) => s.id !== deletedId))
+                setOrgStudentList((prev) => prev.filter((s) => s.id !== deletedId))
               }
             />
           </Table.Td>

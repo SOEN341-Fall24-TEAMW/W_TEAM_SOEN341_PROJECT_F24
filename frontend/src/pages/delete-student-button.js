@@ -18,16 +18,20 @@ const DeleteStudentButton = ({ studentId, onDelete }) => {
       });
 
       if (response.ok) {
+        onDelete(studentId); // Notify parent to refresh the data or remove the student locally
+        close();
         notifications.show({
           title: 'Success',
           message: 'Student was deleted successfully!',
+          style: { position: "fixed", top: "4rem", right: "1rem", zIndex: 9999 },
+          color: 'green',
         });
-        onDelete(studentId); // Notify parent to refresh the data or remove the student locally
-        close();
       } else {
         notifications.show({
           title: 'Error',
           message: 'Failed to delete the student. Please try again.',
+          style: { position: "fixed", top: "4rem", right: "1rem", zIndex: 9999 },
+          color: 'red',
         });
         console.error("Failed to delete student");
       }

@@ -29,7 +29,7 @@ const StudentDashboard = ({ email, loggedIn, setLoggedIn }) => {
 
 
   const [selectedTeam, setSelectedTeam] = useState(null);
-  const [active, setActive] = useState('Students');
+  const [active, setActive] = useState('My Teams');
   const [query, setQuery] = useState('');
   const [setShowForm] = useState(false);
   const [filteredTeamsByQuery, setFilteredTeamsByQuery] = useState([]); // State for filtered teams

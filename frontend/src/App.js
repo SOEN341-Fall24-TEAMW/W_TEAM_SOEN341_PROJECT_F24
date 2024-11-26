@@ -119,7 +119,7 @@ function App() {
             <Route path="/login" element={<Login role={role} setRole={setRole} email={email} setEmail={setEmail} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} />
             <Route path='/create-new-account' element={<CreateNewAccount setLoggedIn={setLoggedIn} setEmail={setEmail} />} />
             <Route path="/student-dashboard" element={<StudentDashboard email={email} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} />
-            <Route path="/instructor-dashboard" element={<InstructorDashboard organizations={organizations} org={org} courses={courses} teams={teams} setTeams={setTeams} students={students} setStudents={setStudents} orgStudentList={orgStudentList} memberships={memberships} email={email} fetchData={fetchData} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} />
+            <Route path="/instructor-dashboard" element={<InstructorDashboard organizations={organizations} org={org} courses={courses} teams={teams} setTeams={setTeams} students={students} setStudents={setStudents} orgStudentList={orgStudentList} setOrgStudentList={setOrgStudentList} memberships={memberships} email={email} fetchData={fetchData} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} />
             <Route path='/Teams' element={<Teams />} />
             <Route path='/CreateTeams' element={<CreateTeams />} />
             <Route path='/TeamList' element={<TeamList />} />

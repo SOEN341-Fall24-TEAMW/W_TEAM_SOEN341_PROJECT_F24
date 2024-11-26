@@ -2,6 +2,7 @@ import { React, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Select, TextInput, Button, Space, PasswordInput, Divider } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { notifications } from '@mantine/notifications';
 
 const Login = ({ role, setRole, email, setEmail, loggedIn, setLoggedIn }) => {
 
@@ -67,7 +68,7 @@ const Login = ({ role, setRole, email, setEmail, loggedIn, setLoggedIn }) => {
                 logIn();
             else
                 // Else, ask user if they want to create a new account and if yes, then log in
-                if (window.confirm("An account does not exist with this email address: " + email + ". Do you want to create a new account?")) {
+                if (window.confirm("An account does not exist with your email address: " + email + ". Do you want to create a new account?")) {
                     navigate('/create-new-account');
                 }
         })
@@ -116,7 +117,12 @@ const Login = ({ role, setRole, email, setEmail, loggedIn, setLoggedIn }) => {
                         }
                     }, 0);
                 } else {
-                    window.alert(r.message);
+                    notifications.show({
+                        title: r.message,
+                        message: "Please re-enter your password!",
+                        style: { position: "fixed", top: "4rem", right: "1rem", zIndex: 9999 },
+                        color: 'red',
+                    })
                 }
             })
     }

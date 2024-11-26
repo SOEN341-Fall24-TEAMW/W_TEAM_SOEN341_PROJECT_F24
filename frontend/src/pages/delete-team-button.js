@@ -22,12 +22,16 @@ const DeleteTeamButton = ({ teamId, onDelete }) => {
                 notifications.show({
                     title: 'Success',
                     message: 'Team was deleted successfully!',
+                    style: { position: "fixed", top: "4rem", right: "1rem", zIndex: 9999 },
+                    color: 'green',
                 });
                 close();
             } else {
                 notifications.show({
                     title: 'Error',
                     message: 'Failed to delete the team. Please try again.',
+                    style: { position: "fixed", top: "4rem", right: "1rem", zIndex: 9999 },
+                    color: 'red',
                 });
                 console.error("Failed to delete team");
             }

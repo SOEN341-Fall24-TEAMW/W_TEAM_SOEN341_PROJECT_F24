@@ -23,7 +23,7 @@ const CreateNewAccount = (props) => {
     const [idError, setIdError] = useState("");
     const [organizationIdError, setOrganizationIdError] = useState("");
     const [organizationIdInstructorError, setOrganizationIdInstructorError] = useState("");
-    
+
 
     const navigate = useNavigate();
     const icon = <IconArrowLeft size={24} />
@@ -143,9 +143,17 @@ const CreateNewAccount = (props) => {
                     notifications.show({
                         title: 'Success',
                         message: 'Account created successfully!',
-                      })
+                        style: { position: "fixed", top: "4rem", right: "1rem", zIndex: 9999 },
+                        color: 'green',
+                    })
                     navigate('/login');
                 } else {
+                    notifications.show({
+                        title: 'Error',
+                        message: 'Failed to create account!',
+                        style: { position: "fixed", top: "4rem", right: "1rem", zIndex: 9999 },
+                        color: 'red',
+                    })
                     window.alert(r.message);
                 }
             })
