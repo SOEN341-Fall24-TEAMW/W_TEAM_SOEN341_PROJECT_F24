@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { React, useEffect, useState } from 'react';
 import { MantineProvider } from '@mantine/core';
 
 import Header from './header.js';
