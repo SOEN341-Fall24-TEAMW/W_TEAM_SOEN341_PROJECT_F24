@@ -29,10 +29,16 @@ const TeammatesList = ({ teams, memberships, students, email, selectedTeam }) =>
 
     // Filter teammates based on memberships and teams
     const teammates = students
-        .map(student => ({
-            ...student,
-            hasSubmittedFeedback: feedbackStatus[student.id] || false, // Add feedback status directly
-        }));
+    .filter(student => {
+        // Check if there is any membership where student_id matches and team_id matches the selected team
+        return memberships.some(membership => 
+            membership.team_id === teamId
+        );
+      })
+    .map(student => ({
+        ...student,
+        hasSubmittedFeedback: feedbackStatus[student.id] || false, // Add feedback status directly
+    }));
 
     console.log("filteredTeammates: ", teammates);
 
@@ -45,8 +51,8 @@ const TeammatesList = ({ teams, memberships, students, email, selectedTeam }) =>
             }
 
             const statusPromises = memberships
-                .filter(membership => membership.team_id === teamId)
-                .map(async membership => {
+            .filter(membership => String(membership.team_id) === String(teamId))
+            .map(async membership => {
                     const teammate = students.find(student => student.id === membership.student_id);
                     if (!teammate) {
                         console.warn(`Teammate with ID ${membership.student_id} not found.`);

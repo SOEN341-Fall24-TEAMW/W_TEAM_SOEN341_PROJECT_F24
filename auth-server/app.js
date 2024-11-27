@@ -46,7 +46,7 @@ const io = new Server(server);
 
 // Define a JWT secret key. This should be isolated by using env variables for security
 const jwtSecretKey = "dsfdsfsdfdsvcsvdfgefg"
-export default app;  // Export the app object
+module.exports = app;
 
 // function isValidToken(token) {
 //     try {
@@ -215,7 +215,7 @@ function assignStudentsToTeams(students, teams) {
     return assignments;
 }
 
-export { assignStudentsToTeams };
+module.exports = { assignStudentsToTeams };
 
 
 app.post("/create-account", (req, res) => {
@@ -1016,7 +1016,8 @@ const authorizeRole = (role) => {
     };
 };
 
-export { authorizeRole };
+module.exports = { authorizeRole };
+
 
 
 
