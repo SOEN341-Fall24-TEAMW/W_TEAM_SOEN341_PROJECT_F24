@@ -1,24 +1,23 @@
 name: CI
 
-on:
-  push:
-    branches:
-      - main  # or your primary branch
-  pull_request:
-    branches:
-      - main
+on: [pull_request]
 
 jobs:
   test:
-    runs-on: ubuntu-latest  # Choose the OS for the runner
+    runs-on: ubuntu-latest # Choose the OS for the runner
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2  # Check out the repository code
+        uses: actions/checkout@v2 # Check out the repository code
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: '14'  # Specify the version of Node.js you need
+          node-version: "14" # Specify the version of Node.js you need
 
       # Install and test frontend
       - name: Install frontend dependencies
@@ -26,7 +25,7 @@ jobs:
         run: npm install
 
       - name: Run frontend tests
-        working-directory: frontend
+        working-directory: frontend/src
         run: npm test
 
       # Install and test auth-server
