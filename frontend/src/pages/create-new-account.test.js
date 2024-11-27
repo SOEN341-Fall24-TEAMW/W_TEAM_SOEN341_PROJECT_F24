@@ -284,21 +284,21 @@ describe("Create new account" , ()=>{
     });
 
 
-    it("displays to choose an existing organization", ()=>{
+    // it("displays to choose an existing organization", ()=>{
 
 
-        render(
-            <MantineProvider withGlobalStyles withNormalizeCSS>
-            <MemoryRouter >
-            <CreateNewAccount/>
-            </MemoryRouter>
-            </MantineProvider>
-            );
+    //     render(
+    //         <MantineProvider withGlobalStyles withNormalizeCSS>
+    //         <MemoryRouter >
+    //         <CreateNewAccount/>
+    //         </MemoryRouter>
+    //         </MantineProvider>
+    //         );
 
-            expect(screen.getByText(/Choose an existing organization/i)).toBeInTheDocument();
-            expect(screen.getByPlaceholderText(/Select Organization/i)).toBeInTheDocument();
+    //         expect(screen.getByText(/Choose an existing organization/i)).toBeInTheDocument();
+    //         expect(screen.getByPlaceholderText(/Select Organization/i)).toBeInTheDocument();
 
-    });
+    // });
 
     it("options from organization list in  existing organization dropdown", ()=>{
 

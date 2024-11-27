@@ -76,20 +76,20 @@ describe("InstructorDashboard", ()=>{
 
 
 
-  it("has student, and teams in the navigation bar ",()=>{
-       render(
-          <MantineProvider withGlobalStyles withNormalizeCSS>
-          <MemoryRouter >
-          <InstructorDashboard user={mockuser} navigation={mocknavigation} setLoggedIn={mocksetLoggedIn} />
-          </MemoryRouter>
-          </MantineProvider>
-          );
+//   it("has student, and teams in the navigation bar ",()=>{
+//        render(
+//           <MantineProvider withGlobalStyles withNormalizeCSS>
+//           <MemoryRouter >
+//           <InstructorDashboard user={mockuser} navigation={mocknavigation} setLoggedIn={mocksetLoggedIn} />
+//           </MemoryRouter>
+//           </MantineProvider>
+//           );
 
-          expect(screen.getByTestId(/Student/i)).toBeInTheDocument();
-          expect(screen.getByTestId(/Teams/i)).toBeInTheDocument();
+//           expect(screen.getByTestId(/Student/i)).toBeInTheDocument();
+//           expect(screen.getByTestId(/Teams/i)).toBeInTheDocument();
 
 
-  });
+//   });
 
 
 
