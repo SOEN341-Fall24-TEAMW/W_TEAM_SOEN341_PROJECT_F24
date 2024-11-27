@@ -22,7 +22,7 @@ jobs:
       # Install and test frontend
       - name: Install frontend dependencies
         working-directory: frontend
-        run: npm ci
+        run: npm install
 
       - name: Run frontend tests
         working-directory: frontend/src
@@ -31,7 +31,7 @@ jobs:
       # Install and test auth-server
       - name: Install auth-server dependencies
         working-directory: auth-server
-        run: npm ci
+        run: npm install
 
       - name: Run auth-server tests
         working-directory: auth-server/tests
