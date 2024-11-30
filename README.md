@@ -11,12 +11,12 @@ The peer assessment system for university team projects enables students to eval
 
 ## Team Members and Roles
 
-- **Hadi Assemani**: Software Engineer (Backend and Frontend)  Student ID: 26710549
-- **Adja Boye**: Software Engineer (Backend and Frontend) Student ID: 40281923
-- **Mik Driver**: Computer Engineer (Backend and Frontend) Student ID: 40244456
-- **Sara Razene Habte**: Software Engineer (Frontend) Student ID: 40224677
-- **Youssef Tassine**: Computer Engineer (Data Management and Frontend) Student ID: 40242322
-- **Nicolas Vlad Tita**: Software Engineer (Backend) Student ID: 40209853
+- **Hadi Assemani (HADIASSEMANI)**: Software Engineer (Backend and Frontend)  Student ID: 26710549
+- **Adja Boye (boyeadja)**: Software Engineer (Backend and Frontend) Student ID: 40281923
+- **Mik Driver (mikdriver7 / mikdriver77)**: Computer Engineer (Backend and Frontend) Student ID: 40244456
+- **Sara Razene Habte (SaraH6734)**: Software Engineer (Frontend) Student ID: 40224677
+- **Youssef Tassine (YTASS96)**: Computer Engineer (Data Management and Frontend) Student ID: 40242322
+- **Nicolas Vlad Tita (VladTita)**: Software Engineer (Backend) Student ID: 40209853
 
 ## Peer Assessment Application
 
