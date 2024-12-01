@@ -1,0 +1,67 @@
+@startuml
+skinparam classFontSize 14
+
+' Defining React components as classes
+
+class App {
+    +email: string
+    +role: string
+    +organizations: string[]
+    +courses: string[]
+    +teams: string[]
+    +students: string[]
+    +memberships: string[]
+    +fetchData(): void
+}
+
+class Home {
+    +render(): void
+}
+
+class Login {
+    +email: string
+    +password: string
+    +submit(): boolean
+}
+
+class StudentDashboard {
+    +viewTeams(): void
+    +viewPeerEvaluations(): void
+}
+
+class InstructorDashboard {
+    +createTeam(): void
+    +viewTeams(): void
+}
+
+class CreateTeams {
+    +createTeam(): void
+    +addStudents(): void
+}
+
+class TeamList {
+    +listTeams(): void
+}
+
+class TeamDetails {
+    +viewDetails(): void
+}
+
+class TeammatesList {
+    +viewTeammates(): void
+}
+
+class PeerEvaluationForm {
+    +submitEvaluation(): void
+}
+
+' Relationships between components
+App --> Home : "Displays"
+App --> Login : "Login screen"
+App --> StudentDashboard : "Student's Dashboard"
+App --> InstructorDashboard : "Instructor's Dashboard"
+StudentDashboard --> TeamList : "View Teams"
+InstructorDashboard --> CreateTeams : "Create Teams"
+TeammatesList --> PeerEvaluationForm : "Submit Peer Evaluations"
+
+@enduml
