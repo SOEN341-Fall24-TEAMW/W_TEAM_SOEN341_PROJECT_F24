@@ -1,0 +1,45 @@
+@startuml
+skinparam componentStyle rectangle
+skinparam pageWidth 800
+skinparam pageHeight 1200
+
+package "Frontend" {
+    [React App]
+    [Home]
+    [Login]
+    [StudentDashboard]
+    [InstructorDashboard]
+    [CreateTeams]
+    [TeamList]
+    [TeamDetails]
+    [TeammatesList]
+    [PeerEvaluationForm]
+    [PeerEvaluationIntro]
+}
+
+package "Backend" {
+    [Express API]
+    [Courses API]
+    [Teams API]
+    [Authentication API]
+    [Verify Token API]
+}
+
+package "Database" {
+    [LowDB]
+    [User Table]
+    [Course Table]
+    [Team Table]
+    [PeerEvaluation Table]
+}
+
+package "Authentication" {
+    [Clerk]
+    [JWT]
+}
+
+[Frontend] --> [Backend] : "Fetches Data (HTTP Requests)"
+[Backend] --> [Database] : "Queries Data"
+[Frontend] --> [Authentication] : "Login / Auth"
+[Backend] --> [Authentication] : "Verify Token"
+@enduml

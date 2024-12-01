@@ -1,0 +1,56 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam classFontSize 14
+
+' Defining classes with attributes and methods
+
+class User {
+    +email: string
+    +password: string
+    +login(): boolean
+    +logout(): void
+}
+
+class Student {
+    +studentId: string
+    +viewTeams(): Team[]
+    +submitPeerEvaluation(): void
+}
+
+class Instructor {
+    +instructorId: string
+    +createTeam(): Team
+    +assignStudents(): void
+    +viewAllTeams(): Team[]
+}
+
+class Team {
+    +teamId: string
+    +teamName: string
+    +students: Student[]
+    +addMember(student: Student): void
+    +removeMember(student: Student): void
+}
+
+class Course {
+    +courseId: string
+    +courseName: string
+    +students: Student[]
+    +assignInstructor(instructor: Instructor): void
+}
+
+class PeerEvaluation {
+    +evaluatorId: string
+    +evaluateStudent(studentId: string, rating: number): void
+}
+
+' Relationships between classes
+User <|-- Student : Inherits
+User <|-- Instructor : Inherits
+Instructor --> Team : "creates"
+Instructor --> Course : "teaches"
+Team --> Student : "has"
+Student --> PeerEvaluation : "submits"
+PeerEvaluation --> Team : "evaluates"
+
+@enduml
