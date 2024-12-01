@@ -1,5 +1,11 @@
+
 @startuml
 skinparam layout left to right direction
+skinparam defaultFontSize 26   ' Increase font size
+skinparam componentFontSize 24 ' Increase component font size
+skinparam wrapWidth 200        ' Allow more space for text wrapping
+skinparam padding 20          ' Increase spacing between elements
+skinparam arrowFontSize 24    ' Increase font size for arrows
 
 package "React Components" {
     [App]
