@@ -1,8 +1,12 @@
 @startuml
 skinparam componentStyle rectangle
-skinparam pageWidth 800
-skinparam pageHeight 1200
+skinparam pageWidth 600
+skinparam pageHeight 800
+skinparam defaultFontSize 16
+skinparam wrapWidth 80
+skinparam packagePadding 10
 
+' Frontend Package
 package "Frontend" {
     [React App]
     [Home]
@@ -17,6 +21,7 @@ package "Frontend" {
     [PeerEvaluationIntro]
 }
 
+' Backend Package
 package "Backend" {
     [Express API]
     [Courses API]
@@ -25,6 +30,7 @@ package "Backend" {
     [Verify Token API]
 }
 
+' Database Package
 package "Database" {
     [LowDB]
     [User Table]
@@ -33,13 +39,16 @@ package "Database" {
     [PeerEvaluation Table]
 }
 
+' Authentication Package
 package "Authentication" {
     [Clerk]
     [JWT]
 }
 
+' Relationships between components
 [Frontend] --> [Backend] : "Fetches Data (HTTP Requests)"
 [Backend] --> [Database] : "Queries Data"
 [Frontend] --> [Authentication] : "Login / Auth"
 [Backend] --> [Authentication] : "Verify Token"
+
 @enduml

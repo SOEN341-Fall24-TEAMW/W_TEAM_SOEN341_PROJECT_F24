@@ -1,11 +1,5 @@
 @startuml
-skinparam wrapWidth 100   ' Control text wrapping to avoid wide nodes
-skinparam componentStyle rectangle
-skinparam defaultFontSize 12
-skinparam pageWidth 800   ' Width of the page (portrait mode)
-skinparam pageHeight 1500 ' Height of the page (portrait mode)
-skinparam packageTitleAlignment center
-skinparam layout top_down  ' Force top-down layout for packages
+skinparam layout left to right direction
 
 package "React Components" {
     [App]
@@ -70,3 +64,4 @@ package "API Endpoints" {
 [Routes] --> [PeerEvaluationIntro]
 
 @enduml
+
